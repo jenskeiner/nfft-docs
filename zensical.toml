@@ -49,6 +49,7 @@ nav = [
     { "Precision" = "guide/precision.md" },
     { "OpenMP" = "guide/openmp.md" },
     { "Accuracy" = "guide/accuracy.md" },
+    { "Troubleshooting" = "guide/troubleshooting.md" },
   ] },
   { "Transforms" = [
     { "Overview" = "transforms/index.md" },
