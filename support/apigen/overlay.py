@@ -17,7 +17,7 @@ from support.apigen.generate import Module, Section, mangled, unwrap
 
 ROOT = os.path.join("overlay", "api")
 FRONT = re.compile(r"\A---\n(?P<head>.*?)\n---\n(?P<body>.*)\Z", re.S)
-MEMBER = re.compile(r"^### +`?(?P<name>\w+)`?\s*$", re.M)
+MEMBER = re.compile(r"^### +`?(?P<name>[\w()]+)`?\s*$", re.M)
 
 
 class OverlayError(Exception):
