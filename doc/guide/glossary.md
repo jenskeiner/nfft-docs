@@ -80,3 +80,30 @@ Window function
     $\varphi$. $\mathbf D$ divides by its Fourier transform $\hat\varphi$. The
     build selects one window. `nfft_get_window_name` reports it. See
     [Windows](windows.md).
+
+## Terms in other sources
+
+Other libraries and publications use their own terms. Some of them clash with
+the terms on this page. Check the formula, not only the name.
+
+The forward NDFT of this site maps the coefficients $\hat f_{\mathbf k}$ on a
+regular grid to the samples $f_j$ at the nodes $\mathbf x_j$ (see
+[NFFT](../transforms/nfft.md#definition)). Some sources call this transform
+NUDFT-II or a type 2 transform. They call the adjoint NDFT, which maps samples
+at the nodes to coefficients on the grid, NUDFT-I or a type 1 transform. A
+third transform with nonequispaced nodes in both domains has the type number 3
+in these sources. The NFFT3 library offers it as the
+[NNFFT](../transforms/nnfft.md).
+
+Sources also differ in these points:
+
+- The sign in the exponent. This site uses $-2\pi\mathrm{i}$ for the forward
+  transform and $+2\pi\mathrm{i}$ for the adjoint.
+- The scaling. This site uses the angle $2\pi\,\mathbf k\mathbf x_j$ with nodes
+  in $[-\tfrac12,\tfrac12)^d$. Other sources use nodes in $[0,2\pi)$ or
+  $[-\pi,\pi)$ and the angle $\mathbf k\mathbf x_j$.
+- The word "forward". Here it means the transform from coefficients to
+  samples. A source with a different sign convention can use it for the
+  other direction.
+- The word "bandwidth". Here $N_t$ is the number of frequencies in dimension
+  $t$. Other sources use it for the largest frequency, which is about $N_t/2$.
