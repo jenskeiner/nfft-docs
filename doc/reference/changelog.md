@@ -1,0 +1,246 @@
+# Changelog
+
+The version history of NFFT 3, newest release first. It is taken from the file `ChangeLog` in the source tree.
+
+## 3.6.0
+
+### Added
+
+- Add release drafter workflow. (#174) @jenskeiner
+- Add macOS build workflow. (#168) @jenskeiner
+- Add more compiler versions to CI and dev container. (#166) @jenskeiner
+- Add Dependabot config. (#154) @jenskeiner
+- Add dev container. (#153) @jenskeiner
+- Add Linux build & test workflow. (#150) @jenskeiner
+- Add CodSpeed benchmarks. (#148) @jenskeiner
+- Add NFSFT interface for Julia and Python. (#143) @mnolander
+- Add kernel `der_laplacian_rbf` (#138) @wagnertheresa
+- Add kernels `xx_gaussian` and `absx` in fastsum. @FranziskaN
+
+### Changed
+
+- Retry benchmarks up to three times. (#187) @jenskeiner
+- Link against libatomic where required for OpenMP atomic operations on floating-point type. (#170) @jenskeiner
+- Run benchmarks agnostic to certain parameters only for default values. (#162) @jenskeiner
+- Refactor CUnit library detection and usage. (#160) @jenskeiner
+- Improve threaded FFTW 3 library detection and usage as well as overall link-time behavior. (#158) @jenskeiner
+- Improve direct adjoint NDFT transform performance. (#152) @jenskeiner
+- Improve direct NDFT forward transform for d > 1. (#149) @jenskeiner
+- Improve efficiency of NDFT forward transform for d = 1. (#142) @jenskeiner
+- Allow configure to run on ARM. (#140) @ralfHielscher
+
+### Fixed
+
+- Fix compilation errors with GCC 15 in cunit tests (#165) @michaelquellmalz
+- Re-enable Julia interface. (#164) @jenskeiner
+- Do not modify LIBS in the detection of CUnit. (#163) @michaelquellmalz
+- Fix an issue where `makedist` would fail because doxygen always builds documentation in srcdir, not builddir. (#161) @jenskeiner
+- Prevent autoreconf warning in `nfft_lib_codspeed.m4` (#157) @michaelquellmalz
+- Fix build with GCC 15 (#146) @DarthGandalf
+- Add missing get functions for odd n to `imex.h`. @michaelquellmalz
+
+### Chores
+
+- Bump actions/upload-artifact from 4.6.2 to 6.0.0 (#186) @[dependabot[bot]](https://github.com/apps/dependabot)
+- Bump actions/checkout from 5 to 6 (#179) @[dependabot[bot]](https://github.com/apps/dependabot)
+- Harden workflows. (#184) @jenskeiner
+- Bump actions/upload-artifact from 4 to 5 (#177) @[dependabot[bot]](https://github.com/apps/dependabot)
+- Remove the softlink the README.md (#159) @michaelquellmalz
+- Bump CodSpeedHQ/action from 3 to 4 (#155) @[dependabot[bot]](https://github.com/apps/dependabot)
+- Bump actions/checkout from 4 to 5 (#156) @[dependabot[bot]](https://github.com/apps/dependabot)
+- Add required software and reference in README. (#129) @michaelquellmalz
+- Add Bibtex entry in README. @michaelquellmalz
+
+## 3.5.3
+
+### Bugfixes
+
+- #116 Fix in the fastsum Matlab interface that might cause crashes.
+- Update obsolete autoconf macros.
+
+### Enhancements
+
+- #118 Additional node at South Pole in `NFSFT_EQUISPACED` enhancement.
+- #115 Matlab interface with single precision.
+- #113 Add function to `set_num_threads` in Matlab.
+
+## 3.5.2
+
+### Bugfixes
+
+- #103 Build of fastsum fails because `fftw_libs` are not found.
+- #109 Update m4 files for 3.5.2 release.
+- Removed superfluous calls to autoreconf in bootstrap.
+
+### Enhancements
+
+- #98 Add Julia Interface fastsum.
+- #105 Even bandwith in NFCT and NFST.
+- #108 Compute `NFFT_EPSILON` at runtime.
+- #110 In-place fftw for dimension >1 (reduce memory consumption).
+- TravisCI tests on Windows and OSX.
+- Enable AVX2 in precompiled binaries.
+
+## 3.5.1
+
+### Bugfixes
+
+- #90 Improve check if tests are executed in Matlab or Octave.
+- #92 Build with Octave 5.1.0 fails in Windows.
+- #95 FFTW3 Linking problem while building.
+- #96 Remove unnecessary dependence on ncurses library.
+
+### Enhancements
+
+- #86 Add Julia Interface for NFCT, NFST.
+- #87 FSFT: Spherical Fourier transform with equidistant nodes.
+- #88 Inverse NFFT via frame approach.
+
+## 3.5.0
+
+### Bugfixes
+
+- #83 `_Complex` is not supported by some compilers.
+
+### Enhancements
+
+- #62 Extend NFFT Matlab interface to d>4.
+- #64 Faster NFFT in 4D and 5D.
+- #72 Add support for higher bandwidth in NFSFT and improve parallelization.
+- #73 fastsum: Skip nearfield (pre-)computations when eps_I is zero.
+- #76 Add NFSOFT Matlab class.
+- #77 Add Mex interface for FPT.
+- #81 OpenMP parallelization of NFSOFT.
+- #82 Add NFFT Julia interface.
+
+## 3.4.1
+
+### Bugfixes
+
+- #60 Add Latex for target `dist` in Travis.
+- #66 `ABS_SRCDIR` might return a wrong path.
+- #70 infft1d is missing in release.
+- Solved compatibility problem with MATLAB 2018a.
+- Fixed wrong libs flag when compiling for Octave and non-combined `fftw3_threads`.
+
+### Enhancements
+
+- #52 Compile mex interface against GNU Octave in TravisCI.
+- #63 Add bash script to build statically linked libs in Windows.
+- #65 Add Octave tests.
+- #68 Add NFSFT Matlab class.
+
+## 3.4.0
+
+### Bugfixes
+
+- #29 NFSOFT crashes due to false memory free.
+- #32 Support fftw3 compatible libraries that do not require `-l` linker flags, e.g. Intel MKL.
+- #31 Maximum number of plans too low.
+- #34 `nfft_adjoint()` crash with small N_total.
+- #50 Build of Octave interface fails in fastsummex bug.
+- #54 Remove defunct iterS2 application.
+- #55 Use MinGW implementation of printf.
+- #57 Internal compiler error with GCC 7 in fastsum.
+- #59 Replace `%td` in format strings with macro `__D__` for Windows compatibility.
+
+### Enhancements
+
+- #29 Change definition of `NFFT_EPSILON` to `2^(1-MANT_DIG)` to allow for better estimation of error bounds when using long double.
+- #30 Support cross-compiling (thanks GitHub user xantares).
+- #35 Add API to query window function name.
+- #39 Add Matlab mex interface for fastsum application.
+- #40 Add Matlab mex interface for NFCT and NFST modules.
+- #58 Use more efficient method to find log base 2 of an integer.
+
+## 3.3.2
+
+### Bugfixes
+
+- #20 `make check` crashes on windows.
+- #24 Testsuite failures on selected architectures with 3.3.1.
+
+### Enhancements
+
+- #25 Add support for GNU Octave via MEX interface.
+- #27 Enable query of versioning information.
+
+## 3.3.1
+
+### Bugfixes
+
+- #2 NFFT/NFST/NFCT transforms fail when using certain window functions.
+- #11 NFSFT module crashes due to pointer type incompatibility.
+- #14 `applications\fastsum\fastsum_matlab` produces wrong results in Windows.
+- #15 Fixes for Matlab applications/examples in Windows.
+- #16 `X(bsplines)(n, x)` can be inaccurate when x is close to zero.
+- #17 MATLAB r2015b/r2016a don't ship symlink `libmfftw3.so` to `libmfftw3.so.3`.
+- #18 Define format string for ptrdiff_t in platform-dependent macro.
+
+### Enhancements
+
+- #3 Allow to select scope of unit tests via configure.
+- #1 Extend Travis CI configuration.
+
+## 3.3.0
+
+- Added unit tests for some parts of the library. They are invoked via `make check`, but only if the CUnit framework was found on the build host.
+
+## 3.2.4
+
+- Fixed an issue when linker flags were not set correctly.
+
+## 3.2.3
+
+- Added a workaround for an internal compiler error occuring with gcc 4.7.1 in `kernel/mri`
+- Added a workaround for a compilation error in the MATLAB mex interface for gcc 4.7.1 when compiling with C99 support (`-std=gnu99`)
+
+## 3.2.2
+
+- Fixed several problems introduced in version 3.2.1
+- Fixed an issue when the configure script would not run correctly when using the option `--with-fftw3`.
+
+## 3.2.1
+
+- Added missing files of new nfft MATLAB (class) interface to release.
+
+## 3.2.0
+
+- Added support for OpenMP. To activate, use the configure script with the `--enable-openmp` option.
+- Added `ticks.h` from FFTW to leverage CPU cycle counters. If cycle counters are available, the configure script will try to determine the number of ticks per second. If successful, example programs measure times in seconds. Otherwise, example programs will output raw cycle counter differences in arbitrary units. If cycle counters are not available, results of time measurements are undefined.
+- Renamed functions of direct (non-fast) algorithms to `<function name of fast algorithm>_direct`, e.g. the function name for the direct computation of the non-equispaced Fourier transform is `nfft_trafo_direct(nfft_plan)` instead of `ndft_trafo(nfft_plan)`.
+
+## 3.1.4
+
+- Added pkg-config file (thanks Gert Wollny)
+- Headers `include/nfft3util.h`, `applications/fastsum/fastsum.h`, and `applications/fastsum/kernels.h` can now be included by C++ compilers.
+- Fixed an error that occured when trying to create symbolic links to Matlab mex files during installation.
+- All programs from the application and examples subdirectories are no longer installed. The same holds for the Matlab code from the matlab subdirectory.
+
+## 3.1.3
+
+- Fixed some issues that can cause C++ compilers to fail. Thanks to Romain Bossart.
+- Fixed an error that caused linking against FFTW while checking compiler characteristics in the configure script. This only affected installations where FFTW had been installed in a custom location.
+- Doxygen generated documentation is now only deleted if the target `maintainer-clean` is used. The documentation is no longer deleted if the user invokes the usual clean target.
+
+## 3.1.2
+
+- Fixed a bug in `fpt_precompute()` that caused excessive stabilization and incorrect results.
+- Fixed three bugs in the nfft: window function defines are moved to the internal header `infft.h`, a larger lookup table is used for `PRE_LIN_PSI`, and `nfft_adjoint` for d=2,3 and `PRE_FULL_PSI` writes its output correctly.
+
+## 3.1.1
+
+- Added a workaround for an internal compiler error occuring with gcc 4.3.2.
+
+## 3.1.0
+
+- The FPT example program, that is, `examples/fpt/simple_test` has been modified to not require the NFCT module anymore. This solves the problem that NFFT won't compile when the FPT module has been switched on while the NFCT module is swithced off.
+- A module, called nfsoft, for fast Fourier transforms on the rotation group SO(3) has been added.
+- It is now possible to configure the build process so that only specific modules are compiled and installed. Invoke the configure script with option `--help` for details.
+- The handling of how to link against the fftw3 library has been improved. The new configure script options `--with-fftw3`, `--with-fftw-includedir`, and `--with-fftw-libdir` allow to specify where fftw3 has been installed.
+- Improved compliance with GNU standards.
+- The experimental Matlab interface has been improved and is now officially a part of NFFT3. To compile the Matlab modules, invoke the configure script with the option `--with-matlab=<path/to/matlab/directory>`. Also, an interface to the plain NFFT has been added.
+
+## 3.0.2
+
+- Fixed a bug in the fpt module that lead to wrong output.

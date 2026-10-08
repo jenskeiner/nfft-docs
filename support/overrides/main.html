@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+<!--
+  Banner shown on any version that is not the default. base.html renders the
+  surrounding element only when config.extra.version is set, which is what the
+  [project.extra.version] block in zensical.toml does, and reveals it from
+  sessionStorage when mike's versions.json says this version is outdated.
+-->
+{% block outdated %}
+  You are reading the documentation of an older version of NFFT3.
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Go to the current release.</strong>
+  </a>
+{% endblock %}

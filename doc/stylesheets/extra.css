@@ -1,0 +1,38 @@
+/* Brand colours. The logo draws the N in pure red on dark grey; pure red is too
+   loud and too low in contrast for links, so the primary is darkened. */
+:root {
+  --md-primary-fg-color:        #b81414;
+  --md-primary-fg-color--light: #d63232;
+  --md-primary-fg-color--dark:  #8c0f0f;
+  --md-accent-fg-color:         #d63232;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #1e1e22;
+  --md-primary-fg-color--light: #33333a;
+  --md-primary-fg-color--dark:  #121215;
+  --md-accent-fg-color:         #ff4d4d;
+  --md-typeset-a-color:         #ff6b6b;
+}
+
+/* Wide tables, generated API tables in particular, scroll instead of
+   overflowing the content column. */
+.md-typeset__table {
+  width: 100%;
+}
+
+.md-typeset table:not([class]) {
+  display: table;
+}
+
+/* Long display formulas scroll horizontally on a phone. */
+.md-typeset mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2rem 0;
+}
+
+/* Signature blocks in the API reference stay readable when they wrap. */
+.md-typeset .api-signature code {
+  white-space: pre-wrap;
+}

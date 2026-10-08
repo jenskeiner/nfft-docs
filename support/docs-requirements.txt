@@ -1,0 +1,14 @@
+# Python requirements for the documentation site.
+#
+# Preview:  uv run --with-requirements support/docs-requirements.txt zensical serve
+# Build:    uv run --with-requirements support/docs-requirements.txt zensical build --strict
+#
+# Zensical is alpha with a fast release cadence. Pin the exact version and bump
+# it deliberately.
+zensical==0.0.57
+
+# Versioning. Zensical has no native versioning yet (roadmap, no date), so the
+# site uses squidfunk's mike fork, pinned to a commit. It is not on PyPI. It
+# still pulls mkdocs in as a dependency; harmless, mike only uses its plumbing.
+# Replace this with native Zensical versioning when that ships. See D2.
+mike @ git+https://github.com/squidfunk/mike.git@6a3ce35d185493466206cfbc2cb31aec2cea135e
