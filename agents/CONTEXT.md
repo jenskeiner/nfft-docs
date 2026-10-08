@@ -37,7 +37,7 @@ Parity means the topics are covered. Never copy text from an external site.
 
 - One issue, one pull request, one run. Never more.
 - Claim an issue before work: add label `in-progress`, comment the run URL
-  (`$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID`).
+  given under "This run" at the end of your prompt.
   Release the claim (remove `in-progress`, comment why) if you stop without a PR.
 - Before `gh pr create`, all of these must pass:
 
