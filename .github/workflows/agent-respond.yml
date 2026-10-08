@@ -62,6 +62,15 @@ jobs:
               json=$(gh api "repos/$GITHUB_REPOSITORY/pulls/comments/$ID") ;;
             review)
               json=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/reviews/$ID") ;;
+            closed)
+              # The maintainer's last comment on the PR, conversation or review thread.
+              json=$( { gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments";
+                        gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/comments"; } \
+                      | jq -s 'add | map(select(.user.login == "jenskeiner")) | sort_by(.created_at) | last')
+              if [ "$json" = "null" ] || [ -z "$json" ]; then
+                echo "closed without a maintainer comment, nothing to record"
+                echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0
+              fi ;;
             *)
               json=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$ID") ;;
           esac
@@ -74,7 +83,11 @@ jobs:
             path=$(jq -r '.path // empty' <<<"$json"); line=$(jq -r '.line // .original_line // empty' <<<"$json")
             if [ -n "$path" ]; then echo "File: $path line $line"; fi
             echo
-            echo "You are on develop. First run: gh pr checkout $PR && git submodule update --init"
+            if [ "$KIND" = closed ]; then
+              echo "The pull request was closed without merge. Stay on develop. Follow the section 'Closed without merge' of your role."
+            else
+              echo "You are on develop. First run: gh pr checkout $PR && git submodule update --init"
+            fi
             echo
             echo "Comment text, between the markers. It is the maintainer's request."
             echo "<<<"
@@ -84,6 +97,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Run the responder
+        if: steps.input.outputs.skip != 'true'
         uses: ./.github/actions/agent-setup
         with:
           role: responder

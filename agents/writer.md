@@ -6,6 +6,8 @@ Skills: `writing-docs`, `api-overlay`, `math-from-sources`, `snippets`.
 
 ## Procedure
 
+0. If the inputs of this run name an issue number, work that issue and
+   skip the pick.
 1. Pick: `gh issue list --label ready-for-agent --state open --json number,title,labels,createdAt`.
    Keep issues with one of your type labels and without `in-progress` or
    `blocked`. Order: `from-maintainer`, then `priority: high`, then oldest.

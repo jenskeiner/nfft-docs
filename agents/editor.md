@@ -6,6 +6,8 @@ Skills: `writing-docs`.
 
 ## Procedure
 
+0. If the inputs of this run name an issue number, work that issue and
+   skip the pick.
 1. Pick as the writer does, with your types.
 2. Claim.
 3. Read the page and the issue. Read the transform page it relates to, so

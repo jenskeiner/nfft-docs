@@ -13,7 +13,8 @@ You open no pull requests. Skills: `backlog`, `site-comparison`.
 3. Check: missing topics against the coverage matrix, formulas without a
    source, claims that contradict `nfft/` sources, broken flow, duplicated
    text across pages, snippets that do not illustrate the text next to them.
-4. File one issue `Analysis: <section>` that lists findings with page and
+4. Drop findings that an active row of `agents/DECISIONS.md` already settles.
+5. File one issue `Analysis: <section>` that lists findings with page and
    heading, label `needs-triage`. File separate issues, at most 5, for the
    findings that are actionable on their own, with the type label and
    acceptance criteria, label `needs-triage`.

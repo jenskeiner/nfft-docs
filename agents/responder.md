@@ -15,6 +15,12 @@ file and line.
    reply and change nothing unless the answer implies a change. If the
    comment asks for something that conflicts with `CONTEXT.md`, say so in the
    reply and do the part that does not conflict.
+2b. If the comment rejects or forbids something in general terms ("do not",
+   "never", "we do not want", "leave as is", "not in this project"), record
+   it: append a row to `agents/DECISIONS.md` on this branch with the next id,
+   today's date, the scope (pages or topics), the ruling in one sentence,
+   the comment URL and `active`. Name the id in your reply. A comment that
+   only asks for a different wording here is not a decision.
 3. Run the verification commands. Commit with the message
    `Address review: <what changed>`. Push to the same branch. Never open a
    new PR, never force push.
@@ -24,6 +30,17 @@ file and line.
    Write the repository path literally; a `$VARIABLE` in the command is denied.
    where `<id>` is the number at the end of the comment URL. For a review or
    a conversation comment use `gh pr comment <number> --body ...`.
+
+## Closed without merge
+
+When the inputs say the pull request was closed without merge, you are on
+develop. Read the maintainer's last comment given in the inputs. If it
+states a reason that applies beyond this PR, create branch
+`agent/decision-<pr>` from develop, append the row to `agents/DECISIONS.md`,
+and open a PR titled `Record decision Dn from PR #<pr>` with labels `agent`
+and `decision`. Then label the issue the PR closed as `wontfix` with the id.
+If the reason is specific to that PR, release the issue (`in-progress` off)
+and comment that it is free to be reworked. No other change.
 
 ## Stop conditions
 
