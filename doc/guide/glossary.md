@@ -95,6 +95,13 @@ third transform with nonequispaced nodes in both domains has the type number 3
 in these sources. The NFFT3 library offers it as the
 [NNFFT](../transforms/nnfft.md).
 
+These sources describe the mathematical terms and the names of the transforms:
+the Wikipedia page
+[Non-uniform discrete Fourier transform](https://en.wikipedia.org/wiki/Non-uniform_discrete_Fourier_transform)
+and the
+[math section](https://finufft.readthedocs.io/en/latest/math.html#math)
+of the FINUFFT documentation.
+
 Sources also differ in these points:
 
 - The sign in the exponent. This site uses $-2\pi\mathrm{i}$ for the forward
