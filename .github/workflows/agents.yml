@@ -1,20 +1,21 @@
 name: Agents
 
-# One cron per role. The step below maps the cron string to the role, so a
-# schedule change needs both lines edited. Crons are enabled in M2.
+# Fixed crons for the product owner and the analyst. The worker cron picks
+# its role from agents/roles.json by the best ready issue, so a new role
+# needs no change here. Crons run only when the repository variable
+# AGENTS_ENABLED is "true"; dispatches always run.
 on:
-  # schedule:
-  #   - cron: "0 5 * * *"      # product-owner
-  #   - cron: "0 */4 * * *"    # writer
-  #   - cron: "30 */8 * * *"   # editor
-  #   - cron: "0 7 */2 * *"    # analyst
+  schedule:
+    - cron: "0 5 * * *"      # product-owner
+    - cron: "0 7 */2 * *"    # analyst
+    - cron: "30 */2 * * *"   # worker
   workflow_dispatch:
     inputs:
       role:
-        description: Role to run
+        description: Role to run. worker picks from roles.json.
         required: true
         type: choice
-        options: [product-owner, writer, editor, analyst]
+        options: [worker, product-owner, analyst, writer, editor, meta]
 
 permissions:
   contents: write
@@ -25,6 +26,7 @@ permissions:
 jobs:
   role:
     name: ${{ inputs.role || github.event.schedule }}
+    if: github.event_name == 'workflow_dispatch' || vars.AGENTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment: agents
     concurrency:
@@ -34,31 +36,36 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Map the trigger to a role
-        id: role
+        id: want
+        env:
+          TRIGGER: ${{ inputs.role || github.event.schedule }}
         run: |
-          case "${{ inputs.role || github.event.schedule }}" in
-            "0 5 * * *"|product-owner) role=product-owner; model=claude-opus-5-5 ;;
-            "0 */4 * * *"|writer)      role=writer;        model=claude-opus-5-5 ;;
-            "30 */8 * * *"|editor)     role=editor;        model=claude-sonnet-5-5 ;;
-            "0 7 */2 * *"|analyst)     role=analyst;       model=claude-opus-5-5 ;;
-            *) echo "unmapped trigger" >&2; exit 1 ;;
+          case "$TRIGGER" in
+            "0 5 * * *")   want=product-owner ;;
+            "0 7 */2 * *") want=analyst ;;
+            "30 */2 * * *") want=worker ;;
+            *) want="$TRIGGER" ;;
           esac
-          echo "role=$role" >> "$GITHUB_OUTPUT"
-          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "want=$want" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           submodules: true
           fetch-depth: 0
+          # The model pushes with the Claude app token the action configures.
+          persist-credentials: false
 
       - name: Gate
         id: gate
-        run: bash .github/scripts/agent-gate.sh "${{ steps.role.outputs.role }}"
+        run: bash .github/scripts/agent-gate.sh "${{ steps.want.outputs.want }}"
 
       - name: Run the role
         if: steps.gate.outputs.run == 'true'
         uses: ./.github/actions/agent-setup
         with:
-          role: ${{ steps.role.outputs.role }}
-          model: ${{ steps.role.outputs.model }}
+          role: ${{ steps.gate.outputs.role }}
+          model: ${{ steps.gate.outputs.model }}
+          max_turns: ${{ steps.gate.outputs.max_turns }}
+          # Quoted: a " #" inside an expression starts a YAML comment and leaves ${{ unclosed.
+          extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || '' }}"
           oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

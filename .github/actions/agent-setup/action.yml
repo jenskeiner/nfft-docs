@@ -35,12 +35,20 @@ runs:
       shell: bash
       env:
         EXTRA: ${{ inputs.extra_prompt }}
+        ROLE: ${{ inputs.role }}
       run: |
         {
           echo "text<<PROMPT_EOF"
           cat agents/CONTEXT.md
           echo
-          cat "agents/${{ inputs.role }}.md"
+          cat "agents/$ROLE.md"
+          echo
+          cat agents/DECISIONS.md
+          echo
+          echo "## This run"
+          echo
+          echo "Run URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "Subprocesses cannot read the GitHub Actions environment variables. Use the values given here."
           if [ -n "$EXTRA" ]; then
             echo
             echo "## Inputs of this run"
@@ -51,6 +59,7 @@ runs:
         } >> "$GITHUB_OUTPUT"
 
     - name: Run Claude Code
+      id: claude
       uses: anthropics/claude-code-action@6fed3ca145920b639991cb756090506e1bcaf515 # v1
       with:
         claude_code_oauth_token: ${{ inputs.oauth_token }}
@@ -60,4 +69,14 @@ runs:
         claude_args: >-
           --model ${{ inputs.model }}
           --max-turns ${{ inputs.max_turns }}
-          --allowedTools "Read,Edit,Write,Glob,Grep,Bash(uv run:*),Bash(git:*),Bash(gh issue:*),Bash(gh pr:*),Bash(gh label:*),Bash(gh api:*),Bash(python3:*),Bash(curl:*),Bash(grep:*),Bash(find:*),Bash(cat:*),Bash(ls:*),Bash(mkdir:*),Bash(diff:*),Bash(wc:*),Bash(head:*),Bash(tail:*),Bash(sed -n:*)"
+          --allowedTools "Read,Edit,Write,Glob,Grep,Bash(uv run:*),Bash(git:*),Bash(gh issue:*),Bash(gh pr create:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(gh pr diff:*),Bash(gh pr checks:*),Bash(gh pr checkout:*),Bash(gh pr comment:*),Bash(gh pr edit:*),Bash(gh pr review --comment:*),Bash(gh label:*),Bash(gh api:*),Bash(python3:*),Bash(curl:*),Bash(grep:*),Bash(find:*),Bash(cat:*),Bash(ls:*),Bash(mkdir:*),Bash(diff:*),Bash(wc:*),Bash(head:*),Bash(tail:*),Bash(sed -n:*),Bash(jq:*),Bash(echo:*),Bash(printf:*),Bash(awk:*),Bash(cut:*),Bash(sort:*),Bash(uniq:*),Bash(tr:*),Bash(date:*),Bash(test:*),Bash(true:*)"
+
+    # The run log shows only the count of denied tool calls. The transcript
+    # has the calls, the denials and the final message.
+    - name: Keep the transcript
+      if: always() && steps.claude.outputs.execution_file != ''
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: transcript-${{ inputs.role }}-${{ github.run_id }}
+        path: ${{ steps.claude.outputs.execution_file }}
+        retention-days: 14

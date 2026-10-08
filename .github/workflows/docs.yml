@@ -31,7 +31,7 @@ jobs:
           submodules: true
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v7
         with:
           enable-cache: true
 
@@ -66,12 +66,12 @@ jobs:
     steps:
       # persist-credentials must stay on: mike pushes with this token.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
-        with:
+        with: # zizmor: ignore[artipacked]
           fetch-depth: 0
           submodules: true
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v7
         with:
           enable-cache: true
 
@@ -89,16 +89,20 @@ jobs:
       group: gh-pages
       cancel-in-progress: false
     steps:
+      # mike pushes with the persisted token.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
-        with:
+        with: # zizmor: ignore[artipacked]
           fetch-depth: 0
           submodules: true
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v7
         with:
           enable-cache: true
 
       # Deploys whatever ref was dispatched.
       - name: Deploy
-        run: bash .github/scripts/docs-deploy.sh "${{ inputs.version }}" "${{ inputs.alias }}"
+        env:
+          VERSION: ${{ inputs.version }}
+          ALIAS: ${{ inputs.alias }}
+        run: bash .github/scripts/docs-deploy.sh "$VERSION" "$ALIAS"

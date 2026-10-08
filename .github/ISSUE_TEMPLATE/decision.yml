@@ -1,0 +1,25 @@
+name: Decision
+description: A ruling by the maintainer that agents must respect from now on.
+title: "[Decision] "
+labels: ["decision", "from-maintainer"]
+body:
+  - type: textarea
+    id: ruling
+    attributes:
+      label: Ruling
+      description: One or two sentences an agent can apply. Say what, not why, first; why may follow.
+    validations:
+      required: true
+  - type: input
+    id: scope
+    attributes:
+      label: Scope
+      placeholder: all pages / doc/guide/ / API overlay / terminology
+    validations:
+      required: true
+  - type: input
+    id: supersedes
+    attributes:
+      label: Supersedes
+      description: Decision id this replaces, if any.
+      placeholder: D3

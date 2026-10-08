@@ -11,10 +11,12 @@ The backlog is GitHub Issues. Labels carry the state.
 
 | Group | Labels |
 |-------|--------|
-| Type, exactly one | `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`, `upstream` |
+| Type, exactly one | `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`, `upstream`, `meta` |
+| Maintainer input | `decision` (a ruling to record in `agents/DECISIONS.md`) |
 | State, exactly one | `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `in-progress`, `blocked`, `wontfix` |
 | Origin | `from-maintainer`, `agent` |
 | Priority | `priority: high` |
+| Upstream | `upstream-defect`, always with `ready-for-human`, never `ready-for-agent` |
 
 Pick order for workers: `from-maintainer`, then `priority: high`, then the
 oldest `createdAt`.
@@ -49,7 +51,7 @@ window and cites nfft_init", not "document m".
 
 ```
 gh issue edit <n> --add-label in-progress
-gh issue comment <n> --body "Claimed by run $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+gh issue comment <n> --body "Claimed by run <run URL from the prompt>"
 ```
 
 Release when you stop without a PR:
@@ -61,6 +63,12 @@ gh issue comment <n> --body "Released: <reason>"
 
 A claim older than 12 hours without an open PR is stale. The product owner
 releases it.
+
+## Decisions
+
+Before claiming, read the active rows of `agents/DECISIONS.md` in your prompt.
+An issue that asks for something a row forbids is not worked: comment
+`Conflicts with Dn: <ruling>`, add label `blocked`, pick the next issue.
 
 ## Triage
 
