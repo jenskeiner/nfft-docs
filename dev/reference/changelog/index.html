@@ -1,0 +1,3510 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Nonequispaced fast Fourier transforms and related transforms, a C library.">
+      
+      
+        <meta name="author" content="Jens Keiner, Stefan Kunis, Daniel Potts">
+      
+      
+        <link rel="canonical" href="https://jenskeiner.github.io/nfft-docs/dev/reference/changelog/">
+      
+      
+        <link rel="prev" href="../people/">
+      
+      
+        <link rel="next" href="../license/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="zensical-0.0.57">
+    
+    
+      
+        <title>Changelog - NFFT3</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You are reading the documentation of an older version of NFFT3.
+  <a href="../../..">
+    <strong>Go to the current release.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NFFT3" class="md-header__button md-logo" aria-label="NFFT3" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="NFFT3">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFFT3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun-moon" viewBox="0 0 24 24"><path d="M12 2v2M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715M16 12a4 4 0 0 0-4-4M19 5l-1.256 1.256M20 12h2"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="red"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/jenskeiner/nfft-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jenskeiner/nfft-docs
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/" class="md-tabs__link">
+          
+  
+  Get started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guide/" class="md-tabs__link">
+          
+  
+  Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../transforms/" class="md-tabs__link">
+          
+  
+  Transforms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../applications/" class="md-tabs__link">
+          
+  
+  Applications
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interfaces/julia/" class="md-tabs__link">
+          
+  
+  Interfaces
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+      
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../publications/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NFFT3" class="md-nav__button md-logo" aria-label="NFFT3" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="NFFT3">
+
+    </a>
+    NFFT3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jenskeiner/nfft-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jenskeiner/nfft-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Home
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../getting-started/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Get started
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Get started
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-transform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  First transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/build-from-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Build from source
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Examples
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Guide
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Guide
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/plans-and-flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Plans and flags
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/windows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Windows
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/precision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Precision
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/openmp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  OpenMP
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/accuracy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Accuracy
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../transforms/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Transforms
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Transforms
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFCT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFST
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nnfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NNFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nsfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NSFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfsft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfsft-background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT background
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfsoft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSOFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/fpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FPT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Solver
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  API
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  API
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFCT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFST
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nnfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NNFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nsfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NSFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfsft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfsoft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSOFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/fpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FPT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Solver
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../applications/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Applications
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Applications
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/fastsum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/fastgauss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast Gauss transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/fastsumS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/mri-2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI 2D
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/mri-3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI 3D
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/polarFFT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Polar FFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/radon/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Radon transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/quadratureS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Quadrature on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/iterS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Inversion on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/glacier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reconstruction of a glacier
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Interfaces
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Interfaces
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interfaces/julia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Julia
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interfaces/matlab-octave/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MATLAB and Octave
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reference
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../publications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Publications
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FAQ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../people/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  People
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#360" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3.6.0
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.6.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Added
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Changed
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Fixed
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chores" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Chores
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#353" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3.5.3
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bugfixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Bugfixes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  License
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../development/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Development
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Development
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/build-matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Build matrix
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Testing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Benchmarks
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Releasing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#360" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3.6.0
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.6.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Added
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Changed
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Fixed
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chores" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Chores
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#353" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        3.5.3
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5.3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bugfixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Bugfixes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../publications/" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+    <a href="https://github.com/jenskeiner/nfft-docs/edit/develop/doc/reference/changelog.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>The version history of NFFT 3, newest release first. It is taken from the file <code>ChangeLog</code> in the source tree.</p>
+<h2 id="360">3.6.0<a class="headerlink" href="#360" title="Permanent link">&para;</a></h2>
+<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add release drafter workflow. (#174) @jenskeiner</li>
+<li>Add macOS build workflow. (#168) @jenskeiner</li>
+<li>Add more compiler versions to CI and dev container. (#166) @jenskeiner</li>
+<li>Add Dependabot config. (#154) @jenskeiner</li>
+<li>Add dev container. (#153) @jenskeiner</li>
+<li>Add Linux build &amp; test workflow. (#150) @jenskeiner</li>
+<li>Add CodSpeed benchmarks. (#148) @jenskeiner</li>
+<li>Add NFSFT interface for Julia and Python. (#143) @mnolander</li>
+<li>Add kernel <code>der_laplacian_rbf</code> (#138) @wagnertheresa</li>
+<li>Add kernels <code>xx_gaussian</code> and <code>absx</code> in fastsum. @FranziskaN</li>
+</ul>
+<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Retry benchmarks up to three times. (#187) @jenskeiner</li>
+<li>Link against libatomic where required for OpenMP atomic operations on floating-point type. (#170) @jenskeiner</li>
+<li>Run benchmarks agnostic to certain parameters only for default values. (#162) @jenskeiner</li>
+<li>Refactor CUnit library detection and usage. (#160) @jenskeiner</li>
+<li>Improve threaded FFTW 3 library detection and usage as well as overall link-time behavior. (#158) @jenskeiner</li>
+<li>Improve direct adjoint NDFT transform performance. (#152) @jenskeiner</li>
+<li>Improve direct NDFT forward transform for d &gt; 1. (#149) @jenskeiner</li>
+<li>Improve efficiency of NDFT forward transform for d = 1. (#142) @jenskeiner</li>
+<li>Allow configure to run on ARM. (#140) @ralfHielscher</li>
+</ul>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix compilation errors with GCC 15 in cunit tests (#165) @michaelquellmalz</li>
+<li>Re-enable Julia interface. (#164) @jenskeiner</li>
+<li>Do not modify LIBS in the detection of CUnit. (#163) @michaelquellmalz</li>
+<li>Fix an issue where <code>makedist</code> would fail because doxygen always builds documentation in srcdir, not builddir. (#161) @jenskeiner</li>
+<li>Prevent autoreconf warning in <code>nfft_lib_codspeed.m4</code> (#157) @michaelquellmalz</li>
+<li>Fix build with GCC 15 (#146) @DarthGandalf</li>
+<li>Add missing get functions for odd n to <code>imex.h</code>. @michaelquellmalz</li>
+</ul>
+<h3 id="chores">Chores<a class="headerlink" href="#chores" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Bump actions/upload-artifact from 4.6.2 to 6.0.0 (#186) @<a href="https://github.com/apps/dependabot">dependabot[bot]</a></li>
+<li>Bump actions/checkout from 5 to 6 (#179) @<a href="https://github.com/apps/dependabot">dependabot[bot]</a></li>
+<li>Harden workflows. (#184) @jenskeiner</li>
+<li>Bump actions/upload-artifact from 4 to 5 (#177) @<a href="https://github.com/apps/dependabot">dependabot[bot]</a></li>
+<li>Remove the softlink the README.md (#159) @michaelquellmalz</li>
+<li>Bump CodSpeedHQ/action from 3 to 4 (#155) @<a href="https://github.com/apps/dependabot">dependabot[bot]</a></li>
+<li>Bump actions/checkout from 4 to 5 (#156) @<a href="https://github.com/apps/dependabot">dependabot[bot]</a></li>
+<li>Add required software and reference in README. (#129) @michaelquellmalz</li>
+<li>Add Bibtex entry in README. @michaelquellmalz</li>
+</ul>
+<h2 id="353">3.5.3<a class="headerlink" href="#353" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes">Bugfixes<a class="headerlink" href="#bugfixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="116-fix-in-the-fastsum-matlab-interface-that-might-cause-crashes">116 Fix in the fastsum Matlab interface that might cause crashes.<a class="headerlink" href="#116-fix-in-the-fastsum-matlab-interface-that-might-cause-crashes" title="Permanent link">&para;</a></h1>
+</li>
+<li>Update obsolete autoconf macros.</li>
+</ul>
+<h3 id="enhancements">Enhancements<a class="headerlink" href="#enhancements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="118-additional-node-at-south-pole-in-nfsft_equispaced-enhancement">118 Additional node at South Pole in <code>NFSFT_EQUISPACED</code> enhancement.<a class="headerlink" href="#118-additional-node-at-south-pole-in-nfsft_equispaced-enhancement" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="115-matlab-interface-with-single-precision">115 Matlab interface with single precision.<a class="headerlink" href="#115-matlab-interface-with-single-precision" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="113-add-function-to-set_num_threads-in-matlab">113 Add function to <code>set_num_threads</code> in Matlab.<a class="headerlink" href="#113-add-function-to-set_num_threads-in-matlab" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="352">3.5.2<a class="headerlink" href="#352" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_1">Bugfixes<a class="headerlink" href="#bugfixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="103-build-of-fastsum-fails-because-fftw_libs-are-not-found">103 Build of fastsum fails because <code>fftw_libs</code> are not found.<a class="headerlink" href="#103-build-of-fastsum-fails-because-fftw_libs-are-not-found" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="109-update-m4-files-for-352-release">109 Update m4 files for 3.5.2 release.<a class="headerlink" href="#109-update-m4-files-for-352-release" title="Permanent link">&para;</a></h1>
+</li>
+<li>Removed superfluous calls to autoreconf in bootstrap.</li>
+</ul>
+<h3 id="enhancements_1">Enhancements<a class="headerlink" href="#enhancements_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="98-add-julia-interface-fastsum">98 Add Julia Interface fastsum.<a class="headerlink" href="#98-add-julia-interface-fastsum" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="105-even-bandwith-in-nfct-and-nfst">105 Even bandwith in NFCT and NFST.<a class="headerlink" href="#105-even-bandwith-in-nfct-and-nfst" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="108-compute-nfft_epsilon-at-runtime">108 Compute <code>NFFT_EPSILON</code> at runtime.<a class="headerlink" href="#108-compute-nfft_epsilon-at-runtime" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="110-in-place-fftw-for-dimension-1-reduce-memory-consumption">110 In-place fftw for dimension &gt;1 (reduce memory consumption).<a class="headerlink" href="#110-in-place-fftw-for-dimension-1-reduce-memory-consumption" title="Permanent link">&para;</a></h1>
+</li>
+<li>TravisCI tests on Windows and OSX.</li>
+<li>Enable AVX2 in precompiled binaries.</li>
+</ul>
+<h2 id="351">3.5.1<a class="headerlink" href="#351" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_2">Bugfixes<a class="headerlink" href="#bugfixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="90-improve-check-if-tests-are-executed-in-matlab-or-octave">90 Improve check if tests are executed in Matlab or Octave.<a class="headerlink" href="#90-improve-check-if-tests-are-executed-in-matlab-or-octave" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="92-build-with-octave-510-fails-in-windows">92 Build with Octave 5.1.0 fails in Windows.<a class="headerlink" href="#92-build-with-octave-510-fails-in-windows" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="95-fftw3-linking-problem-while-building">95 FFTW3 Linking problem while building.<a class="headerlink" href="#95-fftw3-linking-problem-while-building" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="96-remove-unnecessary-dependence-on-ncurses-library">96 Remove unnecessary dependence on ncurses library.<a class="headerlink" href="#96-remove-unnecessary-dependence-on-ncurses-library" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h3 id="enhancements_2">Enhancements<a class="headerlink" href="#enhancements_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="86-add-julia-interface-for-nfct-nfst">86 Add Julia Interface for NFCT, NFST.<a class="headerlink" href="#86-add-julia-interface-for-nfct-nfst" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="87-fsft-spherical-fourier-transform-with-equidistant-nodes">87 FSFT: Spherical Fourier transform with equidistant nodes.<a class="headerlink" href="#87-fsft-spherical-fourier-transform-with-equidistant-nodes" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="88-inverse-nfft-via-frame-approach">88 Inverse NFFT via frame approach.<a class="headerlink" href="#88-inverse-nfft-via-frame-approach" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="350">3.5.0<a class="headerlink" href="#350" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_3">Bugfixes<a class="headerlink" href="#bugfixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="83-_complex-is-not-supported-by-some-compilers">83 <code>_Complex</code> is not supported by some compilers.<a class="headerlink" href="#83-_complex-is-not-supported-by-some-compilers" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h3 id="enhancements_3">Enhancements<a class="headerlink" href="#enhancements_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="62-extend-nfft-matlab-interface-to-d4">62 Extend NFFT Matlab interface to d&gt;4.<a class="headerlink" href="#62-extend-nfft-matlab-interface-to-d4" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="64-faster-nfft-in-4d-and-5d">64 Faster NFFT in 4D and 5D.<a class="headerlink" href="#64-faster-nfft-in-4d-and-5d" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="72-add-support-for-higher-bandwidth-in-nfsft-and-improve-parallelization">72 Add support for higher bandwidth in NFSFT and improve parallelization.<a class="headerlink" href="#72-add-support-for-higher-bandwidth-in-nfsft-and-improve-parallelization" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="73-fastsum-skip-nearfield-pre-computations-when-eps_i-is-zero">73 fastsum: Skip nearfield (pre-)computations when eps_I is zero.<a class="headerlink" href="#73-fastsum-skip-nearfield-pre-computations-when-eps_i-is-zero" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="76-add-nfsoft-matlab-class">76 Add NFSOFT Matlab class.<a class="headerlink" href="#76-add-nfsoft-matlab-class" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="77-add-mex-interface-for-fpt">77 Add Mex interface for FPT.<a class="headerlink" href="#77-add-mex-interface-for-fpt" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="81-openmp-parallelization-of-nfsoft">81 OpenMP parallelization of NFSOFT.<a class="headerlink" href="#81-openmp-parallelization-of-nfsoft" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="82-add-nfft-julia-interface">82 Add NFFT Julia interface.<a class="headerlink" href="#82-add-nfft-julia-interface" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="341">3.4.1<a class="headerlink" href="#341" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_4">Bugfixes<a class="headerlink" href="#bugfixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="60-add-latex-for-target-dist-in-travis">60 Add Latex for target <code>dist</code> in Travis.<a class="headerlink" href="#60-add-latex-for-target-dist-in-travis" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="66-abs_srcdir-might-return-a-wrong-path">66 <code>ABS_SRCDIR</code> might return a wrong path.<a class="headerlink" href="#66-abs_srcdir-might-return-a-wrong-path" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="70-infft1d-is-missing-in-release">70 infft1d is missing in release.<a class="headerlink" href="#70-infft1d-is-missing-in-release" title="Permanent link">&para;</a></h1>
+</li>
+<li>Solved compatibility problem with MATLAB 2018a.</li>
+<li>Fixed wrong libs flag when compiling for Octave and non-combined <code>fftw3_threads</code>.</li>
+</ul>
+<h3 id="enhancements_4">Enhancements<a class="headerlink" href="#enhancements_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="52-compile-mex-interface-against-gnu-octave-in-travisci">52 Compile mex interface against GNU Octave in TravisCI.<a class="headerlink" href="#52-compile-mex-interface-against-gnu-octave-in-travisci" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="63-add-bash-script-to-build-statically-linked-libs-in-windows">63 Add bash script to build statically linked libs in Windows.<a class="headerlink" href="#63-add-bash-script-to-build-statically-linked-libs-in-windows" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="65-add-octave-tests">65 Add Octave tests.<a class="headerlink" href="#65-add-octave-tests" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="68-add-nfsft-matlab-class">68 Add NFSFT Matlab class.<a class="headerlink" href="#68-add-nfsft-matlab-class" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="340">3.4.0<a class="headerlink" href="#340" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_5">Bugfixes<a class="headerlink" href="#bugfixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="29-nfsoft-crashes-due-to-false-memory-free">29 NFSOFT crashes due to false memory free.<a class="headerlink" href="#29-nfsoft-crashes-due-to-false-memory-free" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="32-support-fftw3-compatible-libraries-that-do-not-require-l-linker-flags-eg-intel-mkl">32 Support fftw3 compatible libraries that do not require <code>-l</code> linker flags, e.g. Intel MKL.<a class="headerlink" href="#32-support-fftw3-compatible-libraries-that-do-not-require-l-linker-flags-eg-intel-mkl" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="31-maximum-number-of-plans-too-low">31 Maximum number of plans too low.<a class="headerlink" href="#31-maximum-number-of-plans-too-low" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="34-nfft_adjoint-crash-with-small-n_total">34 <code>nfft_adjoint()</code> crash with small N_total.<a class="headerlink" href="#34-nfft_adjoint-crash-with-small-n_total" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="50-build-of-octave-interface-fails-in-fastsummex-bug">50 Build of Octave interface fails in fastsummex bug.<a class="headerlink" href="#50-build-of-octave-interface-fails-in-fastsummex-bug" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="54-remove-defunct-iters2-application">54 Remove defunct iterS2 application.<a class="headerlink" href="#54-remove-defunct-iters2-application" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="55-use-mingw-implementation-of-printf">55 Use MinGW implementation of printf.<a class="headerlink" href="#55-use-mingw-implementation-of-printf" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="57-internal-compiler-error-with-gcc-7-in-fastsum">57 Internal compiler error with GCC 7 in fastsum.<a class="headerlink" href="#57-internal-compiler-error-with-gcc-7-in-fastsum" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="59-replace-td-in-format-strings-with-macro-__d__-for-windows-compatibility">59 Replace <code>%td</code> in format strings with macro <code>__D__</code> for Windows compatibility.<a class="headerlink" href="#59-replace-td-in-format-strings-with-macro-__d__-for-windows-compatibility" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h3 id="enhancements_5">Enhancements<a class="headerlink" href="#enhancements_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="29-change-definition-of-nfft_epsilon-to-21-mant_dig-to-allow-for-better-estimation-of-error-bounds-when-using-long-double">29 Change definition of <code>NFFT_EPSILON</code> to <code>2^(1-MANT_DIG)</code> to allow for better estimation of error bounds when using long double.<a class="headerlink" href="#29-change-definition-of-nfft_epsilon-to-21-mant_dig-to-allow-for-better-estimation-of-error-bounds-when-using-long-double" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="30-support-cross-compiling-thanks-github-user-xantares">30 Support cross-compiling (thanks GitHub user xantares).<a class="headerlink" href="#30-support-cross-compiling-thanks-github-user-xantares" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="35-add-api-to-query-window-function-name">35 Add API to query window function name.<a class="headerlink" href="#35-add-api-to-query-window-function-name" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="39-add-matlab-mex-interface-for-fastsum-application">39 Add Matlab mex interface for fastsum application.<a class="headerlink" href="#39-add-matlab-mex-interface-for-fastsum-application" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="40-add-matlab-mex-interface-for-nfct-and-nfst-modules">40 Add Matlab mex interface for NFCT and NFST modules.<a class="headerlink" href="#40-add-matlab-mex-interface-for-nfct-and-nfst-modules" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="58-use-more-efficient-method-to-find-log-base-2-of-an-integer">58 Use more efficient method to find log base 2 of an integer.<a class="headerlink" href="#58-use-more-efficient-method-to-find-log-base-2-of-an-integer" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="332">3.3.2<a class="headerlink" href="#332" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_6">Bugfixes<a class="headerlink" href="#bugfixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="20-make-check-crashes-on-windows">20 <code>make check</code> crashes on windows.<a class="headerlink" href="#20-make-check-crashes-on-windows" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="24-testsuite-failures-on-selected-architectures-with-331">24 Testsuite failures on selected architectures with 3.3.1.<a class="headerlink" href="#24-testsuite-failures-on-selected-architectures-with-331" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h3 id="enhancements_6">Enhancements<a class="headerlink" href="#enhancements_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="25-add-support-for-gnu-octave-via-mex-interface">25 Add support for GNU Octave via MEX interface.<a class="headerlink" href="#25-add-support-for-gnu-octave-via-mex-interface" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="27-enable-query-of-versioning-information">27 Enable query of versioning information.<a class="headerlink" href="#27-enable-query-of-versioning-information" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="331">3.3.1<a class="headerlink" href="#331" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_7">Bugfixes<a class="headerlink" href="#bugfixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="2-nfftnfstnfct-transforms-fail-when-using-certain-window-functions">2 NFFT/NFST/NFCT transforms fail when using certain window functions.<a class="headerlink" href="#2-nfftnfstnfct-transforms-fail-when-using-certain-window-functions" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="11-nfsft-module-crashes-due-to-pointer-type-incompatibility">11 NFSFT module crashes due to pointer type incompatibility.<a class="headerlink" href="#11-nfsft-module-crashes-due-to-pointer-type-incompatibility" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="14-applicationsfastsumfastsum_matlab-produces-wrong-results-in-windows">14 <code>applications\fastsum\fastsum_matlab</code> produces wrong results in Windows.<a class="headerlink" href="#14-applicationsfastsumfastsum_matlab-produces-wrong-results-in-windows" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="15-fixes-for-matlab-applicationsexamples-in-windows">15 Fixes for Matlab applications/examples in Windows.<a class="headerlink" href="#15-fixes-for-matlab-applicationsexamples-in-windows" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="16-xbsplinesn-x-can-be-inaccurate-when-x-is-close-to-zero">16 <code>X(bsplines)(n, x)</code> can be inaccurate when x is close to zero.<a class="headerlink" href="#16-xbsplinesn-x-can-be-inaccurate-when-x-is-close-to-zero" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="17-matlab-r2015br2016a-dont-ship-symlink-libmfftw3so-to-libmfftw3so3">17 MATLAB r2015b/r2016a don't ship symlink <code>libmfftw3.so</code> to <code>libmfftw3.so.3</code>.<a class="headerlink" href="#17-matlab-r2015br2016a-dont-ship-symlink-libmfftw3so-to-libmfftw3so3" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="18-define-format-string-for-ptrdiff_t-in-platform-dependent-macro">18 Define format string for ptrdiff_t in platform-dependent macro.<a class="headerlink" href="#18-define-format-string-for-ptrdiff_t-in-platform-dependent-macro" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h3 id="enhancements_7">Enhancements<a class="headerlink" href="#enhancements_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<h1 id="3-allow-to-select-scope-of-unit-tests-via-configure">3 Allow to select scope of unit tests via configure.<a class="headerlink" href="#3-allow-to-select-scope-of-unit-tests-via-configure" title="Permanent link">&para;</a></h1>
+</li>
+<li>
+<h1 id="1-extend-travis-ci-configuration">1 Extend Travis CI configuration.<a class="headerlink" href="#1-extend-travis-ci-configuration" title="Permanent link">&para;</a></h1>
+</li>
+</ul>
+<h2 id="330">3.3.0<a class="headerlink" href="#330" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added unit tests for some parts of the library. They are invoked via <code>make check</code>, but only if the CUnit framework was found on the build host.</li>
+</ul>
+<h2 id="324">3.2.4<a class="headerlink" href="#324" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed an issue when linker flags were not set correctly.</li>
+</ul>
+<h2 id="323">3.2.3<a class="headerlink" href="#323" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added a workaround for an internal compiler error occuring with gcc 4.7.1 in <code>kernel/mri</code></li>
+<li>Added a workaround for a compilation error in the MATLAB mex interface for gcc 4.7.1 when compiling with C99 support (<code>-std=gnu99</code>)</li>
+</ul>
+<h2 id="322">3.2.2<a class="headerlink" href="#322" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed several problems introduced in version 3.2.1</li>
+<li>Fixed an issue when the configure script would not run correctly when using the option <code>--with-fftw3</code>.</li>
+</ul>
+<h2 id="321">3.2.1<a class="headerlink" href="#321" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added missing files of new nfft MATLAB (class) interface to release.</li>
+</ul>
+<h2 id="320">3.2.0<a class="headerlink" href="#320" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support for OpenMP. To activate, use the configure script with the <code>--enable-openmp</code> option.</li>
+<li>Added <code>ticks.h</code> from FFTW to leverage CPU cycle counters. If cycle counters are available, the configure script will try to determine the number of ticks per second. If successful, example programs measure times in seconds. Otherwise, example programs will output raw cycle counter differences in arbitrary units. If cycle counters are not available, results of time measurements are undefined.</li>
+<li>Renamed functions of direct (non-fast) algorithms to <code>&lt;function name of fast algorithm&gt;_direct</code>, e.g. the function name for the direct computation of the non-equispaced Fourier transform is <code>nfft_trafo_direct(nfft_plan)</code> instead of <code>ndft_trafo(nfft_plan)</code>.</li>
+</ul>
+<h2 id="314">3.1.4<a class="headerlink" href="#314" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added pkg-config file (thanks Gert Wollny)</li>
+<li>Headers <code>include/nfft3util.h</code>, <code>applications/fastsum/fastsum.h</code>, and <code>applications/fastsum/kernels.h</code> can now be included by C++ compilers.</li>
+<li>Fixed an error that occured when trying to create symbolic links to Matlab mex files during installation.</li>
+<li>All programs from the application and examples subdirectories are no longer installed. The same holds for the Matlab code from the matlab subdirectory.</li>
+</ul>
+<h2 id="313">3.1.3<a class="headerlink" href="#313" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed some issues that can cause C++ compilers to fail. Thanks to Romain Bossart.</li>
+<li>Fixed an error that caused linking against FFTW while checking compiler characteristics in the configure script. This only affected installations where FFTW had been installed in a custom location.</li>
+<li>Doxygen generated documentation is now only deleted if the target <code>maintainer-clean</code> is used. The documentation is no longer deleted if the user invokes the usual clean target.</li>
+</ul>
+<h2 id="312">3.1.2<a class="headerlink" href="#312" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed a bug in <code>fpt_precompute()</code> that caused excessive stabilization and incorrect results.</li>
+<li>Fixed three bugs in the nfft: window function defines are moved to the internal header <code>infft.h</code>, a larger lookup table is used for <code>PRE_LIN_PSI</code>, and <code>nfft_adjoint</code> for d=2,3 and <code>PRE_FULL_PSI</code> writes its output correctly.</li>
+</ul>
+<h2 id="311">3.1.1<a class="headerlink" href="#311" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added a workaround for an internal compiler error occuring with gcc 4.3.2.</li>
+</ul>
+<h2 id="310">3.1.0<a class="headerlink" href="#310" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The FPT example program, that is, <code>examples/fpt/simple_test</code> has been modified to not require the NFCT module anymore. This solves the problem that NFFT won't compile when the FPT module has been switched on while the NFCT module is swithced off.</li>
+<li>A module, called nfsoft, for fast Fourier transforms on the rotation group SO(3) has been added.</li>
+<li>It is now possible to configure the build process so that only specific modules are compiled and installed. Invoke the configure script with option <code>--help</code> for details.</li>
+<li>The handling of how to link against the fftw3 library has been improved. The new configure script options <code>--with-fftw3</code>, <code>--with-fftw-includedir</code>, and <code>--with-fftw-libdir</code> allow to specify where fftw3 has been installed.</li>
+<li>Improved compliance with GNU standards.</li>
+<li>The experimental Matlab interface has been improved and is now officially a part of NFFT3. To compile the Matlab modules, invoke the configure script with the option <code>--with-matlab=&lt;path/to/matlab/directory&gt;</code>. Also, an interface to the plain NFFT has been added.</li>
+</ul>
+<h2 id="302">3.0.2<a class="headerlink" href="#302" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed a bug in the fpt module that lead to wrong output.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../people/" class="md-footer__link md-footer__link--prev" aria-label="Previous: People">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                People
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../license/" class="md-footer__link md-footer__link--next" aria-label="Next: License">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                License
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2002-2026 Jens Keiner, Stefan Kunis, Daniel Potts
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/NFFT/nfft" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.tabs","navigation.tabs.sticky","navigation.top","navigation.tracking","search.highlight","toc.follow"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":"latest","provider":"mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

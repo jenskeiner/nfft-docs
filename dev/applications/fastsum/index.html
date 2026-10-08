@@ -1,0 +1,3846 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Nonequispaced fast Fourier transforms and related transforms, a C library.">
+      
+      
+        <meta name="author" content="Jens Keiner, Stefan Kunis, Daniel Potts">
+      
+      
+        <link rel="canonical" href="https://jenskeiner.github.io/nfft-docs/dev/applications/fastsum/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../fastgauss/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="zensical-0.0.57">
+    
+    
+      
+        <title>Fast summation - NFFT3</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fast-summation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You are reading the documentation of an older version of NFFT3.
+  <a href="../../..">
+    <strong>Go to the current release.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NFFT3" class="md-header__button md-logo" aria-label="NFFT3" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="NFFT3">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFFT3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Fast summation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun-moon" viewBox="0 0 24 24"><path d="M12 2v2M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715M16 12a4 4 0 0 0-4-4M19 5l-1.256 1.256M20 12h2"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="red"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/jenskeiner/nfft-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jenskeiner/nfft-docs
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/" class="md-tabs__link">
+          
+  
+  Get started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guide/" class="md-tabs__link">
+          
+  
+  Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../transforms/" class="md-tabs__link">
+          
+  
+  Transforms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Applications
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interfaces/julia/" class="md-tabs__link">
+          
+  
+  Interfaces
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/publications/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NFFT3" class="md-nav__button md-logo" aria-label="NFFT3" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="NFFT3">
+
+    </a>
+    NFFT3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jenskeiner/nfft-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jenskeiner/nfft-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Home
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../getting-started/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Get started
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Get started
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-transform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  First transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/build-from-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Build from source
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Examples
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Guide
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Guide
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/plans-and-flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Plans and flags
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/windows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Windows
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/precision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Precision
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/openmp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  OpenMP
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/accuracy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Accuracy
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../transforms/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Transforms
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Transforms
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFCT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFST
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nnfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NNFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nsfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NSFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfsft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfsft-background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT background
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/nfsoft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSOFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/fpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FPT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../transforms/solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Solver
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  API
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  API
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFCT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFST
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nnfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NNFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nsfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NSFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfsft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfsoft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSOFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/fpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FPT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Solver
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Applications
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Applications
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kernels-and-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Kernels and nodes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Method
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regularisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Regularisation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#far-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Far field
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#near-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Near field
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kernel-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Kernel list
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Parameters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Plan lifecycle
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Programs
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Programs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Build
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastsum_test" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        fastsum_test
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastsum_matlab-and-fastsumm" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        fastsum_matlab and fastsum.m
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Accuracy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#julia-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Julia interface
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        References
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fastgauss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast Gauss transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fastsumS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mri-2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI 2D
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mri-3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI 3D
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polarFFT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Polar FFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../radon/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Radon transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quadratureS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Quadrature on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iterS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Inversion on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glacier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reconstruction of a glacier
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Interfaces
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Interfaces
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interfaces/julia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Julia
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interfaces/matlab-octave/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MATLAB and Octave
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reference
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/publications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Publications
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FAQ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/people/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  People
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  License
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../development/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Development
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Development
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/build-matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Build matrix
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Testing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Benchmarks
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Releasing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kernels-and-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Kernels and nodes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Method
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regularisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Regularisation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#far-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Far field
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#near-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Near field
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kernel-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Kernel list
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Parameters
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Plan lifecycle
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Programs
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Programs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Build
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastsum_test" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        fastsum_test
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastsum_matlab-and-fastsumm" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        fastsum_matlab and fastsum.m
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Accuracy
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#julia-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Julia interface
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        References
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Applications
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+    <a href="https://github.com/jenskeiner/nfft-docs/edit/develop/doc/applications/fastsum.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="fast-summation">Fast summation<a class="headerlink" href="#fast-summation" title="Permanent link">&para;</a></h1>
+<p>Direct and fast summation of kernel sums. The program computes</p>
+<div class="arithmatex">\[
+f(y_j) = \sum_{k=1}^{N} \alpha_k\, K(y_j - x_k),
+\qquad j = 1,\dots,M,
+\]</div>
+<p>for <span class="arithmatex">\(N\)</span> source nodes <span class="arithmatex">\(x_k\)</span>, <span class="arithmatex">\(M\)</span> target nodes <span class="arithmatex">\(y_j\)</span>, complex coefficients
+<span class="arithmatex">\(\alpha_k\)</span> and a kernel <span class="arithmatex">\(K : \mathbb{R}^d \to \mathbb{C}\)</span>. A direct evaluation
+needs <span class="arithmatex">\(\mathcal{O}(NM)\)</span> operations. The fast algorithm uses the
+<a href="../../transforms/nfft/">NFFT</a> to approximate all <span class="arithmatex">\(M\)</span> sums with far fewer
+operations.</p>
+<div class="admonition note">
+<p class="admonition-title">Application code</p>
+<p>The code is in <code>applications/fastsum/</code>. The library <code>libfastsum</code> and the
+kernel library <code>libkernels</code> are built next to the programs. They are
+not installed and have no page in the <a href="../../api/">API reference</a>.
+Only the <a href="../../api/nfft/">NFFT API</a> is public.</p>
+</div>
+<h2 id="kernels-and-nodes">Kernels and nodes<a class="headerlink" href="#kernels-and-nodes" title="Permanent link">&para;</a></h2>
+<p>The kernel <span class="arithmatex">\(K\)</span> is <span class="arithmatex">\(C^\infty\)</span> except at the origin. In <span class="arithmatex">\(d &gt; 1\)</span> dimensions <span class="arithmatex">\(K\)</span>
+is a radial function, that is <span class="arithmatex">\(K(x)\)</span> depends on <span class="arithmatex">\(\|x\|_2\)</span> only. Typical kernels
+are <span class="arithmatex">\(\log|x|\)</span>, <span class="arithmatex">\(|x|^{-b}\)</span> with <span class="arithmatex">\(b \in \mathbb{N}\)</span>, Hardy's multiquadric
+<span class="arithmatex">\((x^2+c^2)^{1/2}\)</span> and the generalised multiquadrics <span class="arithmatex">\((x^2+c^2)^{-b/2}\)</span>.
+<a href="#kernel-list">The table below</a> lists all kernels of the program.</p>
+<p>All nodes lie in the ball of radius <span class="arithmatex">\(\tfrac14 - \tfrac{\varepsilon_B}{2}\)</span>
+around the origin. For <span class="arithmatex">\(d = 1\)</span> this is the interval
+<span class="arithmatex">\([-\tfrac14 + \tfrac{\varepsilon_B}{2},\, \tfrac14 - \tfrac{\varepsilon_B}{2}]\)</span>.
+Then all differences <span class="arithmatex">\(y_j - x_k\)</span> have norm at most
+<span class="arithmatex">\(\tfrac12 - \varepsilon_B\)</span>. The parameter <span class="arithmatex">\(\varepsilon_B\)</span> is the width of the
+outer boundary strip of the regularisation.</p>
+<h2 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h2>
+<p>The algorithm splits the kernel into a smooth part and a part that is nonzero
+only near the origin.</p>
+<h3 id="regularisation">Regularisation<a class="headerlink" href="#regularisation" title="Permanent link">&para;</a></h3>
+<p>The kernel <span class="arithmatex">\(K\)</span> has a singularity at the origin, and <span class="arithmatex">\(K\)</span> is not periodic. The
+algorithm first replaces <span class="arithmatex">\(K\)</span> on <span class="arithmatex">\([-\tfrac12,\tfrac12]^d\)</span> by a regularised
+kernel <span class="arithmatex">\(K_R\)</span> that is smooth and periodic:</p>
+<div class="arithmatex">\[
+K_R(t) =
+\begin{cases}
+T_I(t), &amp; \|t\| &lt; \varepsilon_I,\\
+K(t), &amp; \varepsilon_I \le \|t\| \le \tfrac12 - \varepsilon_B,\\
+T_B(t), &amp; \tfrac12 - \varepsilon_B &lt; \|t\| \le \tfrac12.
+\end{cases}
+\]</div>
+<p>Here <span class="arithmatex">\(\varepsilon_I\)</span> is the inner boundary. The functions <span class="arithmatex">\(T_I\)</span> and <span class="arithmatex">\(T_B\)</span> are
+polynomials of degree <span class="arithmatex">\(2p-1\)</span> in <span class="arithmatex">\(\|t\|\)</span>, built as two-point Taylor
+interpolation. They match the derivatives of <span class="arithmatex">\(K\)</span> up to order <span class="arithmatex">\(p-1\)</span> at
+<span class="arithmatex">\(\|t\| = \varepsilon_I\)</span> and at <span class="arithmatex">\(\|t\| = \tfrac12 - \varepsilon_B\)</span>. The
+parameter <span class="arithmatex">\(p\)</span> is the degree of smoothness of the regularisation.</p>
+<p>The boundary polynomial <span class="arithmatex">\(T_B\)</span> depends on <span class="arithmatex">\(d\)</span>.</p>
+<ul>
+<li>For <span class="arithmatex">\(d = 1\)</span> the kernel <span class="arithmatex">\(K_R\)</span> is the periodic continuation of the
+  regularised kernel. On the boundary strip <span class="arithmatex">\(T_B\)</span> joins the derivatives of <span class="arithmatex">\(K\)</span>
+  at <span class="arithmatex">\(\tfrac12 - \varepsilon_B\)</span> to the derivatives at <span class="arithmatex">\(-\tfrac12 + \varepsilon_B\)</span>.
+  Odd kernels such as <span class="arithmatex">\(1/x\)</span> are allowed.</li>
+<li>For <span class="arithmatex">\(d &gt; 1\)</span> the kernel is treated as an even radial function. On the strip
+  <span class="arithmatex">\(T_B\)</span> goes smoothly to the constant value <span class="arithmatex">\(K(\tfrac12)\)</span>.</li>
+</ul>
+<p>The derivatives of <span class="arithmatex">\(K\)</span> come from the kernel function itself. Every kernel
+function takes the derivative order as its second argument. The predefined
+kernels implement the orders 0 to 12, so <span class="arithmatex">\(p \le 13\)</span>.</p>
+<h3 id="far-field">Far field<a class="headerlink" href="#far-field" title="Permanent link">&para;</a></h3>
+<p>The smooth kernel <span class="arithmatex">\(K_R\)</span> has a rapidly converging Fourier series. The algorithm
+truncates it to the index set
+<span class="arithmatex">\(I_n^d = \{-\tfrac{n}{2},\dots,\tfrac{n}{2}-1\}^d\)</span>:</p>
+<div class="arithmatex">\[
+K_R(t) \approx \sum_{l \in I_n^d} b_l\, \mathrm{e}^{-2\pi\mathrm{i}\, l\cdot t}.
+\]</div>
+<p>The coefficients <span class="arithmatex">\(b_l\)</span> follow from one <span class="arithmatex">\(d\)</span>-dimensional FFT of samples of <span class="arithmatex">\(K_R\)</span>
+on a regular grid with <span class="arithmatex">\(n\)</span> points per dimension. Insert the series into the sum:</p>
+<div class="arithmatex">\[
+f_{\text{far}}(y_j) = \sum_{l \in I_n^d} b_l
+\Bigl(\sum_{k=1}^{N} \alpha_k\, \mathrm{e}^{2\pi\mathrm{i}\, l\cdot x_k}\Bigr)
+\mathrm{e}^{-2\pi\mathrm{i}\, l\cdot y_j}.
+\]</div>
+<p>The inner sum is an adjoint NFFT at the source nodes. The outer sum is an NFFT
+at the target nodes. So the far field takes three steps:</p>
+<ol>
+<li>Adjoint NFFT of the coefficients <span class="arithmatex">\(\alpha_k\)</span> at the nodes <span class="arithmatex">\(x_k\)</span>.</li>
+<li>Multiplication of the result by the coefficients <span class="arithmatex">\(b_l\)</span>.</li>
+<li>NFFT at the nodes <span class="arithmatex">\(y_j\)</span>.</li>
+</ol>
+<p>Both NFFT plans have bandwidth <span class="arithmatex">\(n\)</span> in every dimension, oversampled
+bandwidth <span class="arithmatex">\(2n\)</span> and cut-off parameter <span class="arithmatex">\(m\)</span>.</p>
+<h3 id="near-field">Near field<a class="headerlink" href="#near-field" title="Permanent link">&para;</a></h3>
+<p>The far field approximates <span class="arithmatex">\(K_R\)</span> instead of <span class="arithmatex">\(K\)</span>. The two differ only for
+<span class="arithmatex">\(\|t\| &lt; \varepsilon_I\)</span>. The near field correction adds the difference</p>
+<div class="arithmatex">\[
+K_{NE}(t) = K(t) - K_R(t) \quad\text{for } \|t\| &lt; \varepsilon_I,
+\qquad K_{NE}(t) = 0 \quad\text{otherwise},
+\]</div>
+<p>for every pair of nodes with <span class="arithmatex">\(\|y_j - x_k\| &lt; \varepsilon_I\)</span>. The result is</p>
+<div class="arithmatex">\[
+f(y_j) \approx f_{\text{far}}(y_j)
++ \sum_{\|y_j - x_k\| &lt; \varepsilon_I} \alpha_k\, K_{NE}(y_j - x_k).
+\]</div>
+<p>The program must find the sources near each target. It has two methods.</p>
+<ul>
+<li>Search tree (default). The plan sorts the sources into a
+  <span class="arithmatex">\(k\)</span>-d tree. The search for a target visits only the tree parts that meet the
+  cube of side <span class="arithmatex">\(2\varepsilon_I\)</span> around the target. The sort changes the order
+  of <code>x</code> and <code>alpha</code> in the plan.</li>
+<li>Boxes (flag <code>NEARFIELD_BOXES</code>). The plan distributes the sources into boxes
+  of side <span class="arithmatex">\(\varepsilon_I\)</span> and searches the neighbouring boxes.
+  It stores sorted copies of <code>x</code> and <code>alpha</code> and leaves the plan arrays
+  unchanged. This method supports <span class="arithmatex">\(d \le 3\)</span>.</li>
+</ul>
+<p>Evaluating <span class="arithmatex">\(K_{NE}\)</span> needs <span class="arithmatex">\(K_R\)</span> near the origin. By default the plan tabulates
+<span class="arithmatex">\(K_R\)</span> for <span class="arithmatex">\(\|t\| \le \varepsilon_I\)</span> at <span class="arithmatex">\(A_d\)</span> knots and interpolates with
+piecewise cubic Lagrange polynomials. The number of knots is
+<span class="arithmatex">\(A_d = 4p^2\)</span> for <span class="arithmatex">\(d = 1\)</span> and <span class="arithmatex">\(A_d = 2p^2\)</span> for <span class="arithmatex">\(d &gt; 1\)</span>. The kernel
+<span class="arithmatex">\(1/x\)</span> in <span class="arithmatex">\(d &gt; 1\)</span> is an exception: the plan uses more knots, depending on <span class="arithmatex">\(p\)</span>.
+The flag <code>EXACT_NEARFIELD</code> evaluates <span class="arithmatex">\(K_R\)</span> directly instead of
+interpolating.</p>
+<p>If <span class="arithmatex">\(\varepsilon_I = 0\)</span> the plan has no near field. Use this only for
+kernels that are smooth at the origin.</p>
+<h2 id="kernel-list">Kernel list<a class="headerlink" href="#kernel-list" title="Permanent link">&para;</a></h2>
+<p>Every kernel is a C function <code>C name(R x, int der, const R *param)</code>. The
+argument <code>x</code> is the distance, <code>der</code> the derivative order and <code>param[0]</code> the
+kernel parameter <span class="arithmatex">\(c\)</span>. The program selects a kernel by its name on the command
+line.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th><span class="arithmatex">\(K(x)\)</span></th>
+<th>Uses <span class="arithmatex">\(c\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gaussian</code></td>
+<td><span class="arithmatex">\(\mathrm{e}^{-x^2/c^2}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>multiquadric</code></td>
+<td><span class="arithmatex">\(\sqrt{x^2+c^2}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>inverse_multiquadric</code></td>
+<td><span class="arithmatex">\(1/\sqrt{x^2+c^2}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>inverse_multiquadric3</code></td>
+<td><span class="arithmatex">\(1/\sqrt{x^2+c^2}^{\,3}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>logarithm</code></td>
+<td><span class="arithmatex">\(\log\lvert x\rvert\)</span></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>thinplate_spline</code></td>
+<td><span class="arithmatex">\(x^2 \log\lvert x\rvert\)</span></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>one_over_square</code></td>
+<td><span class="arithmatex">\(1/x^2\)</span></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>one_over_modulus</code></td>
+<td><span class="arithmatex">\(1/\lvert x\rvert\)</span></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>one_over_x</code></td>
+<td><span class="arithmatex">\(1/x\)</span></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>one_over_cube</code></td>
+<td><span class="arithmatex">\(1/x^3\)</span></td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>sinc_kernel</code></td>
+<td><span class="arithmatex">\(\sin(cx)/x\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>cosc</code></td>
+<td><span class="arithmatex">\(\cos(cx)/x\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>cot</code></td>
+<td><span class="arithmatex">\(\cot(cx)\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>log_sin</code></td>
+<td><span class="arithmatex">\(\log\lvert\sin(cx)\rvert\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>laplacian_rbf</code></td>
+<td><span class="arithmatex">\(\mathrm{e}^{-\lvert x\rvert/c}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>der_laplacian_rbf</code></td>
+<td><span class="arithmatex">\(\lvert x\rvert/c\;\mathrm{e}^{-\lvert x\rvert/c}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>xx_gaussian</code></td>
+<td><span class="arithmatex">\((x^2/c^2)\,\mathrm{e}^{-x^2/c^2}\)</span></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>absx</code></td>
+<td><span class="arithmatex">\(\lvert x\rvert\)</span></td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>The kernel <code>cot</code> is the C function <code>kcot</code>. To add a kernel, write a function
+with this signature that returns the derivatives of order 0 up to <span class="arithmatex">\(p-1\)</span>, and
+add it to the name lookup in the program. <code>applications/fastsum/kernels.c</code>
+holds all predefined kernels as examples.</p>
+<h2 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(d\)</span></td>
+<td>Dimension.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(M\)</span></td>
+<td>Number of source nodes and of target nodes.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(n\)</span></td>
+<td>Expansion degree. The far field uses <span class="arithmatex">\(n^d\)</span> Fourier coefficients. <span class="arithmatex">\(n\)</span> must be even.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(m\)</span></td>
+<td>Cut-off parameter of the NFFT.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(p\)</span></td>
+<td>Degree of smoothness of the regularisation.</td>
+</tr>
+<tr>
+<td>kernel, <span class="arithmatex">\(c\)</span></td>
+<td>The kernel function and its parameter.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\varepsilon_I\)</span></td>
+<td>Inner boundary, the radius of the near field. The test programs and <code>fastsum_test.m</code> use <span class="arithmatex">\(\varepsilon_I = p/n\)</span>.</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\varepsilon_B\)</span></td>
+<td>Outer boundary. The test programs and <code>fastsum_test.m</code> use <span class="arithmatex">\(\varepsilon_B = 1/16\)</span>.</td>
+</tr>
+<tr>
+<td>flags</td>
+<td><code>EXACT_NEARFIELD</code>, <code>NEARFIELD_BOXES</code>, <code>STORE_PERMUTATION_X_ALPHA</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The flag <code>STORE_PERMUTATION_X_ALPHA</code> applies to the search tree with
+<span class="arithmatex">\(\varepsilon_I &gt; 0\)</span>. It makes the plan store the permutation of the source
+nodes in <code>permutation_x_alpha</code>.</p>
+<h2 id="plan-lifecycle">Plan lifecycle<a class="headerlink" href="#plan-lifecycle" title="Permanent link">&para;</a></h2>
+<p>The plan <code>fastsum_plan</code> in <code>applications/fastsum/fastsum.h</code> has these members
+that a caller uses.</p>
+<dl>
+<dt><code>d</code>, <code>N_total</code>, <code>M_total</code></dt>
+<dd>Dimension and numbers of source and target nodes.</dd>
+<dt><code>x</code>, <code>y</code></dt>
+<dd>Source nodes, <span class="arithmatex">\(d\)</span> values per node, and target nodes.
+The nodes lie in the ball of radius <span class="arithmatex">\(\tfrac14 - \tfrac{\varepsilon_B}{2}\)</span>.</dd>
+<dt><code>alpha</code>, <code>f</code></dt>
+<dd>Source coefficients and target values, both complex.</dd>
+<dt><code>k</code>, <code>kernel_param</code>, <code>flags</code></dt>
+<dd>Kernel function, pointer to its parameters and the flags.</dd>
+<dt><code>n</code>, <code>p</code>, <code>eps_I</code>, <code>eps_B</code></dt>
+<dd>Expansion degree, smoothness, inner boundary and outer boundary.</dd>
+</dl>
+<p>The plan is used in five steps.</p>
+<ol>
+<li><strong>Initialise.</strong> <code>fastsum_init_guru</code> takes <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(M\)</span>, the kernel, the
+   parameters, the flags, <span class="arithmatex">\(n\)</span>, <span class="arithmatex">\(m\)</span>, <span class="arithmatex">\(p\)</span>, <span class="arithmatex">\(\varepsilon_I\)</span> and <span class="arithmatex">\(\varepsilon_B\)</span>. It
+   allocates the node and coefficient arrays. The call has three parts that a
+   program can also call alone: the kernel part
+   (<code>fastsum_init_guru_kernel</code>), the source part
+   (<code>fastsum_init_guru_source_nodes</code>) and the target part
+   (<code>fastsum_init_guru_target_nodes</code>). The kernel part builds the near field
+   table and computes the coefficients <span class="arithmatex">\(b_l\)</span> with one FFT. The two other parts
+   create the NFFT plans. <code>fastsum_init_guru</code> uses the oversampled bandwidth
+   <span class="arithmatex">\(2n\)</span> for both.</li>
+<li><strong>Fill.</strong> The program writes the source nodes to <code>x</code>, the target nodes to
+   <code>y</code> and the coefficients to <code>alpha</code>.</li>
+<li><strong>Precompute.</strong> <code>fastsum_precompute</code> builds the search tree or the boxes
+   and precomputes the NFFT window values. The source part and the target part
+   also exist alone, as <code>fastsum_precompute_source_nodes</code> and
+   <code>fastsum_precompute_target_nodes</code>. In tree mode the call sorts <code>x</code> and
+   <code>alpha</code> in place. A caller that provides new coefficients later must use
+   this order or the stored permutation.</li>
+<li><strong>Evaluate.</strong> <code>fastsum_trafo</code> runs the fast algorithm and writes the
+   result to <code>f</code>. <code>fastsum_exact</code> computes the direct sum into <code>f</code> for a
+   comparison.</li>
+<li><strong>Finalise.</strong> <code>fastsum_finalize</code> frees the plan. The parts
+   <code>fastsum_finalize_kernel</code>, <code>fastsum_finalize_source_nodes</code> and
+   <code>fastsum_finalize_target_nodes</code> free the corresponding parts.</li>
+</ol>
+<p>With <code>MEASURE_TIME</code> defined at configure time (<code>--enable-measure-time</code>) the
+plan stores the time of each step in <code>MEASURE_TIME_t</code>.</p>
+<h2 id="programs">Programs<a class="headerlink" href="#programs" title="Permanent link">&para;</a></h2>
+<p>The directory <code>applications/fastsum/</code> builds these programs. The Makefile
+lists them as <code>noinst_PROGRAMS</code>, so <code>make install</code> does not install them.</p>
+<dl>
+<dt><code>fastsum_test</code></dt>
+<dd>Random test. It creates random nodes and coefficients, computes the sums
+directly and with the fast algorithm, and prints the times and the maximum
+relative error.</dd>
+<dt><code>fastsum_matlab</code></dt>
+<dd>The same computation on data from files. The MATLAB and Octave function
+<code>fastsum.m</code> calls it.</dd>
+<dt><code>fastsum_test_threads</code></dt>
+<dd>The source of <code>fastsum_test</code> linked to the OpenMP libraries. It prints the
+number of threads. It exists only with <code>--enable-openmp</code>.</dd>
+<dt><code>fastsum_benchomp</code>, <code>fastsum_benchomp_createdataset</code>, <code>fastsum_benchomp_detail_single</code>, <code>fastsum_benchomp_detail_threads</code></dt>
+<dd>Benchmark programs for the OpenMP version. They exist only with
+<code>--enable-openmp</code>.</dd>
+</dl>
+<h3 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h3>
+<p>The application programs are built by default. The option
+<code>--enable-applications</code> switches them on explicitly, and <code>--enable-all</code>
+builds every module together with the applications.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>make<span class="w"> </span>-j
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">cd</span><span class="w"> </span>applications/fastsum
+</span></code></pre></div>
+<p>The CMake build has the option <code>NFFT_ENABLE_APPLICATIONS</code>, on by default. It
+places the programs in <code>build/applications/fastsum/</code>.</p>
+<h3 id="fastsum_test">fastsum_test<a class="headerlink" href="#fastsum_test" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./fastsum_test<span class="w"> </span>d<span class="w"> </span>N<span class="w"> </span>M<span class="w"> </span>n<span class="w"> </span>m<span class="w"> </span>p<span class="w"> </span>kernel<span class="w"> </span>c<span class="w"> </span>eps_I<span class="w"> </span>eps_B
+</span></code></pre></div>
+<p>All ten arguments are required. <code>kernel</code> is a name from the
+<a href="#kernel-list">kernel list</a>. An unknown name selects <code>multiquadric</code>.
+The program draws the nodes uniformly in the ball of radius
+<span class="arithmatex">\(\tfrac14 - \tfrac{\varepsilon_B}{2}\)</span>. It draws the real and imaginary parts of
+the coefficients uniformly in <span class="arithmatex">\([0,1)\)</span>. A call with the settings of
+<code>fastsum_test.m</code> in two dimensions is</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./fastsum_test<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">2000</span><span class="w"> </span><span class="m">2000</span><span class="w"> </span><span class="m">156</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>multiquadric<span class="w"> </span><span class="m">0</span>.0223607<span class="w"> </span><span class="m">0</span>.0192308<span class="w"> </span><span class="m">0</span>.0625
+</span></code></pre></div>
+<p>The program prints the parameters and the near field method, then the times of
+the direct computation, the precomputation and the fast computation, and</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>max relative error: ...
+</span></code></pre></div>
+<p>The error is <span class="arithmatex">\(\max_j |f_{\text{direct}}(y_j) - f(y_j)| / |f_{\text{direct}}(y_j)|\)</span>.
+The program uses the search tree. To try the boxes, change the flags argument
+of <code>fastsum_init_guru</code> in the source from <code>0</code> to <code>NEARFIELD_BOXES</code>.</p>
+<h3 id="fastsum_matlab-and-fastsumm">fastsum_matlab and fastsum.m<a class="headerlink" href="#fastsum_matlab-and-fastsumm" title="Permanent link">&para;</a></h3>
+<p><code>fastsum_matlab</code> takes the same ten arguments as <code>fastsum_test</code>, but an
+unknown kernel name stops the program. It reads the nodes and coefficients from
+the current directory:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x.dat</code></td>
+<td><span class="arithmatex">\(N\)</span> lines with the <span class="arithmatex">\(d\)</span> coordinates of a source node.</td>
+</tr>
+<tr>
+<td><code>alpha.dat</code></td>
+<td><span class="arithmatex">\(N\)</span> lines with real part and imaginary part of a coefficient.</td>
+</tr>
+<tr>
+<td><code>y.dat</code></td>
+<td><span class="arithmatex">\(M\)</span> lines with the <span class="arithmatex">\(d\)</span> coordinates of a target node.</td>
+</tr>
+</tbody>
+</table>
+<p>It writes <code>f.dat</code> and <code>f_direct.dat</code>, each with <span class="arithmatex">\(M\)</span> lines of real part and
+imaginary part, for the fast and the direct result.</p>
+<p>The function <code>fastsum.m</code> writes these files, calls <code>fastsum_matlab</code> and reads
+the results:</p>
+<div class="language-matlab highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">[</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">f_direct</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">fastsum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="nb">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">kernel</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">eps_I</span><span class="p">,</span><span class="w"> </span><span class="n">eps_B</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Here <code>x</code> is an <span class="arithmatex">\(N \times d\)</span> matrix, <code>alpha</code> an <span class="arithmatex">\(N \times 1\)</span> complex vector and
+<code>y</code> an <span class="arithmatex">\(M \times d\)</span> matrix. The program <code>fastsum_matlab</code> must be in the current
+directory. The script <code>fastsum_test.m</code> shows the use. It sets
+<span class="arithmatex">\(N = M = 2000\)</span>, the multiquadric kernel with <span class="arithmatex">\(c = 1/\sqrt{N}\)</span>, <span class="arithmatex">\(m = 4\)</span>,
+<span class="arithmatex">\(p = 3\)</span>, <span class="arithmatex">\(n = 156\)</span>, <span class="arithmatex">\(\varepsilon_I = p/n\)</span> and <span class="arithmatex">\(\varepsilon_B = 1/16\)</span>. It draws
+random nodes in the disc of radius <span class="arithmatex">\(\tfrac14 - \tfrac{\varepsilon_B}{2}\)</span> and
+calls <code>fastsum</code>.</p>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<p>The main steps of <code>fastsum_test.c</code> are the plan initialisation, the direct
+computation, the precomputation, the fast computation and the error.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="w">  </span><span class="cm">/** init d-dimensional fastsum plan */</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="n">fastsum_init_guru</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fastsum_plan</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">kernel</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">eps_I</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">      </span><span class="n">eps_B</span><span class="p">);</span>
+</span></code></pre></div>
+<p>The program then fills <code>x</code>, <code>y</code> and <code>alpha</code> with random values and runs the
+computation.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="w">  </span><span class="cm">/** direct computation */</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"direct computation: "</span><span class="p">);</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="n">fflush</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="n">t0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getticks</span><span class="p">();</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="n">fastsum_exact</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fastsum_plan</span><span class="p">);</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getticks</span><span class="p">();</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">  </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NFFT</span><span class="p">(</span><span class="n">elapsed_seconds</span><span class="p">)(</span><span class="n">t1</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">);</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="n">__FI__</span><span class="w"> </span><span class="s">"sec</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">  </span><span class="cm">/** copy result */</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">  </span><span class="n">direct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">C</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">NFFT</span><span class="p">(</span><span class="n">malloc</span><span class="p">)((</span><span class="kt">size_t</span><span class="p">)(</span><span class="n">my_fastsum_plan</span><span class="p">.</span><span class="n">M_total</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">C</span><span class="p">)));</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">my_fastsum_plan</span><span class="p">.</span><span class="n">M_total</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="n">direct</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_fastsum_plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">  </span><span class="cm">/** precomputation */</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"pre-computation:    "</span><span class="p">);</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">  </span><span class="n">fflush</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="n">t0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getticks</span><span class="p">();</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">  </span><span class="n">fastsum_precompute</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fastsum_plan</span><span class="p">);</span>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">  </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getticks</span><span class="p">();</span>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">  </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NFFT</span><span class="p">(</span><span class="n">elapsed_seconds</span><span class="p">)(</span><span class="n">t1</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">);</span>
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="n">__FI__</span><span class="w"> </span><span class="s">"sec</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="w">  </span><span class="cm">/** fast computation */</span>
+</span><span id="__span-6-25"><a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"fast computation:   "</span><span class="p">);</span>
+</span><span id="__span-6-26"><a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="w">  </span><span class="n">fflush</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span><span id="__span-6-27"><a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="w">  </span><span class="n">t0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getticks</span><span class="p">();</span>
+</span><span id="__span-6-28"><a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="w">  </span><span class="n">fastsum_trafo</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fastsum_plan</span><span class="p">);</span>
+</span><span id="__span-6-29"><a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="w">  </span><span class="n">t1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getticks</span><span class="p">();</span>
+</span><span id="__span-6-30"><a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="w">  </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NFFT</span><span class="p">(</span><span class="n">elapsed_seconds</span><span class="p">)(</span><span class="n">t1</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">);</span>
+</span><span id="__span-6-31"><a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="n">__FI__</span><span class="w"> </span><span class="s">"sec</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
+</span><span id="__span-6-32"><a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a>
+</span><span id="__span-6-33"><a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a><span class="w">  </span><span class="cm">/** compute max error */</span>
+</span><span id="__span-6-34"><a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a><span class="w">  </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">K</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
+</span><span id="__span-6-35"><a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">my_fastsum_plan</span><span class="p">.</span><span class="n">M_total</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-6-36"><a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-6-37"><a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CABS</span><span class="p">(</span><span class="n">direct</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">my_fastsum_plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">CABS</span><span class="p">(</span><span class="n">direct</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">error</span><span class="p">)</span>
+</span><span id="__span-6-38"><a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a><span class="w">      </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CABS</span><span class="p">(</span><span class="n">direct</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">my_fastsum_plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">CABS</span><span class="p">(</span><span class="n">direct</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+</span><span id="__span-6-39"><a id="__codelineno-6-39" name="__codelineno-6-39" href="#__codelineno-6-39"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-6-40"><a id="__codelineno-6-40" name="__codelineno-6-40" href="#__codelineno-6-40"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"max relative error: %"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">);</span>
+</span><span id="__span-6-41"><a id="__codelineno-6-41" name="__codelineno-6-41" href="#__codelineno-6-41"></a>
+</span><span id="__span-6-42"><a id="__codelineno-6-42" name="__codelineno-6-42" href="#__codelineno-6-42"></a><span class="w">  </span><span class="cm">/** finalise the plan */</span>
+</span><span id="__span-6-43"><a id="__codelineno-6-43" name="__codelineno-6-43" href="#__codelineno-6-43"></a><span class="w">  </span><span class="n">fastsum_finalize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_fastsum_plan</span><span class="p">);</span>
+</span></code></pre></div>
+<h2 id="accuracy">Accuracy<a class="headerlink" href="#accuracy" title="Permanent link">&para;</a></h2>
+<p>The error of the fast algorithm depends on <span class="arithmatex">\(n\)</span>, <span class="arithmatex">\(m\)</span>, <span class="arithmatex">\(p\)</span>, <span class="arithmatex">\(\varepsilon_I\)</span> and
+<span class="arithmatex">\(\varepsilon_B\)</span>. A larger <span class="arithmatex">\(n\)</span>, <span class="arithmatex">\(m\)</span> and <span class="arithmatex">\(p\)</span> give a smaller error and a higher
+cost. The error is the sum of the truncation error of the Fourier series of
+<span class="arithmatex">\(K_R\)</span>, the error of the NFFT and the error of the near field interpolation.
+The papers [1] and [3] analyse this error.</p>
+<h2 id="julia-interface">Julia interface<a class="headerlink" href="#julia-interface" title="Permanent link">&para;</a></h2>
+<p>A Julia module <code>fastsum</code> in <code>julia/fastsum/</code> wraps the same library. It is
+built with <code>--enable-julia</code>. See <a href="../../interfaces/julia/">Julia</a>.</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ol>
+<li>D. Potts and G. Steidl. Fast summation at nonequispaced knots by NFFTs.
+   SIAM J. Sci. Comput., 24:2013-2037, 2003.</li>
+<li>D. Potts, G. Steidl and A. Nieslony. Fast convolution with radial kernels at
+   nonequispaced knots. Numer. Math., 98:329-351, 2004.</li>
+<li>M. Fenn and G. Steidl. Fast NFFT-based summation of radial functions. Sampl.
+   Theory Signal Image Process., 3:1-28, 2004.</li>
+<li>M. Fenn and D. Potts. Fast summation based on fast trigonometric transforms
+   at non-equispaced nodes. Numer. Linear Algebra Appl., 12:161-169, 2005.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../fastgauss/" class="md-footer__link md-footer__link--next" aria-label="Next: Fast Gauss transform">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Fast Gauss transform
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2002-2026 Jens Keiner, Stefan Kunis, Daniel Potts
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/NFFT/nfft" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.tabs","navigation.tabs.sticky","navigation.top","navigation.tracking","search.highlight","toc.follow"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":"latest","provider":"mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

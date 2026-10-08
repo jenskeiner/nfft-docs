@@ -1,0 +1,3859 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Nonequispaced fast Fourier transforms and related transforms, a C library.">
+      
+      
+        <meta name="author" content="Jens Keiner, Stefan Kunis, Daniel Potts">
+      
+      
+        <link rel="canonical" href="https://jenskeiner.github.io/nfft-docs/dev/transforms/nfsft/">
+      
+      
+        <link rel="prev" href="../mri/">
+      
+      
+        <link rel="next" href="../nfsft-background/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="zensical-0.0.57">
+    
+    
+      
+        <title>NFSFT - NFFT3</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nfsft" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You are reading the documentation of an older version of NFFT3.
+  <a href="../../..">
+    <strong>Go to the current release.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NFFT3" class="md-header__button md-logo" aria-label="NFFT3" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="NFFT3">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NFFT3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NFSFT
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun-moon" viewBox="0 0 24 24"><path d="M12 2v2M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715M16 12a4 4 0 0 0-4-4M19 5l-1.256 1.256M20 12h2"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="red"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/jenskeiner/nfft-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jenskeiner/nfft-docs
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/" class="md-tabs__link">
+          
+  
+  Get started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guide/" class="md-tabs__link">
+          
+  
+  Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Transforms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../applications/" class="md-tabs__link">
+          
+  
+  Applications
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interfaces/julia/" class="md-tabs__link">
+          
+  
+  Interfaces
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/publications/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NFFT3" class="md-nav__button md-logo" aria-label="NFFT3" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="NFFT3">
+
+    </a>
+    NFFT3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jenskeiner/nfft-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jenskeiner/nfft-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Home
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../getting-started/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Get started
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Get started
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-transform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  First transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/build-from-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Build from source
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Examples
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Guide
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Guide
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/plans-and-flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Plans and flags
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/windows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Windows
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/precision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Precision
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/openmp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  OpenMP
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/accuracy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Accuracy
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Transforms
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Transforms
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFCT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFST
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nnfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NNFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nsfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NSFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Definition
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ndsft" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        NDSFT
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adjoint-ndsft" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Adjoint NDSFT
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Workflow
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-and-data-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Plan and data layout
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plan and data layout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#layout-of-f_hat" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Layout of <code>f_hat</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Nodes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#precomputation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Precomputation
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Creating a plan
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Flags
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flags">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basis-and-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Basis and algorithms
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Memory
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Input preservation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-fast-algorithm-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How the fast algorithm works
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#equispaced-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Equispaced nodes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        API
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfsft-background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT background
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nfsoft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSOFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FPT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Solver
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  API
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  API
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfct/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFCT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFST
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nnfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NNFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nsfft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NSFFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfsft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/nfsoft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  NFSOFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/fpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FPT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/solver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Solver
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../applications/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Applications
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Applications
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/fastsum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/fastgauss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast Gauss transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/fastsumS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Fast summation on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/mri/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/mri-2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI 2D
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/mri-3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MRI 3D
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/polarFFT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Polar FFT
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/radon/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Radon transform
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/quadratureS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Quadrature on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/iterS2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Inversion on the sphere
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../applications/glacier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reconstruction of a glacier
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Interfaces
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Interfaces
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interfaces/julia/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Julia
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interfaces/matlab-octave/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MATLAB and Octave
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Reference
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Reference
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/publications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Publications
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FAQ
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/people/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  People
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  License
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../development/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Development
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+  Development
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/build-matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Build matrix
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Testing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Benchmarks
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Releasing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Definition
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ndsft" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        NDSFT
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adjoint-ndsft" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Adjoint NDSFT
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Workflow
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-and-data-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Plan and data layout
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plan and data layout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#layout-of-f_hat" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Layout of <code>f_hat</code>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Nodes
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#precomputation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Precomputation
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Creating a plan
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Flags
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flags">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basis-and-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Basis and algorithms
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Memory
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-preservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Input preservation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-the-fast-algorithm-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        How the fast algorithm works
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#equispaced-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Equispaced nodes
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        API
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Transforms
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+    <a href="https://github.com/jenskeiner/nfft-docs/edit/develop/doc/transforms/nfsft.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="nfsft">NFSFT<a class="headerlink" href="#nfsft" title="Permanent link">&para;</a></h1>
+<p>Nonequispaced fast spherical Fourier transform. The module evaluates
+expansions in spherical harmonics on the two-dimensional unit sphere
+<span class="arithmatex">\(\mathbb{S}^2\)</span> at arbitrary nodes, and computes the adjoint transform. The
+abbreviation NFSFT stands for "nonuniform fast spherical Fourier transform".</p>
+<p>The <a href="../nfsft-background/">background page</a> defines spherical coordinates,
+Legendre polynomials, associated Legendre functions and spherical harmonics.
+This page defines the transforms, the data layout of the plan and the
+precomputation. It also explains how the fast algorithm works.</p>
+<h2 id="definition">Definition<a class="headerlink" href="#definition" title="Permanent link">&para;</a></h2>
+<p>By default the module works with the unnormalised spherical harmonics
+<span class="arithmatex">\(\tilde{Y}_k^n\)</span>. With the flag <code>NFSFT_NORMALIZED</code> it works with the
+<span class="arithmatex">\(\mathrm{L}^2\)</span>-normalised harmonics <span class="arithmatex">\(Y_k^n\)</span>. In the formulas below <span class="arithmatex">\(Y_k^n\)</span>
+stands for the basis in use. The node
+<span class="arithmatex">\(\mathbf{x}(m) = (x_1(m),x_2(m))\)</span> has the polar angle
+<span class="arithmatex">\(\vartheta = 2\pi x_2(m)\)</span> and the azimuth <span class="arithmatex">\(\varphi = 2\pi x_1(m)\)</span>, so
+<span class="arithmatex">\(Y_k^n(\mathbf{x}(m))\)</span> means <span class="arithmatex">\(Y_k^n\!\left(2\pi x_2(m),2\pi x_1(m)\right)\)</span>.</p>
+<h3 id="ndsft">NDSFT<a class="headerlink" href="#ndsft" title="Permanent link">&para;</a></h3>
+<p>The <strong>nonuniform discrete spherical Fourier transform</strong> (NDSFT) is defined as
+follows.</p>
+<p><strong>Input.</strong> Coefficients <span class="arithmatex">\(\hat f(k,n) \in \mathbb{C}\)</span> for <span class="arithmatex">\(k=0,\dots,N\)</span> and
+<span class="arithmatex">\(n=-k,\dots,k\)</span> with <span class="arithmatex">\(N \in \mathbb{N}_0\)</span>. Arbitrary nodes
+<span class="arithmatex">\(\mathbf{x}(m) \in [-\tfrac{1}{2},\tfrac{1}{2}] \times [0,\tfrac{1}{2}]\)</span> for
+<span class="arithmatex">\(m=0,\dots,M-1\)</span> with <span class="arithmatex">\(M \in \mathbb{N}\)</span>.</p>
+<p><strong>Task.</strong> Evaluate</p>
+<div class="arithmatex">\[
+f(m) := f\!\left(\mathbf{x}(m)\right)
+= \sum_{k=0}^{N} \sum_{n=-k}^{k} \hat f(k,n)\,
+Y_k^n\!\left(\mathbf{x}(m)\right),
+\qquad m=0,\dots,M-1.
+\]</div>
+<p><strong>Output.</strong> Values <span class="arithmatex">\(f(m) \in \mathbb{C}\)</span> for <span class="arithmatex">\(m=0,\dots,M-1\)</span>.</p>
+<p>The functions <code>nfsft_trafo_direct</code> and <code>nfsft_trafo</code> compute this sum. The
+first function evaluates it directly. The second function uses the fast
+algorithm.</p>
+<h3 id="adjoint-ndsft">Adjoint NDSFT<a class="headerlink" href="#adjoint-ndsft" title="Permanent link">&para;</a></h3>
+<p>The <strong>adjoint nonuniform discrete spherical Fourier transform</strong> is defined as
+follows.</p>
+<p><strong>Input.</strong> Values <span class="arithmatex">\(f(m) \in \mathbb{C}\)</span> for <span class="arithmatex">\(m=0,\dots,M-1\)</span> with
+<span class="arithmatex">\(M \in \mathbb{N}\)</span>. Arbitrary nodes
+<span class="arithmatex">\(\mathbf{x}(m) \in [-\tfrac{1}{2},\tfrac{1}{2}] \times [0,\tfrac{1}{2}]\)</span> for
+<span class="arithmatex">\(m=0,\dots,M-1\)</span>. The bandwidth <span class="arithmatex">\(N \in \mathbb{N}_0\)</span>.</p>
+<p><strong>Task.</strong> Evaluate</p>
+<div class="arithmatex">\[
+\hat f(k,n) := \sum_{m=0}^{M-1} f(m)\,
+\overline{Y_k^n\!\left(\mathbf{x}(m)\right)},
+\qquad k=0,\dots,N,\; n=-k,\dots,k.
+\]</div>
+<p><strong>Output.</strong> Coefficients <span class="arithmatex">\(\hat f(k,n) \in \mathbb{C}\)</span> for <span class="arithmatex">\(k=0,\dots,N\)</span> and
+<span class="arithmatex">\(n=-k,\dots,k\)</span>.</p>
+<p>The functions <code>nfsft_adjoint_direct</code> and <code>nfsft_adjoint</code> compute this sum.
+The first function evaluates it directly. The second function uses the fast
+algorithm.</p>
+<h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Call <code>nfsft_precompute(N, kappa, nfsft_flags, fpt_flags)</code> once for the
+   largest bandwidth in use.</li>
+<li>Create a plan with <code>nfsft_init</code>, <code>nfsft_init_advanced</code> or <code>nfsft_init_guru</code>.</li>
+<li>Set the nodes in <code>plan.x</code>.</li>
+<li>Call <code>nfsft_precompute_x(&amp;plan)</code>.</li>
+<li>Set <code>plan.f_hat</code> for a transform or <code>plan.f</code> for an adjoint transform.</li>
+<li>Call <code>nfsft_trafo</code>, <code>nfsft_adjoint</code>, <code>nfsft_trafo_direct</code> or
+   <code>nfsft_adjoint_direct</code>.</li>
+<li>Call <code>nfsft_finalize</code> for each plan and <code>nfsft_forget</code> when no plan is left.</li>
+</ol>
+<p>The names above are the double precision names. The prefixes <code>nfsftf_</code> and
+<code>nfsftl_</code> select single and long double precision. See
+<a href="../../guide/precision/">precision</a>.</p>
+<h2 id="plan-and-data-layout">Plan and data layout<a class="headerlink" href="#plan-and-data-layout" title="Permanent link">&para;</a></h2>
+<p>The <code>nfsft_plan</code> structure holds all data of the transforms. The members below
+are public. The plan has further members for internal use, among them the
+internal NFFT plan <code>plan_nfft</code>. The
+<a href="../../api/nfsft/">API page</a> lists all members.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Access</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N_total</code></td>
+<td>read</td>
+<td>Number of entries of <code>f_hat</code>. For bandwidth <span class="arithmatex">\(N\)</span> it is <span class="arithmatex">\((2N+2)^2\)</span>.</td>
+</tr>
+<tr>
+<td><code>M_total</code></td>
+<td>read</td>
+<td>Number of nodes <span class="arithmatex">\(M\)</span>.</td>
+</tr>
+<tr>
+<td><code>f_hat</code></td>
+<td>read and write</td>
+<td>Spherical Fourier coefficients in the layout below.</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>read and write</td>
+<td>Function values. <code>f[m]</code> is <span class="arithmatex">\(f(m)\)</span> for <span class="arithmatex">\(m=0,\dots,M-1\)</span>.</td>
+</tr>
+<tr>
+<td><code>N</code></td>
+<td>read</td>
+<td>Bandwidth <span class="arithmatex">\(N \in \mathbb{N}_0\)</span>.</td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td>read and write</td>
+<td>Nodes. <code>x[2*m]</code> is <span class="arithmatex">\(x_1(m)\)</span> and <code>x[2*m+1]</code> is <span class="arithmatex">\(x_2(m)\)</span>.</td>
+</tr>
+<tr>
+<td><code>mv_trafo</code>, <code>mv_adjoint</code></td>
+<td>read</td>
+<td>Function pointers to <code>nfsft_trafo</code> and <code>nfsft_adjoint</code>. The <a href="../solver/">solver</a> module uses them.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="layout-of-f_hat">Layout of <code>f_hat</code><a class="headerlink" href="#layout-of-f_hat" title="Permanent link">&para;</a></h3>
+<p><code>f_hat</code> is a flat array of <span class="arithmatex">\((2N+2)^2\)</span> complex numbers. Read it as a row-major
+matrix with <span class="arithmatex">\(2N+2\)</span> rows and <span class="arithmatex">\(2N+2\)</span> columns. The coefficient
+<span class="arithmatex">\(\hat f(k,n)\)</span> with <span class="arithmatex">\(0 \le k \le N\)</span> and <span class="arithmatex">\(-k \le n \le k\)</span> has the row
+<span class="arithmatex">\(N-n+1\)</span> and the column <span class="arithmatex">\(N+k+1\)</span>. Its index is</p>
+<div class="arithmatex">\[
+i = (2N+2)(N-n+1) + N + k + 1.
+\]</div>
+<p>The macro <code>NFSFT_INDEX(k,n,plan)</code> computes this index, so that
+<code>f_hat[NFSFT_INDEX(k,n,&amp;plan)]</code> is the component of <span class="arithmatex">\(\hat f(k,n)\)</span>. The macro
+<code>NFSFT_F_HAT_SIZE(N)</code> gives the array length <span class="arithmatex">\((2N+2)^2\)</span>.</p>
+<p>Only the entries that belong to a coefficient <span class="arithmatex">\(\hat f(k,n)\)</span> carry data. The
+other entries serve as work space of the fast algorithm. The layout follows
+from the implementation.</p>
+<div class="admonition warning">
+<p class="admonition-title">Macro arguments</p>
+<p><code>NFSFT_INDEX</code> and <code>NFSFT_F_HAT_SIZE</code> do not put their arguments in
+parentheses. Pass a plain variable or write the parentheses yourself, for
+example <code>NFSFT_INDEX(k,(-n),&amp;plan)</code>.</p>
+</div>
+<h3 id="nodes">Nodes<a class="headerlink" href="#nodes" title="Permanent link">&para;</a></h3>
+<p>Each node is a pair <span class="arithmatex">\((x_1,x_2) \in [-\tfrac{1}{2},\tfrac{1}{2}) \times
+[0,\tfrac{1}{2}]\)</span>. The value <span class="arithmatex">\(x_1 = \varphi/2\pi\)</span> is the scaled azimuth and
+<span class="arithmatex">\(x_2 = \vartheta/2\pi\)</span> is the scaled polar angle. Call <code>nfsft_precompute_x</code>
+after you change the nodes. The internal NFFT plan needs this step for its
+node-dependent precomputation.</p>
+<h2 id="precomputation">Precomputation<a class="headerlink" href="#precomputation" title="Permanent link">&para;</a></h2>
+<p>The function <code>nfsft_precompute(N, kappa, nfsft_flags, fpt_flags)</code> fills a global
+store of precomputed data. The code calls this store wisdom. It holds</p>
+<ul>
+<li>the coefficients <span class="arithmatex">\(v_k^n\)</span>, <span class="arithmatex">\(w_k^n\)</span> of the three-term recurrence of the
+  associated Legendre functions, in the form <span class="arithmatex">\(\alpha_k^n\)</span>, <span class="arithmatex">\(\beta_k^n\)</span>,
+  <span class="arithmatex">\(\gamma_k^n\)</span> used by the <a href="../fpt/">FPT</a>, for the direct transforms, and</li>
+<li>the FPT data for all orders <span class="arithmatex">\(n\)</span>, for the fast transforms.</li>
+</ul>
+<p>Rules for the precomputation:</p>
+<ul>
+<li>The bandwidth <span class="arithmatex">\(N_{\max}\)</span> up to which the function precomputes is the next
+  power of two with respect to the argument <code>N</code>. A plan needs
+  <span class="arithmatex">\(N \le N_{\max}\)</span>. If <span class="arithmatex">\(N &gt; N_{\max}\)</span>, the fast transforms write <code>NaN</code> to
+  their result and the direct transforms read outside the stored data.</li>
+<li>The parameter <code>kappa</code> is the threshold <span class="arithmatex">\(\kappa \in \mathbb{R}^{+}\)</span> of the
+  FPT. It sets the number of stabilisation steps of the discrete polynomial
+  transform and so its accuracy. The examples use <span class="arithmatex">\(\kappa = 1000\)</span>.</li>
+<li>The parameter <code>fpt_flags</code> goes to the <a href="../fpt/">FPT</a> module.</li>
+<li>The store exists once per precision. The function returns at once if the
+  store exists. Call <code>nfsft_forget</code> first to precompute for other parameters.</li>
+<li><code>nfsft_forget</code> frees the store. Transforms need the store, so call it after
+  the last transform.</li>
+<li>A plan with <span class="arithmatex">\(N &lt; 5\)</span> always runs the direct algorithm, also in <code>nfsft_trafo</code>
+  and <code>nfsft_adjoint</code>. The break-even bandwidth is 5.</li>
+</ul>
+<p>The following flags for <code>nfsft_precompute</code> save memory.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NFSFT_NO_DIRECT_ALGORITHM</code></td>
+<td>The function does not precompute the recurrence coefficients. <code>nfsft_trafo_direct</code> and <code>nfsft_adjoint_direct</code> write <code>NaN</code> to their result. A plan with <span class="arithmatex">\(N &lt; 5\)</span> has no working transform.</td>
+</tr>
+<tr>
+<td><code>NFSFT_NO_FAST_ALGORITHM</code></td>
+<td>The function does not precompute the FPT data. <code>nfsft_trafo</code> and <code>nfsft_adjoint</code> write <code>NaN</code> to their result.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="creating-a-plan">Creating a plan<a class="headerlink" href="#creating-a-plan" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nfsft_init(&amp;plan, N, M)</code></td>
+<td>Plan with the flags <code>NFSFT_MALLOC_X</code>, <code>NFSFT_MALLOC_F</code> and <code>NFSFT_MALLOC_F_HAT</code>.</td>
+</tr>
+<tr>
+<td><code>nfsft_init_advanced(&amp;plan, N, M, nfsft_flags)</code></td>
+<td>Plan with the given NFSFT flags. The NFFT uses the flags <code>PRE_PHI_HUT</code>, <code>PRE_PSI</code>, <code>FFTW_INIT</code> and <code>NFFT_OMP_BLOCKWISE_ADJOINT</code> and the cut-off 6.</td>
+</tr>
+<tr>
+<td><code>nfsft_init_guru(&amp;plan, N, M, nfsft_flags, nfft_flags, nfft_cutoff)</code></td>
+<td>Plan with the given NFSFT flags, NFFT flags and NFFT cut-off. See <a href="../nfft/">NFFT</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>The internal NFFT plan has the bandwidth <span class="arithmatex">\(2N+2\)</span> in both dimensions and the FFT
+size <span class="arithmatex">\(4N\)</span>.</p>
+<h2 id="flags">Flags<a class="headerlink" href="#flags" title="Permanent link">&para;</a></h2>
+<p>The flags for <code>nfsft_init_advanced</code> and <code>nfsft_init_guru</code> are bit flags. Combine
+them with <code>|</code>.</p>
+<h3 id="basis-and-algorithms">Basis and algorithms<a class="headerlink" href="#basis-and-algorithms" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NFSFT_NORMALIZED</code></td>
+<td>By default the computation uses the unnormalised functions <span class="arithmatex">\(\tilde{Y}_k^n(\vartheta,\varphi) = P_k^{\lvert n\rvert}(\cos\vartheta)\,\mathrm{e}^{\mathrm{i} n \varphi}\)</span>. With this flag it uses the <span class="arithmatex">\(\mathrm{L}^2\)</span>-normalised functions <span class="arithmatex">\(Y_k^n(\vartheta,\varphi) = \sqrt{\tfrac{2k+1}{4\pi}}\,P_k^{\lvert n\rvert}(\cos\vartheta)\,\mathrm{e}^{\mathrm{i} n \varphi}\)</span>. Each transform multiplies the coefficients by <span class="arithmatex">\(\sqrt{(2k+1)/4\pi}\)</span>.</td>
+</tr>
+<tr>
+<td><code>NFSFT_USE_NDFT</code></td>
+<td>The fast transforms use the exact direct NDFT in place of the fast but approximate NFFT.</td>
+</tr>
+<tr>
+<td><code>NFSFT_USE_DPT</code></td>
+<td>The fast transforms use the direct discrete polynomial transform (DPT) in place of the FPT.</td>
+</tr>
+<tr>
+<td><code>NFSFT_EQUISPACED</code></td>
+<td>The plan uses an equispaced FFT in place of the NFFT. See <a href="#equispaced-nodes">Equispaced nodes</a>.</td>
+</tr>
+<tr>
+<td><code>NFSFT_NO_FAST_ALGORITHM</code></td>
+<td>The plan has no internal NFFT plan. The fast transforms write <code>NaN</code>.</td>
+</tr>
+<tr>
+<td><code>NFSFT_ZERO_F_HAT</code></td>
+<td>The adjoint transforms set all entries of <code>f_hat</code> that do not belong to a coefficient to zero. <code>nfsft_adjoint_direct</code> always does this. Without the flag, <code>nfsft_adjoint</code> leaves undefined values in these entries.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory">Memory<a class="headerlink" href="#memory" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NFSFT_MALLOC_X</code></td>
+<td>The init function allocates the node array <code>x</code>, of <span class="arithmatex">\(2M\)</span> real numbers, and <code>nfsft_finalize</code> frees it. Without the flag, <code>x</code> must point to an array of the right size before a transform, and you free it.</td>
+</tr>
+<tr>
+<td><code>NFSFT_MALLOC_F_HAT</code></td>
+<td>The same for the array <code>f_hat</code>, of <span class="arithmatex">\((2N+2)^2\)</span> complex numbers.</td>
+</tr>
+<tr>
+<td><code>NFSFT_MALLOC_F</code></td>
+<td>The same for the array <code>f</code>, of <span class="arithmatex">\(M\)</span> complex numbers.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-preservation">Input preservation<a class="headerlink" href="#input-preservation" title="Permanent link">&para;</a></h3>
+<p>The transforms treat the input arrays as follows.</p>
+<ul>
+<li><code>nfsft_trafo</code> and <code>nfsft_trafo_direct</code> do not change <code>x</code>. By default the fast
+  transform overwrites <code>f_hat</code>. The direct transform overwrites <code>f_hat</code> only
+  together with <code>NFSFT_NORMALIZED</code>.</li>
+<li>The adjoint transforms <code>nfsft_adjoint</code> and <code>nfsft_adjoint_direct</code> do not
+  change <code>x</code> and <code>f</code>.</li>
+</ul>
+<p>The flag <code>NFSFT_PRESERVE_F_HAT</code> makes the transforms work on an internal copy
+of <code>f_hat</code>. It costs memory for one more coefficient array. Then <code>f_hat</code>
+stays unchanged. The flags below are part of the interface. They have no
+further effect in the current implementation.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NFSFT_PRESERVE_F_HAT</code></td>
+<td><code>f_hat</code> stays unchanged in <code>nfsft_trafo_direct</code> and <code>nfsft_trafo</code>.</td>
+</tr>
+<tr>
+<td><code>NFSFT_PRESERVE_X</code></td>
+<td><code>x</code> stays unchanged in all four transforms. This is always true.</td>
+</tr>
+<tr>
+<td><code>NFSFT_PRESERVE_F</code></td>
+<td><code>f</code> stays unchanged in <code>nfsft_adjoint_direct</code> and <code>nfsft_adjoint</code>. This is always true.</td>
+</tr>
+<tr>
+<td><code>NFSFT_DESTROY_F_HAT</code></td>
+<td>The transforms may change <code>f_hat</code> in <code>nfsft_trafo_direct</code> and <code>nfsft_trafo</code>. This is the default.</td>
+</tr>
+<tr>
+<td><code>NFSFT_DESTROY_X</code></td>
+<td>The transforms may change <code>x</code>.</td>
+</tr>
+<tr>
+<td><code>NFSFT_DESTROY_F</code></td>
+<td>The adjoint transforms may change <code>f</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-the-fast-algorithm-works">How the fast algorithm works<a class="headerlink" href="#how-the-fast-algorithm-works" title="Permanent link">&para;</a></h2>
+<p>The direct algorithm evaluates for each order <span class="arithmatex">\(n\)</span> the sum over <span class="arithmatex">\(k\)</span> with the
+Clenshaw algorithm and the stored recurrence coefficients. It runs in long
+double arithmetic for <span class="arithmatex">\(N &gt; 1024\)</span>.</p>
+<p>The fast algorithm <code>nfsft_trafo</code> has these stages.</p>
+<ol>
+<li><strong>Weights.</strong> With <code>NFSFT_NORMALIZED</code> the algorithm multiplies
+   <span class="arithmatex">\(\hat f(k,n)\)</span> by <span class="arithmatex">\(\sqrt{(2k+1)/4\pi}\)</span>.</li>
+<li><strong>FPT.</strong> For each order <span class="arithmatex">\(n\)</span> the <a href="../fpt/">FPT</a> turns the coefficients of
+   the functions <span class="arithmatex">\(P_k^{\lvert n\rvert}\)</span> into coefficients of Chebyshev
+   polynomials. The result is a function
+   <span class="arithmatex">\(f_n(\cos\vartheta) = \sum_{k=0}^{N} a_k^n\,(\sin\vartheta)^{n \bmod 2}\,
+   T_k(\cos\vartheta)\)</span>. With <code>NFSFT_USE_DPT</code> the direct DPT does this step.</li>
+<li><strong>Conversion.</strong> The internal function <code>c2e</code> changes these coefficients in
+   place into the coefficients <span class="arithmatex">\(c_k^n\)</span> of the representation by complex
+   exponentials
+   <span class="arithmatex">\(f_n(\cos\vartheta) = \sum_{k=-N}^{N} c_k^n\,\mathrm{e}^{\mathrm{i} k \vartheta}\)</span>.</li>
+<li><strong>NFFT.</strong> A two-dimensional <a href="../nfft/">NFFT</a> evaluates the trigonometric
+   sum in <span class="arithmatex">\(\varphi\)</span> and <span class="arithmatex">\(\vartheta\)</span> with the coefficients <span class="arithmatex">\(c_k^n\)</span> at the
+   nodes. With <code>NFSFT_USE_NDFT</code> the direct NDFT does this step.</li>
+</ol>
+<p>The adjoint algorithm <code>nfsft_adjoint</code> runs the transposed stages in reverse
+order: adjoint NFFT, transposed conversion, transposed FPT and the weights.</p>
+<p>The <code>f_hat</code> array is also the coefficient array of the NFFT, of bandwidth
+<span class="arithmatex">\(2N+2\)</span> in both dimensions. For this reason the layout has <span class="arithmatex">\(2N+2\)</span> rows and
+columns. The row of <span class="arithmatex">\(\hat f(k,n)\)</span> is the NFFT frequency <span class="arithmatex">\(-n\)</span> and the column is
+the NFFT frequency <span class="arithmatex">\(k\)</span>, each shifted by <span class="arithmatex">\(N+1\)</span>.</p>
+<h2 id="equispaced-nodes">Equispaced nodes<a class="headerlink" href="#equispaced-nodes" title="Permanent link">&para;</a></h2>
+<p>With <code>NFSFT_EQUISPACED</code> the transform evaluates on a fixed grid with an FFT
+of size <span class="arithmatex">\(2N+2\)</span> in place of the NFFT. The plan creates no NFFT plan. The nodes
+are</p>
+<div class="arithmatex">\[
+\varphi_i = 2\pi \frac{i}{2N+2}, \qquad i=-N-1,\dots,N,
+\]</div>
+<div class="arithmatex">\[
+\vartheta_j = 2\pi \frac{j}{2N+2}, \qquad j=0,\dots,N+1.
+\]</div>
+<p>The number of nodes is fixed to <span class="arithmatex">\(M = (2N+2)(N+2)\)</span>, whatever <code>M</code> is in the init
+call. <code>plan.M_total</code> holds the value. The entry <code>f[i*(N+2)+j]</code> belongs to the
+node with the angle <span class="arithmatex">\(\varphi\)</span> of the index <span class="arithmatex">\(i-N-1\)</span> and the angle <span class="arithmatex">\(\vartheta\)</span> of
+the index <span class="arithmatex">\(j\)</span>, for <span class="arithmatex">\(i=0,\dots,2N+1\)</span> and <span class="arithmatex">\(j=0,\dots,N+1\)</span>. The value of the flag
+is <code>1U &lt;&lt; 17</code>.</p>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<p>The example <code>examples/nfsft/simple_test.c</code> uses the guru interface with
+normalised harmonics and preserved <code>f_hat</code>. It computes a direct and a fast
+transform and a direct and a fast adjoint transform.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">simple_test_nfsft</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="cm">/* bandwidth/maximum degree */</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="cm">/* number of nodes */</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="n">nfsft_plan</span><span class="w"> </span><span class="n">plan</span><span class="p">;</span><span class="w"> </span><span class="cm">/* transform plan */</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="cm">/* loop variables */</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="cm">/* precomputation (for fast polynomial transform) */</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="n">nfsft_precompute</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="mf">1000.0</span><span class="p">,</span><span class="mi">0U</span><span class="p">,</span><span class="mi">0U</span><span class="p">);</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="cm">/* Initialize transform plan using the guru interface. All input and output</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="cm">   * arrays are allocated by nfsft_init_guru(). Computations are performed with</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="cm">   * respect to L^2-normalized spherical harmonics Y_k^n. The array of spherical</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="cm">   * Fourier coefficients is preserved during transformations. The NFFT uses a</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="cm">   * cut-off parameter m = 6. See the NFFT 3 manual for details.</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="cm">   */</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="n">nfsft_init_guru</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">NFSFT_MALLOC_X</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NFSFT_MALLOC_F</span><span class="w"> </span><span class="o">|</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="n">NFSFT_MALLOC_F_HAT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NFSFT_NORMALIZED</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NFSFT_PRESERVE_F_HAT</span><span class="p">,</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">    </span><span class="n">PRE_PHI_HUT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">PRE_PSI</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">FFTW_INIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">FFT_OUT_OF_PLACE</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">  </span><span class="cm">/* pseudo-random nodes */</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">plan</span><span class="p">.</span><span class="n">M_total</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">    </span><span class="n">plan</span><span class="p">.</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="w"> </span><span class="n">nfft_drand48</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">K</span><span class="p">(</span><span class="mf">0.5</span><span class="p">);</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">    </span><span class="n">plan</span><span class="p">.</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="w"> </span><span class="n">K</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">nfft_drand48</span><span class="p">();</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">  </span><span class="cm">/* precomputation (for NFFT, node-dependent) */</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">  </span><span class="n">nfsft_precompute_x</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">);</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">  </span><span class="cm">/* pseudo-random Fourier coefficients */</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">plan</span><span class="p">.</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">      </span><span class="n">plan</span><span class="p">.</span><span class="n">f_hat</span><span class="p">[</span><span class="n">NFSFT_INDEX</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="w">          </span><span class="n">nfft_drand48</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">K</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">_Complex_I</span><span class="o">*</span><span class="p">(</span><span class="n">nfft_drand48</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">K</span><span class="p">(</span><span class="mf">0.5</span><span class="p">));</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">  </span><span class="cm">/* Direct transformation, display result. */</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="w">  </span><span class="n">nfsft_trafo_direct</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">);</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"Vector f (NDSFT):</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">plan</span><span class="p">.</span><span class="n">M_total</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"f[%+2d] = %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">" %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">"*I</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="w">      </span><span class="n">creal</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span><span class="w"> </span><span class="n">cimag</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">]));</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a><span class="w">  </span><span class="cm">/* Fast approximate transformation, display result. */</span>
+</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a><span class="w">  </span><span class="n">nfsft_trafo</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">);</span>
+</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"Vector f (NFSFT):</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">plan</span><span class="p">.</span><span class="n">M_total</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"f[%+2d] = %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">" %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">"*I</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">j</span><span class="p">,</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a><span class="w">      </span><span class="n">creal</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span><span class="w"> </span><span class="n">cimag</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">]));</span>
+</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>
+</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>
+</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a><span class="w">  </span><span class="cm">/* Direct adjoint transformation, display result. */</span>
+</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a><span class="w">  </span><span class="n">nfsft_adjoint_direct</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">);</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"Vector f_hat (NDSFT):</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">plan</span><span class="p">.</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a><span class="w">      </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="s">"f_hat[%+2d,%+2d] = %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">" %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">"*I</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span>
+</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a><span class="w">        </span><span class="n">creal</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f_hat</span><span class="p">[</span><span class="n">NFSFT_INDEX</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">)]),</span>
+</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a><span class="w">        </span><span class="n">cimag</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f_hat</span><span class="p">[</span><span class="n">NFSFT_INDEX</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">)]));</span>
+</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>
+</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>
+</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a><span class="w">  </span><span class="cm">/* Fast approximate adjoint transformation, display result. */</span>
+</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a><span class="w">  </span><span class="n">nfsft_adjoint</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">);</span>
+</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a><span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"Vector f_hat (NFSFT):</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">plan</span><span class="p">.</span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a><span class="w">  </span><span class="p">{</span>
+</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a><span class="w">      </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="s">"f_hat[%+2d,%+2d] = %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">" %+5.3"</span><span class="w"> </span><span class="n">__FES__</span><span class="w"> </span><span class="s">"*I</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a><span class="w">        </span><span class="n">creal</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f_hat</span><span class="p">[</span><span class="n">NFSFT_INDEX</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">)]),</span>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a><span class="w">        </span><span class="n">cimag</span><span class="p">(</span><span class="n">plan</span><span class="p">.</span><span class="n">f_hat</span><span class="p">[</span><span class="n">NFSFT_INDEX</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">)]));</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a>
+</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a><span class="w">  </span><span class="cm">/* Finalize the plan. */</span>
+</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a><span class="w">  </span><span class="n">nfsft_finalize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">plan</span><span class="p">);</span>
+</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81" href="#__codelineno-0-81"></a>
+</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82" href="#__codelineno-0-82"></a><span class="w">  </span><span class="cm">/* Destroy data precomputed for fast polynomial transform. */</span>
+</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83" href="#__codelineno-0-83"></a><span class="w">    </span><span class="n">nfsft_forget</span><span class="p">();</span>
+</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84" href="#__codelineno-0-84"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The example uses the bandwidth <span class="arithmatex">\(N=4\)</span>. Because of <span class="arithmatex">\(N &lt; 5\)</span>, <code>nfsft_trafo</code> and
+<code>nfsft_adjoint</code> call the direct algorithm there. Use <span class="arithmatex">\(N \ge 5\)</span> to run the fast
+algorithm.</p>
+<h2 id="api">API<a class="headerlink" href="#api" title="Permanent link">&para;</a></h2>
+<p><a href="../../api/nfsft/">NFSFT API reference</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../mri/" class="md-footer__link md-footer__link--prev" aria-label="Previous: MRI">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                MRI
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../nfsft-background/" class="md-footer__link md-footer__link--next" aria-label="Next: NFSFT background">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                NFSFT background
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2002-2026 Jens Keiner, Stefan Kunis, Daniel Potts
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/NFFT/nfft" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.code.annotate","content.code.copy","content.tabs.link","content.tooltips","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.tabs","navigation.tabs.sticky","navigation.top","navigation.tracking","search.highlight","toc.follow"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"default":"latest","provider":"mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
