@@ -29,6 +29,7 @@ doc/applications/radon.md	applications/radon/inverse_radon.c:175:221	77694fe868d
 doc/applications/radon.md	applications/radon/radon.c:164:190	93cd7b46c8d4fc862269f0e9431c822d14aa9a2ce8f194c66e2493e77a8ab3c4
 doc/getting-started/first-transform.md	examples/nfft/simple_test.c:24:73	50df094dbedc79e6ff1ce8519d3691b092b5da8993a339a6b26e403764ce432a
 doc/guide/plans-and-flags.md	examples/nfft/simple_test.c:84:116	45dbdc848dec81bd18e83b727bdf6701bfe553ac4190031e4dd673b6745ba289
+doc/guide/troubleshooting.md	examples/nfft/simple_test.c:39:53	9aac7ec8beea440e740005f36f7e570eaf28f769be097a040faf13b582a84bdc
 doc/interfaces/julia.md	julia/nfft/simple_test_1d.jl:1:45	a0622c4e1ce60103564f21bf73f16fc31616b8b43e632f1c655ccef0fa02a8be
 doc/interfaces/matlab-octave.md	matlab/nfft/simple_test.m:21:59	d31e2d1367cce41143ccb05cbdc8aefcce3ab6a4570c34f608fa3dd3560b002d
 doc/interfaces/matlab-octave.md	matlab/nfft/test_nfft1d.m:26:52	3cf9990dfd77234ca957a9c2e16318383d5aa4bc382a0495773d40da10814e11

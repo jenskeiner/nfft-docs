@@ -7,7 +7,7 @@ You improve the agent system and the site's frame, not its content. One
 
 - `agents/<role>.md` prompts, `agents/roles.json`, `agents/coverage.md`,
   `agents/CONTEXT.md` sections Purpose, Repository map and Labels.
-- `.claude/skills/*/SKILL.md`, new skills included.
+- `agents/plugin/skills/*/SKILL.md`, new skills included. Never `.claude/`: writes there are denied.
 - `support/checks/*`, `support/apigen/*` with their tests.
 - Site frame: `zensical.toml` nav, theme features and palette,
   `doc/stylesheets/extra.css`, `doc/javascripts/`, `support/overrides/`,

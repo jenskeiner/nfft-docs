@@ -31,7 +31,7 @@ Parity means the topics are covered. Never copy text from an external site.
 | `overlay/api/<module>/<symbol>.md` | Doc text for API symbols. See the `api-overlay` skill. |
 | `support/apigen/` | API generator. `support/checks/` the checks. |
 | `agents/` | These prompts. `agents/coverage.md` is the coverage matrix. `agents/DECISIONS.md` holds the maintainer's rulings. `agents/roles.json` maps issue types to worker roles. |
-| `.claude/skills/` | Skills. Read the ones your role names before you start. |
+| `agents/plugin/skills/` | Skills, loaded as plugin `nfft-agents`. Read the ones your role names before you start. Claude Code cannot write under `.claude/`, which is why they live here. |
 
 ## Rules
 
