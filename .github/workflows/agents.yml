@@ -64,5 +64,6 @@ jobs:
           role: ${{ steps.gate.outputs.role }}
           model: ${{ steps.gate.outputs.model }}
           max_turns: ${{ steps.gate.outputs.max_turns }}
-          extra_prompt: ${{ steps.gate.outputs.issue && format('Work issue #{0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || '' }}
+          # Quoted: a " #" inside an expression starts a YAML comment and leaves ${{ unclosed.
+          extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || '' }}"
           oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
