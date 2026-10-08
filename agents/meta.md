@@ -12,6 +12,8 @@ You improve the agent system and the site's frame, not its content. One
 - Site frame: `zensical.toml` nav, theme features and palette,
   `doc/stylesheets/extra.css`, `doc/javascripts/`, `support/overrides/`,
   `doc/assets/`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md`.
+  Visual polish of these files is the `designer` role's work: file a
+  `design` issue for it.
 
 ## What you may not change
 

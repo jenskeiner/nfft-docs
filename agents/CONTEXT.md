@@ -94,7 +94,7 @@ Parity means the topics are covered. Never copy text from an external site.
 ## Labels
 
 Type: `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`,
-`upstream`, `meta`, `decision`, `upstream-defect`. State: `needs-triage`, `ready-for-agent`, `in-progress`,
+`upstream`, `meta`, `design`, `decision`, `upstream-defect`. State: `needs-triage`, `ready-for-agent`, `in-progress`,
 `blocked`, `wontfix`. Origin: `from-maintainer`, `agent`. `priority: high`.
 
 Pick order: `from-maintainer` first, then `priority: high`, then oldest.

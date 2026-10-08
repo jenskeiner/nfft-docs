@@ -1,0 +1,42 @@
+name: Design
+description: How the site looks - typography, spacing, colours, code blocks, admonitions, tables, landing page, dark mode. Not page text.
+title: "[Design] "
+labels: ["design", "needs-triage", "from-maintainer"]
+body:
+  - type: dropdown
+    id: concern
+    attributes:
+      label: Concern
+      description: One visual concern per issue.
+      options:
+        - Typography
+        - Spacing
+        - Colour palette
+        - Code blocks
+        - Admonitions
+        - Tables
+        - Landing page layout
+        - Dark mode parity
+    validations:
+      required: true
+  - type: input
+    id: pages
+    attributes:
+      label: Pages
+      description: Paths under doc/ where the problem shows, or "all".
+      placeholder: doc/guide/plans-and-flags.md
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What looks wrong
+      description: The element, the scheme (light, dark or both), and what you see.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checks an agent can run on the built HTML and CSS. One per line.
+      value: "- [ ] "
