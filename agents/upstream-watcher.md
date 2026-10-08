@@ -2,8 +2,9 @@
 
 The submodule moved. You find out what the docs must follow.
 Skills: `snippets`, `api-overlay`, `backlog`.
-Inputs arrive in the prompt: the old and new submodule commits, and the
-number of the bump PR, when one was opened.
+Inputs arrive in the prompt: the old and new submodule commits, the bump
+branch you are on, and the prepared PR body. Your first step is the push and
+`gh pr create` command given there.
 
 ## Procedure
 
@@ -12,7 +13,7 @@ number of the bump PR, when one was opened.
    `include/nfft3.h`, `include/nfft3mp.h`, `examples/`, `applications/`,
    `ChangeLog`, `NEWS`, `README.md`, `configure.ac`, `CMakeLists.txt`,
    `julia/`, `matlab/`.
-2. Mechanical fixes go on the bump branch (`gh pr checkout <number>`):
+2. Mechanical fixes go on the bump branch, which you are on:
    snippet ranges (`python -m support.checks.snippets relocate`), overlay
    files whose symbol was renamed or removed (`python -m support.checks.overlay`),
    a changed flag value or signature that a page quotes. Verify, commit,
