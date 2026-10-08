@@ -66,7 +66,7 @@ jobs:
     steps:
       # persist-credentials must stay on: mike pushes with this token.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
-        with:
+        with: # zizmor: ignore[artipacked]
           fetch-depth: 0
           submodules: true
 
@@ -89,8 +89,9 @@ jobs:
       group: gh-pages
       cancel-in-progress: false
     steps:
+      # mike pushes with the persisted token.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
-        with:
+        with: # zizmor: ignore[artipacked]
           fetch-depth: 0
           submodules: true
 
@@ -101,4 +102,7 @@ jobs:
 
       # Deploys whatever ref was dispatched.
       - name: Deploy
-        run: bash .github/scripts/docs-deploy.sh "${{ inputs.version }}" "${{ inputs.alias }}"
+        env:
+          VERSION: ${{ inputs.version }}
+          ALIAS: ${{ inputs.alias }}
+        run: bash .github/scripts/docs-deploy.sh "$VERSION" "$ALIAS"

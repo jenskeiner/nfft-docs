@@ -35,12 +35,13 @@ runs:
       shell: bash
       env:
         EXTRA: ${{ inputs.extra_prompt }}
+        ROLE: ${{ inputs.role }}
       run: |
         {
           echo "text<<PROMPT_EOF"
           cat agents/CONTEXT.md
           echo
-          cat "agents/${{ inputs.role }}.md"
+          cat "agents/$ROLE.md"
           echo
           cat agents/DECISIONS.md
           echo

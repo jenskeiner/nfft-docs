@@ -37,12 +37,14 @@ jobs:
     steps:
       - name: Map the trigger to a role
         id: want
+        env:
+          TRIGGER: ${{ inputs.role || github.event.schedule }}
         run: |
-          case "${{ inputs.role || github.event.schedule }}" in
+          case "$TRIGGER" in
             "0 5 * * *")   want=product-owner ;;
             "0 7 */2 * *") want=analyst ;;
             "30 */2 * * *") want=worker ;;
-            *) want="${{ inputs.role }}" ;;
+            *) want="$TRIGGER" ;;
           esac
           echo "want=$want" >> "$GITHUB_OUTPUT"
 
