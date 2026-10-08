@@ -15,6 +15,7 @@ The backlog is GitHub Issues. Labels carry the state.
 | State, exactly one | `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `in-progress`, `blocked`, `wontfix` |
 | Origin | `from-maintainer`, `agent` |
 | Priority | `priority: high` |
+| Upstream | `upstream-defect`, always with `ready-for-human`, never `ready-for-agent` |
 
 Pick order for workers: `from-maintainer`, then `priority: high`, then the
 oldest `createdAt`.

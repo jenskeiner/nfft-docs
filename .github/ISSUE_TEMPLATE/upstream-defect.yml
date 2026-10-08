@@ -1,0 +1,29 @@
+name: Upstream defect
+description: A defect in NFFT/nfft found while documenting. Fixed upstream, not here.
+title: "[Upstream] "
+labels: ["upstream-defect", "ready-for-human"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Location in nfft/
+      description: Path and lines in the submodule, with the submodule commit.
+      placeholder: nfft/include/nfft3.h:702-704 at 4200ed0a
+    validations:
+      required: true
+  - type: textarea
+    id: defect
+    attributes:
+      label: What is wrong
+      description: The observed fact and how it was verified, with commands.
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Proposed upstream fix
+  - type: input
+    id: docs
+    attributes:
+      label: Where the docs work around it
+      placeholder: PR #7, overlay/api/nfsoft/nfsoft_SO3_fpt.md

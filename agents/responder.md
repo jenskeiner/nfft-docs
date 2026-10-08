@@ -20,7 +20,8 @@ file and line.
    new PR, never force push.
 4. Reply, always, even when you changed nothing: what changed in two
    sentences, or the answer. For a review comment reply in its thread with
-   `gh api repos/$GITHUB_REPOSITORY/pulls/<number>/comments/<id>/replies -f body=...`
+   `gh api repos/jenskeiner/nfft-docs/pulls/<number>/comments/<id>/replies -f body=...`
+   Write the repository path literally; a `$VARIABLE` in the command is denied.
    where `<id>` is the number at the end of the comment URL. For a review or
    a conversation comment use `gh pr comment <number> --body ...`.
 
