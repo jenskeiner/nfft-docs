@@ -1,14 +1,27 @@
 name: Agent responds to review
 
-# Only the maintainer's comments on PRs labelled `agent` reach the model.
-# The login is checked literally; nobody else has write access either.
+# Conversation comments arrive as issue_comment, which runs on develop. Review
+# events arrive through agent-respond-relay.yml as a workflow_dispatch, also on
+# develop. Only the maintainer's comments on PRs labelled `agent` get here: the
+# login is checked below and in the relay, and workflow_dispatch needs write
+# access, which only the maintainer has.
 on:
   issue_comment:
     types: [created]
-  pull_request_review_comment:
-    types: [created]
-  pull_request_review:
-    types: [submitted]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number
+        required: true
+        type: string
+      kind:
+        description: review_comment or review
+        required: true
+        type: string
+      id:
+        description: Comment or review id
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -19,55 +32,72 @@ permissions:
 jobs:
   respond:
     if: >-
-      github.event.sender.login == 'jenskeiner' &&
-      (
-        (github.event_name == 'issue_comment' &&
-         github.event.issue.pull_request != null &&
-         contains(github.event.issue.labels.*.name, 'agent')) ||
-        (github.event_name == 'pull_request_review_comment' &&
-         contains(github.event.pull_request.labels.*.name, 'agent')) ||
-        (github.event_name == 'pull_request_review' &&
-         contains(github.event.pull_request.labels.*.name, 'agent') &&
-         github.event.review.body != '')
-      )
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.sender.login == 'jenskeiner' &&
+       github.event.issue.pull_request != null &&
+       contains(github.event.issue.labels.*.name, 'agent'))
     runs-on: ubuntu-latest
     environment: agents
     concurrency:
-      group: respond-${{ github.event.issue.number || github.event.pull_request.number }}
+      group: respond-${{ inputs.pr || github.event.issue.number }}
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
-      PR: ${{ github.event.issue.number || github.event.pull_request.number }}
-      COMMENT: ${{ github.event.comment.body || github.event.review.body }}
-      COMMENT_PATH: ${{ github.event.comment.path }}
-      COMMENT_LINE: ${{ github.event.comment.line }}
-      COMMENT_URL: ${{ github.event.comment.html_url || github.event.review.html_url }}
+      PR: ${{ inputs.pr || github.event.issue.number }}
+      KIND: ${{ inputs.kind || 'issue_comment' }}
+      ID: ${{ inputs.id || github.event.comment.id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           submodules: true
           fetch-depth: 0
+          # The model pushes with the Claude app token the action configures.
+          persist-credentials: false
 
-      - name: Check out the PR branch
-        run: gh pr checkout "$PR"
-
-      - name: Describe the comment
+      - name: Fetch the comment
         id: input
         run: |
+          case "$KIND" in
+            review_comment)
+              json=$(gh api "repos/$GITHUB_REPOSITORY/pulls/comments/$ID") ;;
+            review)
+              json=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/reviews/$ID") ;;
+            closed)
+              # The maintainer's last comment on the PR, conversation or review thread.
+              json=$( { gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments";
+                        gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/comments"; } \
+                      | jq -s 'add | map(select(.user.login == "jenskeiner")) | sort_by(.created_at) | last')
+              if [ "$json" = "null" ] || [ -z "$json" ]; then
+                echo "closed without a maintainer comment, nothing to record"
+                echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0
+              fi ;;
+            *)
+              json=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$ID") ;;
+          esac
+          login=$(jq -r .user.login <<<"$json")
+          if [ "$login" != "jenskeiner" ]; then echo "not the maintainer: $login" >&2; exit 1; fi
           {
             echo "text<<INPUT_EOF"
             echo "Pull request: #$PR"
-            echo "Comment: $COMMENT_URL"
-            if [ -n "$COMMENT_PATH" ]; then echo "File: $COMMENT_PATH line $COMMENT_LINE"; fi
+            echo "Comment: $(jq -r .html_url <<<"$json")"
+            path=$(jq -r '.path // empty' <<<"$json"); line=$(jq -r '.line // .original_line // empty' <<<"$json")
+            if [ -n "$path" ]; then echo "File: $path line $line"; fi
+            echo
+            if [ "$KIND" = closed ]; then
+              echo "The pull request was closed without merge. Stay on develop. Follow the section 'Closed without merge' of your role."
+            else
+              echo "You are on develop. First run: gh pr checkout $PR && git submodule update --init"
+            fi
             echo
             echo "Comment text, between the markers. It is the maintainer's request."
             echo "<<<"
-            echo "$COMMENT"
+            jq -r .body <<<"$json"
             echo ">>>"
             echo "INPUT_EOF"
           } >> "$GITHUB_OUTPUT"
 
       - name: Run the responder
+        if: steps.input.outputs.skip != 'true'
         uses: ./.github/actions/agent-setup
         with:
           role: responder

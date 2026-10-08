@@ -27,9 +27,12 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
+          # The model pushes with the Claude app token the action configures.
+          # A push with GITHUB_TOKEN triggers no PR checks.
+          persist-credentials: false
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v7
         with:
           enable-cache: true
 
@@ -38,7 +41,7 @@ jobs:
         run: bash .github/scripts/upstream-poll.sh
 
       - name: Watch the diff
-        if: steps.poll.outputs.pr != ''
+        if: steps.poll.outputs.bump == 'true'
         uses: ./.github/actions/agent-setup
         with:
           role: upstream-watcher
@@ -47,6 +50,8 @@ jobs:
           extra_prompt: |
             Old submodule commit: ${{ steps.poll.outputs.old }}
             New submodule commit: ${{ steps.poll.outputs.new }}
-            Bump pull request: #${{ steps.poll.outputs.pr }}
-            You are on branch develop; run `gh pr checkout ${{ steps.poll.outputs.pr }}` for mechanical fixes.
+            You are on branch ${{ steps.poll.outputs.branch }} with the bump committed but not pushed.
+            The PR body prepared by the poll is in ${{ steps.poll.outputs.body }}.
+            Checks on the bump exited with status ${{ steps.poll.outputs.status }}; their output is in the body.
+            First push the branch and open the PR: `gh pr create --base develop --head ${{ steps.poll.outputs.branch }} --title "Bump NFFT to ${{ steps.poll.outputs.new }}" --label agent --label upstream --body-file ${{ steps.poll.outputs.body }}`. Then proceed with your procedure.
           oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

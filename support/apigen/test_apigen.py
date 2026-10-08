@@ -145,8 +145,7 @@ def test_documented_count_is_exact():
     is asserted exactly rather than as a lower bound."""
     documented = sum(1 for m in MODULES for s in m.sections
                      for f in s.functions if f.doc)
-    # Four nfsoft functions new on develop have no text yet; coverage.json lists them.
-    assert documented == 145, documented
+    assert documented == 149, documented
     assert sum(1 for m in MODULES for s in m.sections
                for f in s.functions) == 149
 

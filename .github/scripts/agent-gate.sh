@@ -1,33 +1,57 @@
 #!/usr/bin/env bash
 # Usage: agent-gate.sh <role>
-# Decides in shell, before any model call, whether a role may run now.
-# Writes run=true|false to GITHUB_OUTPUT.
+# Decides in shell, before any model call, whether a role may run now, and
+# for `worker` which role from agents/roles.json runs on which issue.
+# Writes run, role, model, max_turns, issue to GITHUB_OUTPUT.
 set -euo pipefail
-role="${1:?role}"
+want="${1:?role}"
 cap=3
+out="${GITHUB_OUTPUT:-/dev/stdout}"
+roles=agents/roles.json
 
-say() { echo "$1"; echo "run=$2" >> "${GITHUB_OUTPUT:-/dev/stdout}"; exit 0; }
+say() { echo "$1"; echo "run=$2" >> "$out"; exit 0; }
 
-case "$role" in
-  writer)  types="gap new-section api-gap math" ;;
-  editor)  types="style clarity" ;;
-  product-owner|analyst|upstream-watcher|responder) types="" ;;
-  *) echo "unknown role $role" >&2; exit 1 ;;
+case "$want" in
+  product-owner) echo "role=product-owner" >> "$out"; echo "model=claude-opus-5-5" >> "$out"; echo "max_turns=80" >> "$out" ;;
+  analyst)       echo "role=analyst" >> "$out";       echo "model=claude-opus-5-5" >> "$out"; echo "max_turns=60" >> "$out" ;;
+  worker|*) ;;
 esac
 
-if [ "$role" = writer ] || [ "$role" = editor ] || [ "$role" = product-owner ]; then
-  open=$(gh pr list --label agent --state open --json number --jq length)
-  [ "$open" -ge "$cap" ] && say "cap reached: $open agent PRs open" false
+open=$(gh pr list --label agent --state open --json number --jq length)
+if [ "$want" != analyst ] && [ "$open" -ge "$cap" ]; then
+  say "cap reached: $open agent PRs open" false
+fi
+if [ "$want" = product-owner ] || [ "$want" = analyst ]; then
+  say "go: $want" true
 fi
 
-if [ -n "$types" ]; then
-  ready=0
-  for t in $types; do
-    n=$(gh issue list --label ready-for-agent --label "$t" --state open --json number,labels \
-        --jq '[.[] | select(all(.labels[].name; . != "in-progress" and . != "blocked"))] | length')
-    ready=$((ready + n))
+# Worker, or a named worker role from a dispatch: pick the best ready issue
+# whose type a role handles. Order: from-maintainer, priority: high, oldest.
+if [ "$want" = worker ]; then
+  candidates=$(jq -r 'to_entries[] | select(.key != "_comment") | .key' "$roles")
+else
+  jq -e --arg r "$want" '.[$r]' "$roles" >/dev/null || { echo "unknown role $want" >&2; exit 1; }
+  candidates="$want"
+fi
+
+best=""
+for role in $candidates; do
+  for t in $(jq -r --arg r "$role" '.[$r].types[]' "$roles"); do
+    gh issue list --label ready-for-agent --label "$t" --state open --limit 100 \
+      --json number,createdAt,labels \
+      --jq '.[] | select(all(.labels[].name; . != "in-progress" and . != "blocked"))
+             | [ (if any(.labels[].name; . == "from-maintainer") then 0 else 1 end),
+                 (if any(.labels[].name; . == "priority: high") then 0 else 1 end),
+                 .createdAt, (.number|tostring), "'"$role"'" ] | @tsv'
   done
-  [ "$ready" -eq 0 ] && say "no ready issue for $role" false
-fi
+done | sort -t$'\t' -k1,1n -k2,2n -k3,3 | head -1 > /tmp/pick.tsv
 
-say "go: $role" true
+if [ ! -s /tmp/pick.tsv ]; then say "no ready issue for $want" false; fi
+issue=$(cut -f4 /tmp/pick.tsv); role=$(cut -f5 /tmp/pick.tsv)
+{
+  echo "role=$role"
+  echo "model=$(jq -r --arg r "$role" '.[$r].model' "$roles")"
+  echo "max_turns=$(jq -r --arg r "$role" '.[$r].max_turns' "$roles")"
+  echo "issue=$issue"
+} >> "$out"
+say "go: $role on issue #$issue" true
