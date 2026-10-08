@@ -49,7 +49,7 @@ window and cites nfft_init", not "document m".
 
 ```
 gh issue edit <n> --add-label in-progress
-gh issue comment <n> --body "Claimed by run $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+gh issue comment <n> --body "Claimed by run <run URL from the prompt>"
 ```
 
 Release when you stop without a PR:

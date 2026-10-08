@@ -41,6 +41,11 @@ runs:
           cat agents/CONTEXT.md
           echo
           cat "agents/${{ inputs.role }}.md"
+          echo
+          echo "## This run"
+          echo
+          echo "Run URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo "Subprocesses cannot read the GitHub Actions environment variables. Use the values given here."
           if [ -n "$EXTRA" ]; then
             echo
             echo "## Inputs of this run"
