@@ -11,7 +11,7 @@ The backlog is GitHub Issues. Labels carry the state.
 
 | Group | Labels |
 |-------|--------|
-| Type, exactly one | `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`, `upstream`, `meta` |
+| Type, exactly one | `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`, `upstream`, `meta`, `design` |
 | Maintainer input | `decision` (a ruling to record in `agents/DECISIONS.md`) |
 | State, exactly one | `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `in-progress`, `blocked`, `wontfix` |
 | Origin | `from-maintainer`, `agent` |
