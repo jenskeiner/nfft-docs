@@ -1,0 +1,5 @@
+[submodule "nfft"]
+	path = nfft
+	url = https://github.com/NFFT/nfft.git
+	branch = develop
+	shallow = true
