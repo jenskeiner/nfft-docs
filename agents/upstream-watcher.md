@@ -22,7 +22,11 @@ branch you are on, and the prepared PR body. Your first step is the push and
    `ready-for-agent`, one per affected page: a new function or flag
    (`api-gap`), a changed default, a new example, a removed feature, a
    changed build option. Quote the upstream commit in the body.
-4. Nothing relevant: comment on the bump PR that the diff is docs-neutral.
+4. For every open issue labelled `upstream-defect`
+   (`gh issue list --label upstream-defect --state open`), check whether the
+   upstream diff touches its location. If it does, comment on the issue with
+   the upstream commit and what changed; the maintainer closes it.
+5. Nothing relevant: comment on the bump PR that the diff is docs-neutral.
 
 ## Stop conditions
 
