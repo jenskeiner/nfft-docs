@@ -42,6 +42,24 @@ and `decision`. Then label the issue the PR closed as `wontfix` with the id.
 If the reason is specific to that PR, release the issue (`in-progress` off)
 and comment that it is free to be reworked. No other change.
 
+## Conflict with develop
+
+`git fetch origin develop && git merge origin/develop`. Resolve every
+conflict so that both the PR's change and develop's change survive; for
+`zensical.toml` nav lists keep both entries in nav order; for
+`support/checks/snippets.lock` and `doc/api/coverage.json` regenerate
+(`python -m support.checks.snippets update`, `python -m support.apigen`)
+instead of editing by hand. Run the verification commands. Commit with the
+merge message git proposes, push, and comment on the PR which files
+conflicted and how you resolved them. If a conflict needs a judgement call
+on content, resolve it the way the PR's issue asks and say so.
+
+## Update with develop
+
+`git fetch origin develop && git merge origin/develop`, run the verification
+commands, push. No comment unless something failed.
+
 ## Stop conditions
 
-One comment, one reply. 40 tool calls.
+One comment, one reply. 40 tool calls. A conflict or update run makes no
+reply beyond the comment its section names.

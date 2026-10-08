@@ -1,0 +1,37 @@
+name: Sync agent PRs with develop
+
+# No event fires when a PR turns dirty. After every push to develop this
+# finds open agent PRs that conflict and hands each to the responder, which
+# merges develop on the PR branch with the app token so the checks run. When
+# the push changed a workflow, every open agent PR gets updated, since a PR
+# runs the job list of its own branch and new required checks would never
+# appear on it. GitHub's update-branch API is no use: commits made with
+# GITHUB_TOKEN trigger no checks.
+on:
+  push:
+    branches: [ develop ]
+
+permissions:
+  actions: write
+  pull-requests: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Dispatch the responder for conflicting or stale agent PRs
+        env:
+          WORKFLOWS_CHANGED: ${{ contains(toJSON(github.event.commits.*.modified), '.github/workflows/') || contains(toJSON(github.event.commits.*.added), '.github/workflows/') }}
+        run: |
+          sleep 45  # GitHub computes mergeability asynchronously
+          gh pr list --repo "$GITHUB_REPOSITORY" --label agent --state open --json number,mergeable \
+            --jq '.[] | "\(.number) \(.mergeable)"' | while read -r pr state; do
+            if [ "$state" = CONFLICTING ]; then kind=conflict
+            elif [ "$WORKFLOWS_CHANGED" = true ]; then kind=update
+            else continue; fi
+            echo "dispatch responder: PR #$pr $kind"
+            gh workflow run agent-respond.yml --repo "$GITHUB_REPOSITORY" --ref develop \
+              -f pr="$pr" -f kind="$kind" -f id=0
+          done
