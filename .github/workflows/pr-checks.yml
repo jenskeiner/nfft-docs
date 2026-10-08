@@ -40,6 +40,27 @@ jobs:
           files: doc
           fail_on_error: true
 
+  # Agents may change prompts, skills and checks, never the workflows, the
+  # action, the scripts, the pinned tooling or the submodule.
+  protected-paths:
+    name: protected-paths
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Agent PRs must not touch protected paths
+        if: github.event.pull_request.user.login == 'claude[bot]' || contains(github.event.pull_request.labels.*.name, 'agent')
+        run: |
+          touched=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            | grep -E '^(\.github/workflows/|\.github/actions/|\.github/scripts/|support/docs-requirements\.txt$|nfft$|nfft/)' || true)
+          if [ -n "$touched" ]; then
+            echo "protected paths changed by an agent PR:"; echo "$touched"; exit 1
+          fi
+          echo "no protected path touched"
+
   links:
     name: external links
     runs-on: ubuntu-latest

@@ -30,12 +30,18 @@ Parity means the topics are covered. Never copy text from an external site.
 | `nfft/` | Submodule, the C library. Read only. Never edit, never run binaries from it. |
 | `overlay/api/<module>/<symbol>.md` | Doc text for API symbols. See the `api-overlay` skill. |
 | `support/apigen/` | API generator. `support/checks/` the checks. |
-| `agents/` | These prompts. `agents/coverage.md` is the coverage matrix. |
+| `agents/` | These prompts. `agents/coverage.md` is the coverage matrix. `agents/DECISIONS.md` holds the maintainer's rulings. `agents/roles.json` maps issue types to worker roles. |
 | `.claude/skills/` | Skills. Read the ones your role names before you start. |
 
 ## Rules
 
 - One issue, one pull request, one run. Never more.
+- Before claiming an issue, check it against the active rows of
+  `agents/DECISIONS.md`, given at the end of your prompt. On conflict:
+  comment the decision id on the issue, label it `blocked`, do not work it.
+- Never edit `.github/workflows/`, `.github/actions/`, `.github/scripts/`,
+  `support/docs-requirements.txt` or `nfft/`. A check rejects such PRs. Need
+  a change there: file a `meta` issue labelled `ready-for-human`.
 - Claim an issue before work: add label `in-progress`, comment the run URL
   given under "This run" at the end of your prompt.
   Release the claim (remove `in-progress`, comment why) if you stop without a PR.
@@ -88,7 +94,7 @@ Parity means the topics are covered. Never copy text from an external site.
 ## Labels
 
 Type: `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`,
-`upstream`. State: `needs-triage`, `ready-for-agent`, `in-progress`,
+`upstream`, `meta`, `decision`, `upstream-defect`. State: `needs-triage`, `ready-for-agent`, `in-progress`,
 `blocked`, `wontfix`. Origin: `from-maintainer`, `agent`. `priority: high`.
 
 Pick order: `from-maintainer` first, then `priority: high`, then oldest.

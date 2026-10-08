@@ -42,6 +42,8 @@ runs:
           echo
           cat "agents/${{ inputs.role }}.md"
           echo
+          cat agents/DECISIONS.md
+          echo
           echo "## This run"
           echo
           echo "Run URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

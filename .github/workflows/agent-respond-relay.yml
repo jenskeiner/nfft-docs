@@ -10,6 +10,8 @@ on:
     types: [created, edited]
   pull_request_review:
     types: [submitted, edited]
+  pull_request:
+    types: [closed]
 
 permissions:
   actions: write
@@ -19,7 +21,9 @@ jobs:
     if: >-
       github.event.sender.login == 'jenskeiner' &&
       contains(github.event.pull_request.labels.*.name, 'agent') &&
-      (github.event_name == 'pull_request_review_comment' || github.event.review.body != '')
+      (github.event_name == 'pull_request_review_comment' ||
+       (github.event_name == 'pull_request_review' && github.event.review.body != '') ||
+       (github.event_name == 'pull_request' && github.event.pull_request.merged == false))
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -28,5 +32,5 @@ jobs:
         run: |
           gh workflow run agent-respond.yml --repo "$GITHUB_REPOSITORY" --ref develop \
             -f pr="${{ github.event.pull_request.number }}" \
-            -f kind="${{ github.event_name == 'pull_request_review' && 'review' || 'review_comment' }}" \
-            -f id="${{ github.event.review.id || github.event.comment.id }}"
+            -f kind="${{ github.event_name == 'pull_request' && 'closed' || github.event_name == 'pull_request_review' && 'review' || 'review_comment' }}" \
+            -f id="${{ github.event.review.id || github.event.comment.id || github.event.pull_request.number }}"
