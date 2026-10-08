@@ -1,0 +1,9 @@
+extends: existence
+message: "'%s' is a forbidden word."
+level: error
+ignorecase: true
+tokens:
+  - load-bearing
+  - seam
+  - byte-identical
+  - odometer

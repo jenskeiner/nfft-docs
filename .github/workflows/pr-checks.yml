@@ -1,0 +1,56 @@
+name: PR checks
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        with:
+          enable-cache: true
+
+      - name: Generator against the header
+        run: uv run python -m support.apigen.test_apigen
+
+      - name: Overlay merge
+        run: uv run python -m support.apigen.test_overlay
+
+      - name: Overlay files name real symbols
+        run: uv run python -m support.checks.overlay
+
+      - name: Snippet lock
+        run: uv run python support/checks/test_snippets.py && uv run python -m support.checks.snippets check
+
+      - name: Prose rules
+        uses: errata-ai/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # v3.0.0
+        with:
+          files: doc
+          fail_on_error: true
+
+  links:
+    name: external links
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - name: Check external links
+        uses: lycheeverse/lychee-action@82b3ce9a63dc1cc617edaa42670c1f27eea1316b # v2.7.0
+        with:
+          args: --no-progress --scheme https --scheme http --exclude-path doc/api doc/
+          fail: false

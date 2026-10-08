@@ -1,0 +1,104 @@
+name: Docs
+
+on:
+  pull_request:
+    branches: [ develop ]
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to (re)deploy, e.g. 3.6. Deploys the checked-out ref under that name."
+        required: true
+        type: string
+      alias:
+        description: "Alias to move as well, e.g. latest. Leave empty for none."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  # Runs everywhere, including fork PRs. Read-only, so it needs no secrets.
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        with:
+          enable-cache: true
+
+      # The API pages are generated. Without this the build has dead links.
+      - name: Generate the API reference
+        run: uv run python -m support.apigen
+
+      - name: Build the site
+        run: |
+          uv run --with-requirements support/docs-requirements.txt \
+            zensical build --strict
+
+      - name: Check what --strict does not
+        run: uv run python -m support.checks.site
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: docs-site
+          path: site/
+          retention-days: 7
+
+  deploy-dev:
+    name: deploy dev
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      # persist-credentials must stay on: mike pushes with this token.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        with:
+          enable-cache: true
+
+      - name: Deploy the dev docs
+        run: bash .github/scripts/docs-deploy.sh dev
+
+  deploy-manual:
+    name: deploy manual
+    if: github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        with:
+          enable-cache: true
+
+      # Deploys whatever ref was dispatched.
+      - name: Deploy
+        run: bash .github/scripts/docs-deploy.sh "${{ inputs.version }}" "${{ inputs.alias }}"
