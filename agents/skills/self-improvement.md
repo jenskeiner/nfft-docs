@@ -13,7 +13,7 @@ description: Use when changing the agent system of the NFFT3 docs repository, ro
 | Maintainer decisions | `agents/DECISIONS.md` | Every run, after CONTEXT |
 | Role prompt | `agents/<role>.md` | The run of that role |
 | Worker roles and their issue types | `agents/roles.json` | `.github/scripts/agent-gate.sh` picks the role for the `worker` cron from the best ready issue |
-| Skills | `agents/plugin/skills/<name>/SKILL.md`, plugin `nfft-agents` passed with `--plugin-dir` | Claude Code, by the description's triggers. Not `.claude/`: writes there are denied to agents. |
+| Skills | `agents/skills/<name>.md`, assembled into plugin `nfft-agents` by `.github/scripts/assemble-plugin.sh` at run start | Claude Code, by the description's triggers |
 | Checks | `support/checks/*.py`, run as `python -m support.checks.<name>` | PR checks and every agent before a PR |
 | Issue forms | `.github/ISSUE_TEMPLATE/*.yml` | Maintainer |
 | Site frame | `zensical.toml`, `doc/stylesheets/extra.css`, `support/overrides/main.html`, `doc/assets/` | Zensical build |
@@ -25,18 +25,11 @@ none is allowed.
 
 ## Writing a skill file
 
-Claude Code refuses the Write and Edit tools on any `SKILL.md` ("sensitive
-file"), wherever it lives. Shell commands are not gated. So:
-
-```
-# new skill: write the text to staging with the Write tool, then
-mkdir -p agents/plugin/skills/<name> && cp agents/plugin/staging/<name>.md agents/plugin/skills/<name>/SKILL.md && rm agents/plugin/staging/<name>.md
-# existing skill: copy out, edit in staging with the Edit tool, copy back
-cp agents/plugin/skills/<name>/SKILL.md agents/plugin/staging/<name>.md
-cp agents/plugin/staging/<name>.md agents/plugin/skills/<name>/SKILL.md && rm agents/plugin/staging/<name>.md
-```
-
-`agents/plugin/staging/` is gitignored; nothing may stay there.
+A skill is `agents/skills/<name>.md` with front matter `name: <name>` and a
+`description` that carries the trigger phrases. Write and Edit it like any
+file. Claude Code refuses every write under its loaded plugin directory
+(`agents/plugin/`, gitignored) and under `.claude/`; do not try. The next run
+assembles your file into the plugin.
 
 ## Protected paths
 
