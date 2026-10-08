@@ -50,6 +50,9 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
+          # The model pushes with the Claude app token the action configures.
+          # A push with GITHUB_TOKEN triggers no PR checks.
+          persist-credentials: false
 
       - name: Gate
         id: gate
