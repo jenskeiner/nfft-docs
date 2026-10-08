@@ -1,0 +1,64 @@
+name: Agents
+
+# One cron per role. The step below maps the cron string to the role, so a
+# schedule change needs both lines edited. Crons are enabled in M2.
+on:
+  # schedule:
+  #   - cron: "0 5 * * *"      # product-owner
+  #   - cron: "0 */4 * * *"    # writer
+  #   - cron: "30 */8 * * *"   # editor
+  #   - cron: "0 7 */2 * *"    # analyst
+  workflow_dispatch:
+    inputs:
+      role:
+        description: Role to run
+        required: true
+        type: choice
+        options: [product-owner, writer, editor, analyst]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  role:
+    name: ${{ inputs.role || github.event.schedule }}
+    runs-on: ubuntu-latest
+    environment: agents
+    concurrency:
+      group: agents-${{ inputs.role || github.event.schedule }}
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Map the trigger to a role
+        id: role
+        run: |
+          case "${{ inputs.role || github.event.schedule }}" in
+            "0 5 * * *"|product-owner) role=product-owner; model=claude-opus-5-5 ;;
+            "0 */4 * * *"|writer)      role=writer;        model=claude-opus-5-5 ;;
+            "30 */8 * * *"|editor)     role=editor;        model=claude-sonnet-5-5 ;;
+            "0 7 */2 * *"|analyst)     role=analyst;       model=claude-opus-5-5 ;;
+            *) echo "unmapped trigger" >&2; exit 1 ;;
+          esac
+          echo "role=$role" >> "$GITHUB_OUTPUT"
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Gate
+        id: gate
+        run: bash .github/scripts/agent-gate.sh "${{ steps.role.outputs.role }}"
+
+      - name: Run the role
+        if: steps.gate.outputs.run == 'true'
+        uses: ./.github/actions/agent-setup
+        with:
+          role: ${{ steps.role.outputs.role }}
+          model: ${{ steps.role.outputs.model }}
+          oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

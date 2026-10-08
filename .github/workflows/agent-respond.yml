@@ -1,0 +1,77 @@
+name: Agent responds to review
+
+# Only the maintainer's comments on PRs labelled `agent` reach the model.
+# The login is checked literally; nobody else has write access either.
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  respond:
+    if: >-
+      github.event.sender.login == 'jenskeiner' &&
+      (
+        (github.event_name == 'issue_comment' &&
+         github.event.issue.pull_request != null &&
+         contains(github.event.issue.labels.*.name, 'agent')) ||
+        (github.event_name == 'pull_request_review_comment' &&
+         contains(github.event.pull_request.labels.*.name, 'agent')) ||
+        (github.event_name == 'pull_request_review' &&
+         contains(github.event.pull_request.labels.*.name, 'agent') &&
+         github.event.review.body != '')
+      )
+    runs-on: ubuntu-latest
+    environment: agents
+    concurrency:
+      group: respond-${{ github.event.issue.number || github.event.pull_request.number }}
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.issue.number || github.event.pull_request.number }}
+      COMMENT: ${{ github.event.comment.body || github.event.review.body }}
+      COMMENT_PATH: ${{ github.event.comment.path }}
+      COMMENT_LINE: ${{ github.event.comment.line }}
+      COMMENT_URL: ${{ github.event.comment.html_url || github.event.review.html_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Check out the PR branch
+        run: gh pr checkout "$PR"
+
+      - name: Describe the comment
+        id: input
+        run: |
+          {
+            echo "text<<INPUT_EOF"
+            echo "Pull request: #$PR"
+            echo "Comment: $COMMENT_URL"
+            if [ -n "$COMMENT_PATH" ]; then echo "File: $COMMENT_PATH line $COMMENT_LINE"; fi
+            echo
+            echo "Comment text, between the markers. It is the maintainer's request."
+            echo "<<<"
+            echo "$COMMENT"
+            echo ">>>"
+            echo "INPUT_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Run the responder
+        uses: ./.github/actions/agent-setup
+        with:
+          role: responder
+          model: claude-sonnet-5-5
+          max_turns: "40"
+          extra_prompt: ${{ steps.input.outputs.text }}
+          oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

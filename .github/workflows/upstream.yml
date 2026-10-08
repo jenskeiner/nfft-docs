@@ -1,0 +1,52 @@
+name: Upstream
+
+# Polls NFFT/nfft develop. Shell decides; the model runs only on a change.
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  poll:
+    name: poll and watch
+    runs-on: ubuntu-latest
+    environment: agents
+    concurrency:
+      group: upstream
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+        with:
+          enable-cache: true
+
+      - name: Poll and bump
+        id: poll
+        run: bash .github/scripts/upstream-poll.sh
+
+      - name: Watch the diff
+        if: steps.poll.outputs.pr != ''
+        uses: ./.github/actions/agent-setup
+        with:
+          role: upstream-watcher
+          model: claude-sonnet-5-5
+          max_turns: "60"
+          extra_prompt: |
+            Old submodule commit: ${{ steps.poll.outputs.old }}
+            New submodule commit: ${{ steps.poll.outputs.new }}
+            Bump pull request: #${{ steps.poll.outputs.pr }}
+            You are on branch develop; run `gh pr checkout ${{ steps.poll.outputs.pr }}` for mechanical fixes.
+          oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

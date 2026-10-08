@@ -1,0 +1,63 @@
+name: Run one agent role
+description: Generates the API pages, builds the prompt from agents/, runs Claude Code.
+inputs:
+  role:
+    description: Role name, a file agents/<role>.md
+    required: true
+  model:
+    description: Model id
+    required: true
+  extra_prompt:
+    description: Text appended to the prompt, for example the comment to act on
+    required: false
+    default: ""
+  oauth_token:
+    description: CLAUDE_CODE_OAUTH_TOKEN
+    required: true
+  max_turns:
+    description: Turn cap
+    required: false
+    default: "80"
+runs:
+  using: composite
+  steps:
+    - name: Set up uv
+      uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v7
+      with:
+        enable-cache: true
+
+    - name: Generate the API reference
+      shell: bash
+      run: uv run python -m support.apigen
+
+    - name: Build the prompt
+      id: prompt
+      shell: bash
+      env:
+        EXTRA: ${{ inputs.extra_prompt }}
+      run: |
+        {
+          echo "text<<PROMPT_EOF"
+          cat agents/CONTEXT.md
+          echo
+          cat "agents/${{ inputs.role }}.md"
+          if [ -n "$EXTRA" ]; then
+            echo
+            echo "## Inputs of this run"
+            echo
+            echo "$EXTRA"
+          fi
+          echo "PROMPT_EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Run Claude Code
+      uses: anthropics/claude-code-action@6fed3ca145920b639991cb756090506e1bcaf515 # v1
+      with:
+        claude_code_oauth_token: ${{ inputs.oauth_token }}
+        prompt: ${{ steps.prompt.outputs.text }}
+        branch_prefix: agent/
+        base_branch: develop
+        claude_args: >-
+          --model ${{ inputs.model }}
+          --max-turns ${{ inputs.max_turns }}
+          --allowedTools "Read,Edit,Write,Glob,Grep,Bash(uv run:*),Bash(git:*),Bash(gh issue:*),Bash(gh pr:*),Bash(gh label:*),Bash(gh api:*),Bash(python3:*),Bash(curl:*),Bash(grep:*),Bash(find:*),Bash(cat:*),Bash(ls:*),Bash(mkdir:*),Bash(diff:*),Bash(wc:*),Bash(head:*),Bash(tail:*),Bash(sed -n:*)"

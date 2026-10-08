@@ -50,7 +50,7 @@ jobs:
           persist-credentials: false
 
       - name: Check external links
-        uses: lycheeverse/lychee-action@82b3ce9a63dc1cc617edaa42670c1f27eea1316b # v2.7.0
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: --no-progress --scheme https --scheme http --exclude-path doc/api doc/
           fail: false
