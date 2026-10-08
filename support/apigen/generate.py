@@ -16,7 +16,7 @@ import os
 import re
 from dataclasses import dataclass, field
 
-HEADER = os.path.join("include", "nfft3.h")
+HEADER = os.path.join("nfft", "include", "nfft3.h")
 
 PRECISIONS = ("FLOAT", "DOUBLE", "LONG_DOUBLE")
 
@@ -648,7 +648,8 @@ def render_module(mod: Module, prefixes: dict[str, str]) -> str:
     return "\n".join(out) + "\n"
 
 
-def coverage(modules: list[Module]) -> dict:
+def coverage(modules: list[Module], overlaid: set[tuple[str, str]] = frozenset(),
+             key_of=None) -> dict:
     data = {"generated_from": HEADER, "modules": {}}
     totals = {"functions": 0, "documented": 0, "members": 0, "members_documented": 0,
               "flags": 0, "flags_documented": 0}
@@ -665,7 +666,18 @@ def coverage(modules: list[Module]) -> dict:
                     mem_undoc += not mem.doc
         consts = mod.flags + mod.macros
         const_undoc = [c.name for c in consts if not c.doc]
+        symbols = {}
+        if key_of is not None:
+            for sec in mod.sections:
+                for item in sec.structs + sec.typedefs + sec.variables + sec.functions:
+                    k = key_of(sec, item)
+                    symbols[k] = ("overlay" if (mod.key, k) in overlaid
+                                  else "header" if item.doc else "none")
+            for item in consts:
+                symbols[item.name] = ("overlay" if (mod.key, item.name) in overlaid
+                                      else "header" if item.doc else "none")
         data["modules"][mod.key] = {
+            "symbols": symbols,
             "functions": fns,
             "undocumented_functions": sorted(undoc),
             "members": members,
@@ -768,10 +780,16 @@ def render_index(modules: list[Module], cov: dict, prefixes: dict[str, str]) -> 
 
 
 def main(out_dir: str = os.path.join("doc", "api")) -> None:
+    from support.apigen import overlay
+
     src = open(HEADER).read()
     prefixes = mangle_prefixes(src)
     modules = parse()
-    cov = coverage(modules)
+    entries = overlay.load()
+    unmatched = overlay.apply(modules, entries, prefixes)
+    cov = coverage(modules, set(entries) - set(unmatched),
+                   lambda sec, item: overlay.key_of(sec, item, prefixes))
+    cov["unmatched_overlay"] = [f"{m}/{k}" for m, k in unmatched]
 
     os.makedirs(out_dir, exist_ok=True)
     for mod in modules:
@@ -786,4 +804,7 @@ def main(out_dir: str = os.path.join("doc", "api")) -> None:
     t = cov["totals"]
     print(f"{len(modules)} modules, {t['functions']} functions "
           f"({t['documented']} documented), {t['members']} members "
-          f"({t['members_documented']} documented) -> {out_dir}")
+          f"({t['members_documented']} documented), {len(entries)} overlay files "
+          f"-> {out_dir}")
+    if unmatched:
+        raise SystemExit("overlay files match no symbol: " + ", ".join(cov["unmatched_overlay"]))
