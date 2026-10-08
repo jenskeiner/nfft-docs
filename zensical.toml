@@ -50,6 +50,7 @@ nav = [
     { "OpenMP" = "guide/openmp.md" },
     { "Accuracy" = "guide/accuracy.md" },
     { "Troubleshooting" = "guide/troubleshooting.md" },
+    { "Glossary" = "guide/glossary.md" },
   ] },
   { "Transforms" = [
     { "Overview" = "transforms/index.md" },
