@@ -12,7 +12,7 @@ alias="${2:-}"
 
 uv run python -m support.apigen
 uv run --with-requirements support/docs-requirements.txt zensical build --strict
-uv run python .github/scripts/docs-check-site.py
+uv run python -m support.checks.site
 
 git config user.name ci
 git config user.email ci@nfft

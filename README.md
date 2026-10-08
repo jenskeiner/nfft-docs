@@ -14,7 +14,7 @@ The C sources are not here. `nfft/` is a git submodule pinned to a commit of
 git submodule update --init
 uv run python -m support.apigen
 uv run --with-requirements support/docs-requirements.txt zensical build --strict
-uv run python support/checks/site.py
+uv run python -m support.checks.site
 ```
 
 Preview with `zensical serve` in place of `build --strict`.
@@ -24,8 +24,8 @@ Preview with `zensical serve` in place of `build --strict`.
 ```bash
 uv run python -m support.apigen.test_apigen
 uv run python -m support.apigen.test_overlay
-uv run python support/checks/snippets.py check
-uv run python support/checks/overlay.py
+uv run python -m support.checks.snippets check
+uv run python -m support.checks.overlay
 ```
 
 ## Agents
