@@ -1,0 +1,31 @@
+name: New section
+description: A page or section that does not exist yet
+title: "[New section] "
+labels: ["new-section", "needs-triage", "from-maintainer"]
+body:
+  - type: input
+    id: pages
+    attributes:
+      label: Pages
+      description: Paths under doc/, or the nav section for a new page.
+      placeholder: doc/guide/accuracy.md
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is missing or wrong
+      description: Quote the current text if it is wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checks an agent can run or a reader can verify. One per line.
+      value: "- [ ] "
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Paths in nfft/, papers, external pages for structure only.
