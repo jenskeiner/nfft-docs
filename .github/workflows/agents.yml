@@ -3,11 +3,11 @@ name: Agents
 # One cron per role. The step below maps the cron string to the role, so a
 # schedule change needs both lines edited. Crons are enabled in M2.
 on:
-  # schedule:
-  #   - cron: "0 5 * * *"      # product-owner
-  #   - cron: "0 */4 * * *"    # writer
-  #   - cron: "30 */8 * * *"   # editor
-  #   - cron: "0 7 */2 * *"    # analyst
+  schedule:
+    - cron: "0 5 * * *"      # product-owner
+    - cron: "0 */4 * * *"    # writer
+    - cron: "30 */8 * * *"   # editor
+    - cron: "0 7 */2 * *"    # analyst
   workflow_dispatch:
     inputs:
       role:
