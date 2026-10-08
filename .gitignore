@@ -3,4 +3,4 @@ doc/api/
 .venv/
 __pycache__/
 .cache/
-agents/plugin/staging/
+agents/plugin/
