@@ -75,7 +75,7 @@ $|j|/W$ for $j \ne 0$ and $1/(4W)$ for $j = 0$, with
 $W = T\,((R/2)^2 + 1/4)$.
 
 ```c
---8<-- "applications/polarFFT/polar_fft_test.c.in:73:92"
+--8<-- "applications/polarFFT/polar_fft_test.c:70:89"
 ```
 
 ### Modified polar grid
@@ -97,7 +97,7 @@ $M \approx \frac{4}{\pi}\log(1+\sqrt{2})\,T R$. The weights are $|j|$ for
 $j \ne 0$ and $1/4$ for $j = 0$, divided by their sum.
 
 ```c
---8<-- "applications/polarFFT/mpolar_fft_test.c.in:58:99"
+--8<-- "applications/polarFFT/mpolar_fft_test.c:55:96"
 ```
 
 ### Linogram grid
@@ -121,7 +121,7 @@ the main axis. The number of nodes is $M = TR$. The weights are those of the
 polar grid.
 
 ```c
---8<-- "applications/polarFFT/linogram_fft_test.c.in:47:76"
+--8<-- "applications/polarFFT/linogram_fft_test.c:44:73"
 ```
 
 ## Method
@@ -146,7 +146,7 @@ The three programs have the same structure. The function names carry the grid
 name, for example `polar_grid`, `polar_dft`, `polar_fft` and `inverse_polar_fft`.
 
 ```c
---8<-- "applications/polarFFT/polar_fft_test.c.in:176:209"
+--8<-- "applications/polarFFT/polar_fft_test.c:173:206"
 ```
 
 ## Programs

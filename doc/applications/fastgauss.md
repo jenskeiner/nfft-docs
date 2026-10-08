@@ -88,9 +88,9 @@ the exponential factor of $b_l$ at $|l| = n/2$ is at most $\varepsilon$.
 
 ## Program
 
-The program is `applications/fastgauss/fastgauss.c.in`. The build system
-turns it into `fastgauss.c` and inserts the precision macro of the
-configured precision. The code uses only the public header `nfft3mp.h`
+The program is `applications/fastgauss/fastgauss.c`. The build system
+sets the precision macro of the configured precision on the compiler command
+line. The code uses only the public header `nfft3mp.h`
 and the [NFFT API](../api/nfft.md). All functions of the Gauss transform
 (`fgt_init`, `fgt_init_guru`, `fgt_trafo`, `dgt_trafo` and others) are
 `static` functions in the program and not a library.
@@ -116,13 +116,13 @@ program has these steps.
 The coefficients $b_l$ for the default variant:
 
 ```c
---8<-- "applications/fastgauss/fastgauss.c.in:203:226"
+--8<-- "applications/fastgauss/fastgauss.c:200:223"
 ```
 
 The fast transform:
 
 ```c
---8<-- "applications/fastgauss/fastgauss.c.in:128:150"
+--8<-- "applications/fastgauss/fastgauss.c:125:147"
 ```
 
 ### Build

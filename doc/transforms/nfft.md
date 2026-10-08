@@ -175,7 +175,7 @@ before the first transform and owns the memory.
 The simple example from `examples/nfft/simple_test.c`:
 
 ```c
---8<-- "examples/nfft/simple_test.c.in:27:76"
+--8<-- "examples/nfft/simple_test.c:24:73"
 ```
 
 The directory `examples/nfft` holds more programs.

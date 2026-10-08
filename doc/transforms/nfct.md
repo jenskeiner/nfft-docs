@@ -87,7 +87,7 @@ effect. With `PRE_LIN_PSI` the table has $K=2^{10}(m+2)$ samples per dimension.
 From `examples/nfct/simple_test.c`:
 
 ```c
---8<-- "examples/nfct/simple_test.c.in:28:77"
+--8<-- "examples/nfct/simple_test.c:25:74"
 ```
 
 ## References

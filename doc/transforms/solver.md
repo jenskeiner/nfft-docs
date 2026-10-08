@@ -101,7 +101,7 @@ and `solverl_` select the single and the long double precision.
 From `examples/solver/simple_test.c`:
 
 ```c
---8<-- "examples/solver/simple_test.c.in:86:150"
+--8<-- "examples/solver/simple_test.c:83:147"
 ```
 
 The program `examples/solver/glacier.c` reconstructs a glacier from sampled

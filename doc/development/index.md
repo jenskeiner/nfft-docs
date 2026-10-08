@@ -214,8 +214,7 @@ The default branch is `develop`. CI runs for pushes and pull requests to
    `deprecation`, `docs`, and `chore`. See [Releasing](releasing.md).
 
 Do not commit build products. The tree contains generated files that are not
-tracked, such as `doc/api/`, `site/` and the `simple_test.c` files that
-`configure` writes from their `.c.in` templates.
+tracked, such as `doc/api/` and `site/`.
 
 ## Project vocabulary and decisions
 

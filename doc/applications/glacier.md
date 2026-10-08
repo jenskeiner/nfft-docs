@@ -45,7 +45,7 @@ with $a = \tfrac{1}{2}$, $b = 3$ and $c = 0.001$. The source calls this function
 `my_weight`.
 
 ```c
---8<-- "examples/solver/glacier.c.in:36:40"
+--8<-- "examples/solver/glacier.c:33:37"
 ```
 
 ## The program `glacier`
@@ -81,7 +81,7 @@ Method
     program starts from zero and runs 40 iterations.
 
 ```c
---8<-- "examples/solver/glacier.c.in:43:106"
+--8<-- "examples/solver/glacier.c:40:103"
 ```
 
 ### Cross validation
@@ -137,8 +137,8 @@ make
 ```
 
 `--disable-examples` switches all examples off. The executable is
-`examples/solver/glacier` in the build tree. It is built from `glacier.c`,
-which `configure` generates from `glacier.c.in`. The source uses the public
+`examples/solver/glacier` in the build tree. It is built from `glacier.c`.
+The source uses the public
 header `nfft3mp.h`, so it follows the precision of the library. To run it, change
 to `examples/solver/`, start MATLAB or Octave, set `N` in the workspace and run
 `glacier.m`. The script calls `./glacier` in the current directory.

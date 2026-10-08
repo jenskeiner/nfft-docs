@@ -145,7 +145,7 @@ metrics for this reason.
 
 ## Example
 
-`examples/nfft/simple_test_threads.c.in` times a one-dimensional transform with
+`examples/nfft/simple_test_threads.c` times a one-dimensional transform with
 $N=M=10^6$. The example `examples/nfft/nfft_benchomp.c` runs benchmarks of the
 OpenMP code and writes the results as pgfplots. It uses
 `examples/nfft/nfft_benchomp_createdataset.c` and

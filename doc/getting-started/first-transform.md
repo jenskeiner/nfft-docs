@@ -6,9 +6,8 @@ nodes, checked against the direct sum.
 ## The program
 
 This is `examples/nfft/simple_test.c`, which is built and run by the test
-suite, so it cannot go stale. It is generated from
-`examples/nfft/simple_test.c.in`, which is what the excerpts below are taken
-from; `configure` substitutes the precision macro.
+suite, so it cannot go stale. The excerpts below are taken from it. The file
+includes `nfft3mp.h`, so one source serves all three precisions.
 
 ```c
 #include <stdio.h>
@@ -28,7 +27,7 @@ instead of `nfft_trafo`. Including `nfft3.h` directly and spelling the prefixes
 out works too.
 
 ```c
---8<-- "examples/nfft/simple_test.c.in:27:76"
+--8<-- "examples/nfft/simple_test.c:24:73"
 ```
 
 ## What happens, step by step

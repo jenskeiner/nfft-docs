@@ -16,13 +16,13 @@
 
 [project]
 site_name = "NFFT3"
-site_url = "https://nfft.github.io/nfft/"
+site_url = "https://jenskeiner.github.io/nfft-docs/"
 site_description = "Nonequispaced fast Fourier transforms and related transforms, a C library."
 site_author = "Jens Keiner, Stefan Kunis, Daniel Potts"
 copyright = "Copyright &copy; 2002-2026 Jens Keiner, Stefan Kunis, Daniel Potts"
 
-repo_url = "https://github.com/NFFT/nfft"
-repo_name = "NFFT/nfft"
+repo_url = "https://github.com/jenskeiner/nfft-docs"
+repo_name = "jenskeiner/nfft-docs"
 # The default branch is develop, so the derived edit/master/doc/ would be wrong.
 edit_uri = "edit/develop/doc/"
 
@@ -193,7 +193,7 @@ pymdownx.magiclink = {}
 pymdownx.mark = {}
 pymdownx.smartsymbols = {}
 # Resolved against the working directory, so run from the repository root.
-pymdownx.snippets.base_path = ["."]
+pymdownx.snippets.base_path = ["nfft", "."]
 pymdownx.snippets.check_paths = true
 pymdownx.superfences.custom_fences = [
   { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },

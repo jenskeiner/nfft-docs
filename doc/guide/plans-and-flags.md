@@ -41,10 +41,10 @@ They need neither precomputation nor FFTW plans.
 
 The example creates a two-dimensional plan with `nfft_init_guru`, fills the
 tables, checks the plan and transforms in both directions. From
-`examples/nfft/simple_test.c.in`:
+`examples/nfft/simple_test.c`:
 
 ```c
---8<-- "examples/nfft/simple_test.c.in:87:119"
+--8<-- "examples/nfft/simple_test.c:84:116"
 ```
 
 ## Creating a plan

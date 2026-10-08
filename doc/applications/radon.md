@@ -106,14 +106,14 @@ The essential steps of `radon.c`: the NFFT at the grid nodes, then for every
 direction the kernel weighting, the 1D inverse FFT and the scaling.
 
 ```c
---8<-- "applications/radon/radon.c.in:167:193"
+--8<-- "applications/radon/radon.c:164:190"
 ```
 
 The inverse: the 1D FFT and the division by the kernel for every direction, and
 the CGNR iteration.
 
 ```c
---8<-- "applications/radon/inverse_radon.c.in:178:224"
+--8<-- "applications/radon/inverse_radon.c:175:221"
 ```
 
 ## MATLAB and Octave scripts
@@ -152,8 +152,8 @@ make
 
 `--disable-applications` switches the application programs off. The executables
 `radon` and `inverse_radon` appear in `applications/radon/` of the build tree.
-The source files are generated from `radon.c.in` and `inverse_radon.c.in`. They
-use the public header `nfft3mp.h`, so they follow the precision of the library.
+The source files `radon.c` and `inverse_radon.c` use the public header
+`nfft3mp.h`, so they follow the precision of the library.
 The MATLAB scripts read and write `double` values and work with the default
 double precision.
 
