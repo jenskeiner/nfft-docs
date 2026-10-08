@@ -3189,6 +3189,9 @@
 <p>Declared in <code>include/nfft3.h</code> by the <code>NFSOFT_DEFINE_API</code> macro, expanded once per precision with the prefixes <code>nfsoftf_</code>, <code>nfsoft_</code>, <code>nfsoftl_</code>.</p>
 <p>In the signatures below, <code>R</code> is the real type of the precision and <code>C</code> the matching FFTW complex type. See the <a href="../">index</a> for the mangling rules.</p>
 <h2 id="plan"><code>plan</code><a class="headerlink" href="#plan" title="Permanent link">&para;</a></h2>
+<p>Plan of a transform on the rotation group <span class="arithmatex">\(\mathrm{SO}(3)\)</span>. One of the init
+functions fills it, <code>nfsoft_finalize</code> frees it. See
+<a href="../../transforms/nfsoft/#plan-and-data-layout">Plan and data layout</a>.</p>
 <table>
 <thead>
 <tr>
@@ -3201,12 +3204,12 @@
 <tr>
 <td><code>NFFT_INT</code></td>
 <td><code>N_total</code></td>
-<td>Total number of Fourier coefficients.</td>
+<td>The bandwidth <span class="arithmatex">\(B\)</span>, not the number of coefficients (<code>nfft/kernel/nfsoft/nfsoft.c:89</code>). <code>NFSOFT_F_HAT_SIZE(N_total)</code> gives the number of coefficients.</td>
 </tr>
 <tr>
 <td><code>NFFT_INT</code></td>
 <td><code>M_total</code></td>
-<td>Total number of samples.</td>
+<td>Number of nodes <span class="arithmatex">\(M\)</span>.</td>
 </tr>
 <tr>
 <td><code>C *</code></td>
@@ -3231,47 +3234,47 @@
 <tr>
 <td><code>R *</code></td>
 <td><code>x</code></td>
-<td>input nodes</td>
+<td>Nodes, <span class="arithmatex">\(3M\)</span> angles in radians: <code>x[3*j]</code> <span class="arithmatex">\(=\alpha_j\)</span>, <code>x[3*j+1]</code> <span class="arithmatex">\(=\beta_j\)</span>, <code>x[3*j+2]</code> <span class="arithmatex">\(=\gamma_j\)</span>. With <code>NFSOFT_MALLOC_X</code> the init function allocates the array and <code>nfsoft_finalize</code> frees it. <code>nfsoft_precompute</code> copies the nodes into <code>p_nfft.x</code> in the order <span class="arithmatex">\(\gamma,\alpha,\beta\)</span> and divides them by <span class="arithmatex">\(2\pi\)</span> (<code>nfsoft.c:393-401</code>).</td>
 </tr>
 <tr>
 <td><code>C *</code></td>
 <td><code>wig_coeffs</code></td>
-<td>deprecated variable</td>
+<td>Not used. The init function sets it to <code>NULL</code> (<code>nfsoft.c:110</code>).</td>
 </tr>
 <tr>
 <td><code>C *</code></td>
 <td><code>cheby</code></td>
-<td>deprecated variable</td>
+<td>Not used. The init function sets it to <code>NULL</code> (<code>nfsoft.c:111</code>).</td>
 </tr>
 <tr>
 <td><code>C *</code></td>
 <td><code>aux</code></td>
-<td>deprecated variable</td>
+<td>Not used. The init function sets it to <code>NULL</code> (<code>nfsoft.c:112</code>).</td>
 </tr>
 <tr>
 <td><code>int</code></td>
 <td><code>t</code></td>
-<td>the logarithm of NPT with respect to the basis 2</td>
+<td>Not used. No function in <code>nfft/kernel/nfsoft/</code> sets or reads it.</td>
 </tr>
 <tr>
 <td><code>unsigned int</code></td>
 <td><code>flags</code></td>
-<td>the planner flags</td>
+<td>The NFSOFT flags given to the init function (<code>nfsoft.c:91</code>).</td>
 </tr>
 <tr>
 <td><code>Y(plan)</code></td>
 <td><code>p_nfft</code></td>
-<td>the internal NFFT plan</td>
+<td>The internal three-dimensional NFFT plan, of bandwidth <span class="arithmatex">\(2B+2\)</span> in each dimension (<code>nfsoft.c:73-82</code>). Its flags are the <code>nfft_flags</code> of <code>nfsoft_init_guru</code>.</td>
 </tr>
 <tr>
 <td><code>Z(set) *</code></td>
 <td><code>internal_fpt_set</code></td>
-<td>the internal FPT plan</td>
+<td>Array of <code>nthreads</code> FPT sets, one for each thread (<code>nfsoft.c:170</code>, <code>nfsoft.c:216-221</code>). The sets share the precomputed data of the first set. <code>nfsoft_finalize</code> frees them.</td>
 </tr>
 <tr>
 <td><code>int</code></td>
 <td><code>nthreads</code></td>
-<td>the number of threads</td>
+<td>The number of threads at the time of the init call, from <code>nfft_get_num_threads</code> (<code>nfsoft.c:117</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -3301,6 +3304,30 @@
 </div>
 <h2 id="so3_single_fpt_init"><code>SO3_single_fpt_init</code><a class="headerlink" href="#so3_single_fpt_init" title="Permanent link">&para;</a></h2>
 <p><code>nfsoftf_SO3_single_fpt_init</code> / <code>nfsoft_SO3_single_fpt_init</code> / <code>nfsoftl_SO3_single_fpt_init</code></p>
+<div class="admonition warning">
+<p class="admonition-title">Declared, not defined</p>
+<p><code>nfft/include/nfft3.h:702</code> declares this function, but the library does
+not define it. A program that calls it does not link. No function in
+<code>nfft/</code> has this name or this signature.</p>
+</div>
+<p>The plan builds its FPT sets with the static function <code>SO3_fpt_init</code>
+(<code>nfft/kernel/nfsoft/nfsoft.c:168</code>), which <code>nfsoft_init_guru_advanced</code> calls
+(<code>nfsoft.c:119</code>). It has the parameters <code>l</code>, <code>flags</code>, <code>kappa</code> and a thread
+count, but no orders <code>k</code> and <code>m</code>. It returns one set for each thread, stored
+in <code>internal_fpt_set</code>. Each set holds one transform for every pair of orders,
+<span class="arithmatex">\((2L+1)^2\)</span> transforms with <span class="arithmatex">\(L\)</span> the transform length of <code>nfsoft_SO3_fpt</code>
+(<code>nfsoft.c:216</code>). The precomputation of each transform uses <code>kappa</code> as the
+FPT threshold (<code>nfsoft.c:249</code>).</p>
+<dl>
+<dt><code>l</code></dt>
+<dd>The bandwidth <span class="arithmatex">\(B\)</span> in <code>SO3_fpt_init</code>.</dd>
+<dt><code>flags</code></dt>
+<dd>The NFSOFT flags in <code>SO3_fpt_init</code>. <code>NFSOFT_USE_DPT</code> selects
+<code>FPT_NO_FAST_ALGORITHM</code>, <code>NFSOFT_NO_STABILIZATION</code> selects
+<code>FPT_NO_STABILIZATION</code> (<code>nfsoft.c:195-197</code>).</dd>
+<dt><code>kappa</code></dt>
+<dd>The FPT threshold in <code>SO3_fpt_init</code>. The init functions pass <code>fpt_kappa</code>.</dd>
+</dl>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">float</label><label for="__tabbed_2_2">double</label><label for="__tabbed_2_3">long double</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -3319,6 +3346,38 @@
 </div>
 <h2 id="so3_fpt"><code>SO3_fpt</code><a class="headerlink" href="#so3_fpt" title="Permanent link">&para;</a></h2>
 <p><code>nfsoftf_SO3_fpt</code> / <code>nfsoft_SO3_fpt</code> / <code>nfsoftl_SO3_fpt</code></p>
+<div class="admonition warning">
+<p class="admonition-title">Declared, not defined</p>
+<p><code>nfft/include/nfft3.h:703</code> declares this function, but the library does
+not define it. A program that calls it does not link. Only the static
+function <code>SO3_fpt</code> in <code>nfft/kernel/nfsoft/nfsoft.c:257</code> exists, and only
+<code>nfsoft_trafo</code> calls it (<code>nfsoft.c:483</code>).</p>
+</div>
+<p>The static <code>SO3_fpt</code> does step 2 of <code>nfsoft_trafo</code> for one pair of orders
+<span class="arithmatex">\((k,m)\)</span>. It turns the coefficients of the degrees <span class="arithmatex">\(l=\max(|k|,|m|),\dots,B\)</span>
+into Chebyshev coefficients in <span class="arithmatex">\(\cos\beta\)</span> with the <a href="../fpt/">FPT</a>. See
+<a href="../../transforms/nfsoft/#how-the-fast-algorithm-works">How the fast algorithm works</a>.</p>
+<dl>
+<dt><code>coeffs</code></dt>
+<dd>In: the coefficients of the degrees <span class="arithmatex">\(\max(|k|,|m|)\)</span> to <code>l</code>, from
+<code>coeffs[0]</code> on (<code>nfsoft.c:291-294</code>). Out: the
+Chebyshev coefficients of the degrees <span class="arithmatex">\(0\)</span> to <code>l</code>. The array has at least
+<code>l</code><span class="arithmatex">\(+1\)</span> entries.</dd>
+<dt><code>set</code></dt>
+<dd>The FPT set, one entry of <code>internal_fpt_set</code> of the plan.</dd>
+<dt><code>l</code></dt>
+<dd>The bandwidth <span class="arithmatex">\(B\)</span>.</dd>
+<dt><code>k</code></dt>
+<dd>The first order. The transform number in <code>set</code> is
+<span class="arithmatex">\((L+k)(2L+1)+(L+m)\)</span>, with <span class="arithmatex">\(L\)</span> the transform length below
+(<code>nfsoft.c:282</code>).</dd>
+<dt><code>m</code></dt>
+<dd>The second order.</dd>
+<dt><code>nfsoft_flags</code></dt>
+<dd>With <code>NFSOFT_USE_DPT</code> the function uses <code>fpt_trafo_direct</code> and <span class="arithmatex">\(L=\max(l,2)\)</span>.
+Otherwise it uses <code>fpt_trafo</code> and <span class="arithmatex">\(L\)</span> is the next power of two of <code>l</code>,
+at least 2 (<code>nfsoft.c:265-277</code>, <code>nfsoft.c:300-310</code>).</dd>
+</dl>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">float</label><label for="__tabbed_3_2">double</label><label for="__tabbed_3_3">long double</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -3337,6 +3396,37 @@
 </div>
 <h2 id="so3_fpt_transposed"><code>SO3_fpt_transposed</code><a class="headerlink" href="#so3_fpt_transposed" title="Permanent link">&para;</a></h2>
 <p><code>nfsoftf_SO3_fpt_transposed</code> / <code>nfsoft_SO3_fpt_transposed</code> / <code>nfsoftl_SO3_fpt_transposed</code></p>
+<div class="admonition warning">
+<p class="admonition-title">Declared, not defined</p>
+<p><code>nfft/include/nfft3.h:704</code> declares this function, but the library does
+not define it. A program that calls it does not link. Only the static
+function <code>SO3_fpt_transposed</code> in <code>nfft/kernel/nfsoft/nfsoft.c:322</code>
+exists, and only <code>nfsoft_adjoint</code> calls it (<code>nfsoft.c:607</code>).</p>
+</div>
+<p>The static <code>SO3_fpt_transposed</code> is the transposed step of <code>nfsoft_SO3_fpt</code>,
+used in <code>nfsoft_adjoint</code> for one pair of orders <span class="arithmatex">\((k,m)\)</span>. It turns Chebyshev
+coefficients in <span class="arithmatex">\(\cos\beta\)</span> into coefficients of the degrees
+<span class="arithmatex">\(\max(|k|,|m|),\dots,B\)</span> with the transposed <a href="../fpt/">FPT</a>.</p>
+<dl>
+<dt><code>coeffs</code></dt>
+<dd>In: the Chebyshev coefficients of the degrees <span class="arithmatex">\(0\)</span> to <code>l</code>. Out: the
+coefficient of the degree <span class="arithmatex">\(j\)</span> in <code>coeffs[j]</code>, for
+<span class="arithmatex">\(j=\max(|k|,|m|),\dots,\)</span><code>l</code>. The entries below <span class="arithmatex">\(\max(|k|,|m|)\)</span> have no
+defined value (<code>nfsoft.c:375-378</code>). <code>nfsoft_adjoint</code> reads only the
+defined entries (<code>nfsoft.c:614</code>). The array has at least <code>l</code><span class="arithmatex">\(+1\)</span> entries.</dd>
+<dt><code>set</code></dt>
+<dd>The FPT set, one entry of <code>internal_fpt_set</code> of the plan.</dd>
+<dt><code>l</code></dt>
+<dd>The bandwidth <span class="arithmatex">\(B\)</span>.</dd>
+<dt><code>k</code></dt>
+<dd>The first order. It selects the transform in <code>set</code> as in
+<code>nfsoft_SO3_fpt</code> (<code>nfsoft.c:348</code>).</dd>
+<dt><code>m</code></dt>
+<dd>The second order.</dd>
+<dt><code>nfsoft_flags</code></dt>
+<dd>With <code>NFSOFT_USE_DPT</code> the function uses <code>fpt_transposed_direct</code>,
+otherwise <code>fpt_transposed</code> (<code>nfsoft.c:365-374</code>).</dd>
+</dl>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">float</label><label for="__tabbed_4_2">double</label><label for="__tabbed_4_3">long double</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -3568,6 +3658,31 @@ $$}^{M-1</p>
 </div>
 <h2 id="posn"><code>posN</code><a class="headerlink" href="#posn" title="Permanent link">&para;</a></h2>
 <p><code>nfsoftf_posN</code> / <code>nfsoft_posN</code> / <code>nfsoftl_posN</code></p>
+<div class="admonition warning">
+<p class="admonition-title">Declared, not defined</p>
+<p><code>nfft/include/nfft3.h:712</code> declares this function, but the library does
+not define it. A program that calls it does not link. Only the static
+function <code>posN</code> in <code>nfft/kernel/nfsoft/nfsoft.c:676</code> exists.</p>
+</div>
+<p>The static <code>posN</code> returns</p>
+<div class="arithmatex">\[
+\mathrm{posN}(n,m,B) = \sum_{n'=-B}^{n-1} \bigl(B+1-\max(|m|,|n'|)\bigr),
+\]</div>
+<p>the number of coefficients that come before the order <span class="arithmatex">\(n\)</span> in the block of
+the order <span class="arithmatex">\(m\)</span> of <code>f_hat</code>. Here <span class="arithmatex">\(m\)</span> is the order of the block, the slower
+index, and <span class="arithmatex">\(n\)</span> the order inside the block. For <span class="arithmatex">\(n=-B\)</span> the value is <span class="arithmatex">\(0\)</span>. The
+code computes the sum by recursion in <span class="arithmatex">\(n\)</span> (<code>nfsoft.c:676-686</code>). The
+internal macro <code>NFSOFT_INDEX_TWO</code> uses it to find the start of a block in
+<code>f_hat</code> (<code>nfsoft.c:40</code>). See
+<a href="../../transforms/nfsoft/#layout-of-f_hat">Layout of <code>f_hat</code></a>.</p>
+<dl>
+<dt><code>n</code></dt>
+<dd>The order inside the block, <span class="arithmatex">\(-B \le n \le B\)</span>.</dd>
+<dt><code>m</code></dt>
+<dd>The order of the block, <span class="arithmatex">\(-B \le m \le B\)</span>.</dd>
+<dt><code>B</code></dt>
+<dd>The bandwidth.</dd>
+</dl>
 <div class="tabbed-set tabbed-alternate" data-tabs="12:3"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><input id="__tabbed_12_3" name="__tabbed_12" type="radio" /><div class="tabbed-labels"><label for="__tabbed_12_1">float</label><label for="__tabbed_12_2">double</label><label for="__tabbed_12_3">long double</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">

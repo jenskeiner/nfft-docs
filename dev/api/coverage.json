@@ -218,27 +218,22 @@
         "NFSOFT_USE_DPT": "overlay",
         "NFSOFT_USE_NDFT": "overlay",
         "NFSOFT_ZERO_F_HAT": "overlay",
-        "nfsoft_SO3_fpt": "none",
-        "nfsoft_SO3_fpt_transposed": "none",
-        "nfsoft_SO3_single_fpt_init": "none",
+        "nfsoft_SO3_fpt": "overlay",
+        "nfsoft_SO3_fpt_transposed": "overlay",
+        "nfsoft_SO3_single_fpt_init": "overlay",
         "nfsoft_adjoint": "overlay",
         "nfsoft_finalize": "overlay",
         "nfsoft_init": "overlay",
         "nfsoft_init_advanced": "overlay",
         "nfsoft_init_guru": "overlay",
         "nfsoft_init_guru_advanced": "overlay",
-        "nfsoft_plan": "none",
-        "nfsoft_posN": "none",
+        "nfsoft_plan": "overlay",
+        "nfsoft_posN": "overlay",
         "nfsoft_precompute": "overlay",
         "nfsoft_trafo": "overlay"
       },
       "undocumented_flags_and_macros": [],
-      "undocumented_functions": [
-        "SO3_fpt",
-        "SO3_fpt_transposed",
-        "SO3_single_fpt_init",
-        "posN"
-      ],
+      "undocumented_functions": [],
       "undocumented_members": 0
     },
     "nfst": {
@@ -344,7 +339,7 @@
     }
   },
   "totals": {
-    "documented": 145,
+    "documented": 149,
     "flags": 67,
     "flags_documented": 67,
     "functions": 149,
