@@ -31,5 +31,5 @@ uv run python -m support.checks.overlay
 ## Agents
 
 A team of Claude Code agents improves the site unattended and opens pull
-requests. Roles, rules and the backlog policy are in `agents/`. Design and
+requests. Roles, rules, skills (`agents/plugin/skills/`) and the backlog policy are in `agents/`. Design and
 plan: `docs/plans/`.

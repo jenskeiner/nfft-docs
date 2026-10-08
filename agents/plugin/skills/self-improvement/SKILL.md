@@ -13,7 +13,7 @@ description: Use when changing the agent system of the NFFT3 docs repository, ro
 | Maintainer decisions | `agents/DECISIONS.md` | Every run, after CONTEXT |
 | Role prompt | `agents/<role>.md` | The run of that role |
 | Worker roles and their issue types | `agents/roles.json` | `.github/scripts/agent-gate.sh` picks the role for the `worker` cron from the best ready issue |
-| Skills | `.claude/skills/<name>/SKILL.md` | Claude Code, by the description's triggers |
+| Skills | `agents/plugin/skills/<name>/SKILL.md`, plugin `nfft-agents` passed with `--plugin-dir` | Claude Code, by the description's triggers. Not `.claude/`: writes there are denied to agents. |
 | Checks | `support/checks/*.py`, run as `python -m support.checks.<name>` | PR checks and every agent before a PR |
 | Issue forms | `.github/ISSUE_TEMPLATE/*.yml` | Maintainer |
 | Site frame | `zensical.toml`, `doc/stylesheets/extra.css`, `support/overrides/main.html`, `doc/assets/` | Zensical build |
