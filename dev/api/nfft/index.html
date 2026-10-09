@@ -4300,6 +4300,10 @@
 <p>In the signatures below, <code>R</code> is the real type of the precision and <code>C</code> the matching FFTW complex type. See the <a href="../">index</a> for the mangling rules.</p>
 <h2 id="nfft">NFFT<a class="headerlink" href="#nfft" title="Permanent link">&para;</a></h2>
 <h3 id="mv_plan_complex"><code>mv_plan_complex</code><a class="headerlink" href="#mv_plan_complex" title="Permanent link">&para;</a></h3>
+<p>Base plan for a matrix-vector product with complex data. The solver module takes this type in <code>solver_init_complex</code> and <code>solver_init_advanced_complex</code> (<code>nfft/include/nfft3.h</code>, lines 782-783).</p>
+<p>The members come from the macro <code>MACRO_MV_PLAN</code> (<code>nfft/include/nfft3.h</code>, lines 54-60). Every complex transform plan, for example <code>nfft_plan</code>, starts with the same macro (<code>nfft/include/nfft3.h</code>, line 111). Thus you cast a pointer to such a plan to <code>nfft_mv_plan_complex *</code>. You do not create this type yourself. Example: <code>nfft/examples/solver/simple_test.c</code>, line 101, casts an <code>nfft_plan</code>. <code>nfft/examples/nnfft/simple_test.c</code>, line 208, casts an <code>nnfft_plan</code>.</p>
+<p>The init function of the transform sets <code>mv_trafo</code> and <code>mv_adjoint</code>, for example <code>nfft/kernel/nfft/nfft.c</code>, lines 6045-6046.</p>
+<p>The solver reads all six members. It reads <code>N_total</code> and <code>M_total</code> to allocate its vectors (<code>nfft/kernel/solver/solver.c</code>, lines 46-73). In each step it writes <code>f_hat</code> or <code>f</code>, then calls <code>mv_trafo</code> or <code>mv_adjoint</code> (<code>nfft/kernel/solver/solver.c</code>, lines 83-108).</p>
 <table>
 <thead>
 <tr>
@@ -4312,36 +4316,40 @@
 <tr>
 <td><code>NFFT_INT</code></td>
 <td><code>N_total</code></td>
-<td>Total number of Fourier coefficients.</td>
+<td>Total number of Fourier coefficients. The length of <code>f_hat</code>.</td>
 </tr>
 <tr>
 <td><code>NFFT_INT</code></td>
 <td><code>M_total</code></td>
-<td>Total number of samples.</td>
+<td>Total number of samples. The length of <code>f</code>.</td>
 </tr>
 <tr>
 <td><code>C *</code></td>
 <td><code>f_hat</code></td>
-<td>Fourier coefficients.</td>
+<td>The Fourier coefficients. The input of <code>mv_trafo</code> and the output of <code>mv_adjoint</code>. The solver swaps its own vectors into this pointer for a call and swaps them back after it (<code>nfft/kernel/solver/solver.c</code>, lines 106-108).</td>
 </tr>
 <tr>
 <td><code>C *</code></td>
 <td><code>f</code></td>
-<td>Samples.</td>
+<td>The samples. The output of <code>mv_trafo</code> and the input of <code>mv_adjoint</code>. The solver swaps its own vectors into this pointer for a call and swaps them back after it (<code>nfft/kernel/solver/solver.c</code>, lines 85-87).</td>
 </tr>
 <tr>
 <td><code>void(*)(void*)</code></td>
 <td><code>mv_trafo</code></td>
-<td>Transform.</td>
+<td>Computes <code>f</code> from <code>f_hat</code>. The argument is the plan itself.</td>
 </tr>
 <tr>
 <td><code>void(*)(void*)</code></td>
 <td><code>mv_adjoint</code></td>
-<td>Adjoint transform.</td>
+<td>Computes <code>f_hat</code> from <code>f</code>. The argument is the plan itself.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="mv_plan_double"><code>mv_plan_double</code><a class="headerlink" href="#mv_plan_double" title="Permanent link">&para;</a></h3>
+<p>Base plan for a matrix-vector product with real data. The solver module takes this type in <code>solver_init_double</code> and <code>solver_init_advanced_double</code> (<code>nfft/include/nfft3.h</code>, lines 811-812).</p>
+<p>The members come from the macro <code>MACRO_MV_PLAN</code> (<code>nfft/include/nfft3.h</code>, lines 54-60). The real transform plans <code>nfct_plan</code> and <code>nfst_plan</code> start with the same macro (<code>nfft/include/nfft3.h</code>, lines 229 and 309). Thus you cast a pointer to such a plan to <code>nfft_mv_plan_double *</code>. You do not create this type yourself. No program in <code>nfft/examples/</code> does this cast for the real type. The complex form of the same cast is in <code>nfft/examples/solver/simple_test.c</code>, line 101.</p>
+<p>The init function of the transform sets <code>mv_trafo</code> and <code>mv_adjoint</code>, for example <code>nfft/kernel/nfct/nfct.c</code>, lines 1191-1192.</p>
+<p>The solver reads all six members. It reads <code>N_total</code> and <code>M_total</code> to allocate its vectors (<code>nfft/kernel/solver/solver.c</code>, lines 396-425). In each step it writes <code>f_hat</code> or <code>f</code>, then calls <code>mv_trafo</code> or <code>mv_adjoint</code> (<code>nfft/kernel/solver/solver.c</code>, lines 434-458).</p>
 <table>
 <thead>
 <tr>
@@ -4354,32 +4362,32 @@
 <tr>
 <td><code>NFFT_INT</code></td>
 <td><code>N_total</code></td>
-<td>Total number of Fourier coefficients.</td>
+<td>Total number of Fourier coefficients. The length of <code>f_hat</code>.</td>
 </tr>
 <tr>
 <td><code>NFFT_INT</code></td>
 <td><code>M_total</code></td>
-<td>Total number of samples.</td>
+<td>Total number of samples. The length of <code>f</code>.</td>
 </tr>
 <tr>
 <td><code>R *</code></td>
 <td><code>f_hat</code></td>
-<td>Fourier coefficients.</td>
+<td>The real Fourier coefficients. The input of <code>mv_trafo</code> and the output of <code>mv_adjoint</code>. The solver swaps its own vectors into this pointer for a call and swaps them back after it.</td>
 </tr>
 <tr>
 <td><code>R *</code></td>
 <td><code>f</code></td>
-<td>Samples.</td>
+<td>The real samples. The output of <code>mv_trafo</code> and the input of <code>mv_adjoint</code>. The solver swaps its own vectors into this pointer for a call and swaps them back after it (<code>nfft/kernel/solver/solver.c</code>, lines 436-438).</td>
 </tr>
 <tr>
 <td><code>void(*)(void*)</code></td>
 <td><code>mv_trafo</code></td>
-<td>Transform.</td>
+<td>Computes <code>f</code> from <code>f_hat</code>. The argument is the plan itself.</td>
 </tr>
 <tr>
 <td><code>void(*)(void*)</code></td>
 <td><code>mv_adjoint</code></td>
-<td>Adjoint transform.</td>
+<td>Computes <code>f_hat</code> from <code>f</code>. The argument is the plan itself.</td>
 </tr>
 </tbody>
 </table>
