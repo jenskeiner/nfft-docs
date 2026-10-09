@@ -2,6 +2,7 @@ name: API gap
 description: An API symbol without a description
 title: "[API gap] "
 labels: ["api-gap", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: input
     id: pages

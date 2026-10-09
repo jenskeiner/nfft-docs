@@ -2,6 +2,7 @@ name: Mathematics
 description: A formula, definition or notation to add or check
 title: "[Mathematics] "
 labels: ["math", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: input
     id: pages

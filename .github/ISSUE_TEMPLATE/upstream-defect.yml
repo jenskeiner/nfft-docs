@@ -2,6 +2,7 @@ name: Upstream defect
 description: A defect in NFFT/nfft found while documenting. Fixed upstream, not here.
 title: "[Upstream] "
 labels: ["upstream-defect", "ready-for-human"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: input
     id: location
