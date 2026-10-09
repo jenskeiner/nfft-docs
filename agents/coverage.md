@@ -11,14 +11,14 @@ do not remove them.
 | First example | yes | yes | yes | yes |
 | Tutorial per transform type | partial | yes | yes | partial |
 | Mathematics and notation | yes | n/a | yes | partial |
-| Glossary of terms | no | no | no | no |
+| Glossary of terms | no | no | no | yes |
 | Plans and flags reference | partial | yes | yes | yes |
 | Options and defaults per flag | no | yes | yes | partial |
-| Error handling and return codes | no | n/a | yes | no |
-| Troubleshooting | no | no | yes | no |
+| Error handling and return codes | no | n/a | yes | partial |
+| Troubleshooting | no | no | yes | yes |
 | Performance guide | partial | yes | yes | no |
 | Accuracy and parameter choice | partial | n/a | yes | partial |
-| Memory layout and array format | no | yes | partial | no |
+| Memory layout and array format | no | yes | partial | partial |
 | Precision variants | no | yes | yes | yes |
 | Thread safety | no | yes | partial | no |
 | Multithreading / OpenMP | yes | yes | yes | yes |
@@ -38,7 +38,7 @@ do not remove them.
 | MRI | yes | n/a | n/a | yes |
 | Polar FFT | yes | n/a | n/a | yes |
 | Radon / CT | yes | n/a | n/a | yes |
-| Ridgelet transform | yes | n/a | n/a | no |
+| Ridgelet transform | yes | n/a | n/a | partial |
 | Quadrature on manifolds | yes | n/a | n/a | partial |
 | MTEX | yes | n/a | n/a | no |
 | Julia interface | yes | n/a | yes | partial |
