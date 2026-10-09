@@ -6,9 +6,9 @@ name: Agents
 # AGENTS_ENABLED is "true"; dispatches always run.
 on:
   schedule:
-    - cron: "0 5 * * *"      # product-owner
+    - cron: "0 */6 * * *"    # product-owner
     - cron: "0 7 */2 * *"    # analyst
-    - cron: "30 */2 * * *"   # worker
+    - cron: "30 * * * *"     # worker
   workflow_dispatch:
     inputs:
       role:
@@ -44,9 +44,9 @@ jobs:
           TRIGGER: ${{ inputs.role || github.event.schedule }}
         run: |
           case "$TRIGGER" in
-            "0 5 * * *")   want=product-owner ;;
+            "0 */6 * * *") want=product-owner ;;
             "0 7 */2 * *") want=analyst ;;
-            "30 */2 * * *") want=worker ;;
+            "30 * * * *")  want=worker ;;
             *) want="$TRIGGER" ;;
           esac
           echo "want=$want" >> "$GITHUB_OUTPUT"
