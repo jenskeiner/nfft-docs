@@ -94,7 +94,7 @@ def _is_num(x):
     return type(x) is int
 
 
-def check(plan, items):
+def check(plan, items, stale_day):
     if not isinstance(plan, dict) or set(plan) - {"order", "stale"} or "order" not in plan:
         return ["backlog.json must be an object with keys order and stale"]
     order, stale = plan["order"], plan.get("stale", [])
@@ -116,6 +116,8 @@ def check(plan, items):
         errors.append(f"not on the board: {unknown}")
     if len(stale) > MAX_STALE:
         errors.append(f"stale has {len(stale)} entries, at most {MAX_STALE}")
+    if stale and not stale_day:
+        errors.append("stale entries are allowed only on Mondays (UTC)")
     return errors
 
 
@@ -128,33 +130,39 @@ def final_order(order, items, authors):
 
 
 def moves(items, authors, final):
-    current = [i["id"] for i in ranked(items, authors) if i["status"] == "Backlog"]
-    wanted = [i["id"] for i in final]
-    if current == wanted:
-        return []
+    cur = [i["id"] for i in ranked(items, authors) if i["status"] == "Backlog"]
     out, prev = [], None
-    for item_id in wanted:
-        out.append((item_id, prev))
-        prev = item_id
+    for item in final:
+        k = cur.index(item["id"])
+        if (cur[k - 1] if k else None) != prev:
+            cur.pop(k)
+            cur.insert(cur.index(prev) + 1 if prev else 0, item["id"])
+            out.append((item["id"], prev))
+        prev = item["id"]
     return out
 
 
-def stale_actions(stale, items):
+def stale_actions(stale, items, authors):
     by_n = {i["n"]: i for i in items}
     out = []
     for s in stale:
         item = by_n[s["n"]]
-        if not item["open"] or {"stale-candidate", "keep"} & set(item["labels"]):
+        if (not item["open"] or item["author"] not in authors
+                or {"stale-candidate", "keep"} & set(item["labels"])):
             continue
         reason = " ".join(s["reason"].split())[:MAX_REASON]
-        out.append(("close" if item["author"] == AGENT else "label", s["n"], reason))
+        # Closing moves an item out of Next, which only the maintainer changes.
+        close = item["author"] == AGENT and item["status"] != "Next"
+        out.append(("close" if close else "label", s["n"], reason))
     return out
 
 
 def plan_sync(items, issues, authors):
     on_board = {i["n"] for i in items}
     add = [x for x in issues if x["author"] in authors and x["n"] not in on_board]
-    unset = [i for i in items if i["open"] and i["status"] is None and i["author"] in authors]
+    # Done on an open item: reopened after the close workflow set Done.
+    unset = [i for i in items
+             if i["open"] and i["status"] in (None, "Done") and i["author"] in authors]
     return add, unset
 
 
@@ -260,6 +268,20 @@ mutation($p: ID!, $i: ID!, $a: ID) {
 """
 
 
+STATUS = """
+query($i: ID!) {
+  node(id: $i) { ... on ProjectV2Item {
+    fieldValueByName(name: "Status") { ... on ProjectV2ItemFieldSingleSelectValue { name } } } }
+}
+"""
+
+
+def status_of(item_id):
+    # Re-read right before a write: the maintainer may move items during a run.
+    node = graphql(STATUS, i=item_id)["node"] or {}
+    return (node.get("fieldValueByName") or {}).get("name")
+
+
 def open_issues(repo):
     owner, name = repo.split("/")
     out, cursor = [], None
@@ -280,7 +302,8 @@ def sync():
         item = graphql(ADD, p=project, c=x["id"])["addProjectV2ItemById"]["item"]["id"]
         graphql(SET_STATUS, p=project, i=item, f=field, o=options["Backlog"])
     for i in unset:
-        graphql(SET_STATUS, p=project, i=i["id"], f=field, o=options["Backlog"])
+        if status_of(i["id"]) in (None, "Done"):
+            graphql(SET_STATUS, p=project, i=i["id"], f=field, o=options["Backlog"])
     if add or unset:
         items = read_board(owner, number, repo)[3]
     return project, authors, items
@@ -301,14 +324,20 @@ def cmd_sync():
 def cmd_apply(path):
     plan = load_plan(path)
     project, authors, items = sync()
-    errors = check(plan, items)
+    monday = datetime.datetime.now(datetime.timezone.utc).date().isoweekday() == 1
+    errors = check(plan, items, monday)
     if errors:
         sys.exit("invalid backlog.json: " + "; ".join(errors))
     steps = moves(items, authors, final_order(plan["order"], items, authors))
+    moved = 0
     for item_id, after in steps:
+        if status_of(item_id) != "Backlog":
+            print(f"skip move of {item_id}: no longer in Backlog")
+            continue
         graphql(MOVE, p=project, i=item_id, a=after)
-    print(f"moved {len(steps)} items")
-    for kind, n, reason in stale_actions(plan.get("stale", []), items):
+        moved += 1
+    print(f"moved {moved} items")
+    for kind, n, reason in stale_actions(plan.get("stale", []), items, authors):
         if kind == "close":
             issue("close", str(n), "--reason", "not planned", "--comment", f"Stale: {reason}")
         else:

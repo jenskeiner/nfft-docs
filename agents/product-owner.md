@@ -41,7 +41,9 @@ Skills: `backlog`, `site-comparison`.
    issue goes after the issues it needs), small before large at equal value.
    Issues you file in this run go into the order too. Never list an item of
    `next`: the maintainer owns that column, and a script drops such numbers.
-3c. If `stale_review` is true, review every open issue, also those in `next`.
+3c. If `stale_review` is true, review every item of `next` and `backlog`.
+   Propose no other issue: a script rejects the whole file for a number
+   that is not on the board.
    An issue is stale if: the pages already meet its acceptance criteria, it
    duplicates another open issue, it conflicts with an active decision, it
    refers to code removed upstream, or it is outside the targets in
@@ -50,14 +52,6 @@ Skills: `backlog`, `site-comparison`.
    that names the page, issue, decision or path. A script closes stale
    issues filed by agents and labels the other issues `stale-candidate`. Do
    not close or label them yourself.
-3d. Write `backlog.json` at the repository root. Do not commit it.
-
-   ```json
-   {"order": [42, 35, 34], "stale": [{"n": 17, "reason": "doc/guide/openmp.md has the section"}]}
-   ```
-
-   `order` lists every `backlog` number once, best first. `stale` may be
-   empty. An invalid file changes nothing and fails the run.
 4. Housekeeping PR: `agents/DECISIONS.md` rows from step 2 and the refresh of
    `agents/coverage.md` (one row per topic, columns nfft.org, fftw.org,
    FINUFFT, ours, values `yes`, `partial`, `no`, `n/a`; change only rows you
@@ -78,9 +72,18 @@ Skills: `backlog`, `site-comparison`.
    tool calls from the transcripts, and three proposals. Each proposal that
    changes a prompt, a role or a skill becomes its own `meta` issue, labelled
    `ready-for-agent`.
+8. Write `backlog.json` at the repository root, as the last step. Do not
+   commit it. Put the issues you filed in step 5 into `order` too.
+
+   ```json
+   {"order": [42, 35, 34], "stale": [{"n": 17, "reason": "doc/guide/openmp.md has the section"}]}
+   ```
+
+   `order` lists every `backlog` number once, best first. `stale` may be
+   empty. An invalid file changes nothing and fails the run.
 
 ## Stop conditions
 
-Stop after step 7, with `backlog.json` written, or after 60 tool calls,
-whichever is first. Never edit pages. Never close an issue filed by the
+Stop after step 8. At 55 tool calls, go to step 8 at once: a run without
+`backlog.json` fails. Never edit pages. Never close an issue filed by the
 maintainer.

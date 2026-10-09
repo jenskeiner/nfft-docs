@@ -156,7 +156,7 @@ U, B = ("User", "jenskeiner"), ("Bot", "claude")
 
 def test_check_accepts_valid_plan():
     its = board((1, "Backlog", U), (2, "Next", U))
-    assert backlog.check({"order": [1], "stale": [{"n": 2, "reason": "done"}]}, its) == []
+    assert backlog.check({"order": [1], "stale": [{"n": 2, "reason": "done"}]}, its, True) == []
 
 
 def test_check_rejects_bad_shapes():
@@ -164,21 +164,21 @@ def test_check_rejects_bad_shapes():
     for plan in ([1], {"order": "1"}, {"order": ["1"]}, {"order": [True]},
                  {"order": [1], "extra": 1}, {"order": [1], "stale": [{"n": 1}]},
                  {"order": [1], "stale": [{"n": 1, "reason": " "}]}):
-        assert backlog.check(plan, its), plan
+        assert backlog.check(plan, its, True), plan
 
 
 def test_check_rejects_duplicates_and_unknown():
     its = board((1, "Backlog", U), (2, "Backlog", U))
-    assert any("duplicate" in e for e in backlog.check({"order": [1, 1, 2]}, its))
-    assert any("not on the board" in e for e in backlog.check({"order": [1, 2, 9]}, its))
+    assert any("duplicate" in e for e in backlog.check({"order": [1, 1, 2]}, its, True))
+    assert any("not on the board" in e for e in backlog.check({"order": [1, 2, 9]}, its, True))
     assert any("not on the board" in e for e in
-               backlog.check({"order": [1, 2], "stale": [{"n": 9, "reason": "x"}]}, its))
+               backlog.check({"order": [1, 2], "stale": [{"n": 9, "reason": "x"}]}, its, True))
 
 
 def test_check_limits_stale():
     its = board(*[(n, "Backlog", B) for n in range(1, 13)])
     plan = {"order": list(range(1, 13)), "stale": [{"n": n, "reason": "x"} for n in range(1, 12)]}
-    assert any("at most 10" in e for e in backlog.check(plan, its))
+    assert any("at most 10" in e for e in backlog.check(plan, its, True))
 
 
 def test_final_order_follows_plan_and_appends_missing():
@@ -201,12 +201,12 @@ def test_moves_empty_when_order_unchanged():
 def test_moves_chain_backlog_only():
     its = board((1, "Next", U), (2, "Backlog", U), (3, "Backlog", U))
     got = backlog.moves(its, AUTHORS, backlog.final_order([3, 2], its, AUTHORS))
-    assert got == [("I3", None), ("I2", "I3")], got
+    assert got == [("I3", None)], got
 
 
 def test_stale_closes_agent_issues_and_labels_others():
     its = board((1, "Backlog", B), (2, "Next", U))
-    got = backlog.stale_actions([{"n": 1, "reason": "a\n  b"}, {"n": 2, "reason": "c"}], its)
+    got = backlog.stale_actions([{"n": 1, "reason": "a\n  b"}, {"n": 2, "reason": "c"}], its, AUTHORS)
     assert got == [("close", 1, "a b"), ("label", 2, "c")], got
 
 
@@ -214,12 +214,12 @@ def test_stale_skips_candidate_keep_and_closed():
     its = items(node(1, labels=("gap", "stale-candidate")), node(2, state="CLOSED", author=B),
                 node(3, labels=("gap", "keep"), author=B))
     stale = [{"n": n, "reason": "x"} for n in (1, 2, 3)]
-    assert backlog.stale_actions(stale, its) == []
+    assert backlog.stale_actions(stale, its, AUTHORS) == []
 
 
 def test_stale_truncates_reason():
     its = board((1, "Backlog", B))
-    got = backlog.stale_actions([{"n": 1, "reason": "x" * 400}], its)
+    got = backlog.stale_actions([{"n": 1, "reason": "x" * 400}], its, AUTHORS)
     assert len(got[0][2]) == 300, got
 
 
@@ -260,6 +260,35 @@ def test_load_plan_rejects_large_and_broken_files():
             backlog.load_plan(os.path.join(d, "missing.json"))
         except SystemExit as e:
             assert "invalid backlog.json" in str(e.code), e.code
+
+
+def test_moves_only_items_whose_predecessor_changed():
+    its = board(*[(n, "Backlog", U) for n in range(1, 6)])
+    got = backlog.moves(its, AUTHORS, backlog.final_order([1, 2, 3, 5, 4], its, AUTHORS))
+    assert got == [("I5", "I3")], got
+
+
+def test_check_rejects_stale_outside_monday():
+    its = board((1, "Backlog", B))
+    plan = {"order": [1], "stale": [{"n": 1, "reason": "x"}]}
+    assert any("Monday" in e for e in backlog.check(plan, its, False))
+    assert backlog.check({"order": [1], "stale": []}, its, False) == []
+
+
+def test_stale_labels_agent_issue_in_next():
+    its = board((1, "Next", B))
+    assert backlog.stale_actions([{"n": 1, "reason": "x"}], its, AUTHORS) == [("label", 1, "x")]
+
+
+def test_stale_skips_foreign_authors():
+    its = items(node(1, author=("User", "stranger")))
+    assert backlog.stale_actions([{"n": 1, "reason": "x"}], its, AUTHORS) == []
+
+
+def test_plan_sync_resets_reopened_done_items():
+    its = items(node(1, "Done"), node(2, "Done", state="CLOSED"))
+    add, unset = backlog.plan_sync(its, [{"n": 1, "id": "N1", "author": "jenskeiner"}], AUTHORS)
+    assert add == [] and [i["n"] for i in unset] == [1], (add, unset)
 
 
 if __name__ == "__main__":

@@ -1332,6 +1332,8 @@ gh variable set BACKLOG_AUTHORS --body "jenskeiner claude[bot] github-actions[bo
 gh variable set INTERACTION_LIMIT --body true
 ```
 
+Restrict environment `agents` to the branch `develop` (Settings, Environments, agents, Deployment branches, Selected branches, `develop`). A workflow on an agent branch then cannot read `BACKLOG_TOKEN`, `GUARD_TOKEN` or `CLAUDE_CODE_OAUTH_TOKEN`. Check that dispatches with `--ref develop` still run.
+
 - [ ] **Step 3: Labels**
 
 ```bash
