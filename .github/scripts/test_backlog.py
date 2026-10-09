@@ -147,6 +147,91 @@ def test_main_rejects_unknown_command():
         raise AssertionError("no exit")
 
 
+def board(*specs):
+    return items(*[node(n, s, author=a) for n, s, a in specs])
+
+
+U, B = ("User", "jenskeiner"), ("Bot", "claude")
+
+
+def test_check_accepts_valid_plan():
+    its = board((1, "Backlog", U), (2, "Next", U))
+    assert backlog.check({"order": [1], "stale": [{"n": 2, "reason": "done"}]}, its) == []
+
+
+def test_check_rejects_bad_shapes():
+    its = board((1, "Backlog", U))
+    for plan in ([1], {"order": "1"}, {"order": ["1"]}, {"order": [True]},
+                 {"order": [1], "extra": 1}, {"order": [1], "stale": [{"n": 1}]},
+                 {"order": [1], "stale": [{"n": 1, "reason": " "}]}):
+        assert backlog.check(plan, its), plan
+
+
+def test_check_rejects_duplicates_and_unknown():
+    its = board((1, "Backlog", U), (2, "Backlog", U))
+    assert any("duplicate" in e for e in backlog.check({"order": [1, 1, 2]}, its))
+    assert any("not on the board" in e for e in backlog.check({"order": [1, 2, 9]}, its))
+    assert any("not on the board" in e for e in
+               backlog.check({"order": [1, 2], "stale": [{"n": 9, "reason": "x"}]}, its))
+
+
+def test_check_limits_stale():
+    its = board(*[(n, "Backlog", B) for n in range(1, 13)])
+    plan = {"order": list(range(1, 13)), "stale": [{"n": n, "reason": "x"} for n in range(1, 12)]}
+    assert any("at most 10" in e for e in backlog.check(plan, its))
+
+
+def test_final_order_follows_plan_and_appends_missing():
+    its = board((1, "Backlog", U), (2, "Backlog", U), (3, "Backlog", U), (4, "Backlog", U))
+    got = backlog.final_order([3, 1], its, AUTHORS)
+    assert [i["n"] for i in got] == [3, 1, 2, 4], got
+
+
+def test_final_order_drops_items_no_longer_in_backlog():
+    its = board((1, "Next", U), (2, "Backlog", U), (3, "Done", U))
+    got = backlog.final_order([1, 3, 2], its, AUTHORS)
+    assert [i["n"] for i in got] == [2], got
+
+
+def test_moves_empty_when_order_unchanged():
+    its = board((1, "Next", U), (2, "Backlog", U), (3, "Backlog", U))
+    assert backlog.moves(its, AUTHORS, backlog.final_order([2, 3], its, AUTHORS)) == []
+
+
+def test_moves_chain_backlog_only():
+    its = board((1, "Next", U), (2, "Backlog", U), (3, "Backlog", U))
+    got = backlog.moves(its, AUTHORS, backlog.final_order([3, 2], its, AUTHORS))
+    assert got == [("I3", None), ("I2", "I3")], got
+
+
+def test_stale_closes_agent_issues_and_labels_others():
+    its = board((1, "Backlog", B), (2, "Next", U))
+    got = backlog.stale_actions([{"n": 1, "reason": "a\n  b"}, {"n": 2, "reason": "c"}], its)
+    assert got == [("close", 1, "a b"), ("label", 2, "c")], got
+
+
+def test_stale_skips_candidate_keep_and_closed():
+    its = items(node(1, labels=("gap", "stale-candidate")), node(2, state="CLOSED", author=B),
+                node(3, labels=("gap", "keep"), author=B))
+    stale = [{"n": n, "reason": "x"} for n in (1, 2, 3)]
+    assert backlog.stale_actions(stale, its) == []
+
+
+def test_stale_truncates_reason():
+    its = board((1, "Backlog", B))
+    got = backlog.stale_actions([{"n": 1, "reason": "x" * 400}], its)
+    assert len(got[0][2]) == 300, got
+
+
+def test_plan_sync_adds_missing_and_fixes_empty_status():
+    its = board((1, "Backlog", U), (2, None, U))
+    issues = [{"n": 1, "id": "N1", "author": "jenskeiner"},
+              {"n": 3, "id": "N3", "author": "claude[bot]"},
+              {"n": 4, "id": "N4", "author": "stranger"}]
+    add, unset = backlog.plan_sync(its, issues, AUTHORS)
+    assert [x["n"] for x in add] == [3] and [i["n"] for i in unset] == [2], (add, unset)
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

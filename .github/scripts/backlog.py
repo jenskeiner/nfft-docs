@@ -17,6 +17,10 @@ import subprocess
 import sys
 
 SKIP = {"in-progress", "blocked", "needs-triage"}
+AGENT = "claude[bot]"
+MAX_STALE = 10
+MAX_REASON = 300
+MAX_BYTES = 65536
 
 
 def env():
@@ -83,6 +87,74 @@ def pick(items, authors, roles, want):
         if item["status"] == "Next":
             skipped.append(f"skip #{item['n']}: {reason}")
     return None, skipped
+
+
+def _is_num(x):
+    return type(x) is int
+
+
+def check(plan, items):
+    if not isinstance(plan, dict) or set(plan) - {"order", "stale"} or "order" not in plan:
+        return ["backlog.json must be an object with keys order and stale"]
+    order, stale = plan["order"], plan.get("stale", [])
+    if not isinstance(order, list) or not all(_is_num(n) for n in order):
+        return ["order must be a list of issue numbers"]
+    if not isinstance(stale, list) or not all(
+            isinstance(s, dict) and set(s) == {"n", "reason"} and _is_num(s["n"])
+            and isinstance(s["reason"], str) and s["reason"].strip() for s in stale):
+        return ["stale must be a list of {n, reason} with a non-empty reason"]
+    errors = []
+    known = {i["n"] for i in items}
+    nums = order + [s["n"] for s in stale]
+    dups = sorted({n for n in order if order.count(n) > 1}
+                  | {s["n"] for s in stale if [t["n"] for t in stale].count(s["n"]) > 1})
+    if dups:
+        errors.append(f"duplicate numbers: {dups}")
+    unknown = sorted(set(nums) - known)
+    if unknown:
+        errors.append(f"not on the board: {unknown}")
+    if len(stale) > MAX_STALE:
+        errors.append(f"stale has {len(stale)} entries, at most {MAX_STALE}")
+    return errors
+
+
+def final_order(order, items, authors):
+    backlog = [i for i in ranked(items, authors) if i["status"] == "Backlog"]
+    by_n = {i["n"]: i for i in backlog}
+    head = [by_n[n] for n in order if n in by_n]
+    listed = {i["n"] for i in head}
+    return head + [i for i in backlog if i["n"] not in listed]
+
+
+def moves(items, authors, final):
+    current = [i["id"] for i in ranked(items, authors) if i["status"] == "Backlog"]
+    wanted = [i["id"] for i in final]
+    if current == wanted:
+        return []
+    out, prev = [], None
+    for item_id in wanted:
+        out.append((item_id, prev))
+        prev = item_id
+    return out
+
+
+def stale_actions(stale, items):
+    by_n = {i["n"]: i for i in items}
+    out = []
+    for s in stale:
+        item = by_n[s["n"]]
+        if not item["open"] or {"stale-candidate", "keep"} & set(item["labels"]):
+            continue
+        reason = " ".join(s["reason"].split())[:MAX_REASON]
+        out.append(("close" if item["author"] == AGENT else "label", s["n"], reason))
+    return out
+
+
+def plan_sync(items, issues, authors):
+    on_board = {i["n"] for i in items}
+    add = [x for x in issues if x["author"] in authors and x["n"] not in on_board]
+    unset = [i for i in items if i["open"] and i["status"] is None and i["author"] in authors]
+    return add, unset
 
 
 BOARD = """
