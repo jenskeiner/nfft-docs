@@ -291,6 +291,13 @@ def test_plan_sync_resets_reopened_done_items():
     assert add == [] and [i["n"] for i in unset] == [1], (add, unset)
 
 
+def test_assume_backlog_marks_items_the_sync_wrote():
+    its = items(node(1, None), node(2, "Done"), node(3, "Next"), node(4, None))
+    got = backlog.assume_backlog(its, {1, 2})
+    assert [(i["n"], i["status"]) for i in got] == [(1, "Backlog"), (2, "Backlog"),
+                                                    (3, "Next"), (4, None)], got
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

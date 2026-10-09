@@ -166,6 +166,11 @@ def plan_sync(items, issues, authors):
     return add, unset
 
 
+def assume_backlog(items, written):
+    # A read right after a write can still show the old Status.
+    return [{**i, "status": "Backlog"} if i["n"] in written else i for i in items]
+
+
 def state(items, authors, today):
     def row(i):
         return {"n": i["n"], "title": i["title"], "author": i["author"], "labels": i["labels"]}
@@ -301,11 +306,13 @@ def sync():
     for x in add:
         item = graphql(ADD, p=project, c=x["id"])["addProjectV2ItemById"]["item"]["id"]
         graphql(SET_STATUS, p=project, i=item, f=field, o=options["Backlog"])
+    written = {x["n"] for x in add}
     for i in unset:
         if status_of(i["id"]) in (None, "Done"):
             graphql(SET_STATUS, p=project, i=i["id"], f=field, o=options["Backlog"])
-    if add or unset:
-        items = read_board(owner, number, repo)[3]
+            written.add(i["n"])
+    if written:
+        items = assume_backlog(read_board(owner, number, repo)[3], written)
     return project, authors, items
 
 
