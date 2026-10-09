@@ -57,6 +57,11 @@ jobs:
 
       - name: Gate
         id: gate
+        env:
+          BOARD_TOKEN: ${{ secrets.BACKLOG_TOKEN }}
+          BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
+          BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}
+          BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
         run: bash .github/scripts/agent-gate.sh "${{ steps.want.outputs.want }}"
 
       - name: Run the role

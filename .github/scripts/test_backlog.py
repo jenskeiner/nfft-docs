@@ -138,6 +138,15 @@ def test_env_requires_authors():
         os.environ.update(saved)
 
 
+def test_main_rejects_unknown_command():
+    try:
+        backlog.main(["nope"])
+    except SystemExit as e:
+        assert "usage" in str(e.code), e.code
+    else:
+        raise AssertionError("no exit")
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

@@ -83,3 +83,78 @@ def pick(items, authors, roles, want):
         if item["status"] == "Next":
             skipped.append(f"skip #{item['n']}: {reason}")
     return None, skipped
+
+
+BOARD = """
+query($owner: String!, $number: Int!, $cursor: String) {
+  organization(login: $owner) { projectV2(number: $number) {
+    id
+    field(name: "Status") { ... on ProjectV2SingleSelectField { id options { id name } } }
+    items(first: 100, after: $cursor) {
+      pageInfo { hasNextPage endCursor }
+      nodes {
+        id
+        fieldValueByName(name: "Status") { ... on ProjectV2ItemFieldSingleSelectValue { name } }
+        content { __typename ... on Issue {
+          number title state repository { nameWithOwner }
+          author { __typename login } labels(first: 50) { nodes { name } } } }
+      }
+    }
+  } }
+}
+"""
+
+
+def graphql(query, **variables):
+    cmd = ["gh", "api", "graphql", "-f", f"query={query}"]
+    for key, value in variables.items():
+        if value is not None:
+            cmd += ["-F" if isinstance(value, int) else "-f", f"{key}={value}"]
+    r = subprocess.run(cmd, capture_output=True, text=True,
+                       env={**os.environ, "GH_TOKEN": os.environ.get("BOARD_TOKEN", "")})
+    if r.returncode:
+        sys.exit(f"board: {r.stderr.strip() or r.stdout.strip()}")
+    return json.loads(r.stdout)["data"]
+
+
+def read_board(owner, number, repo):
+    nodes, cursor = [], None
+    while True:
+        org = graphql(BOARD, owner=owner, number=number, cursor=cursor)["organization"]
+        project = org and org["projectV2"]
+        if not project:
+            sys.exit(f"board: project {number} of {owner} not found")
+        nodes += project["items"]["nodes"]
+        page = project["items"]["pageInfo"]
+        if not page["hasNextPage"]:
+            break
+        cursor = page["endCursor"]
+    field = project["field"]
+    if not field:
+        sys.exit("board: field Status not found")
+    options = {o["name"]: o["id"] for o in field["options"]}
+    missing = {"Next", "Backlog", "Done"} - set(options)
+    if missing:
+        sys.exit(f"board: Status lacks {sorted(missing)}")
+    return project["id"], field["id"], options, parse_items(nodes, repo)
+
+
+def cmd_gate(want):
+    owner, number, authors, repo = env()
+    with open("agents/roles.json") as fh:
+        roles = json.load(fh)
+    got, skipped = pick(read_board(owner, number, repo)[3], authors, roles, want)
+    for line in skipped:
+        print(line, file=sys.stderr)
+    if got:
+        print(f"{got[0]}\t{got[1]}")
+
+
+def main(argv):
+    if len(argv) == 2 and argv[0] == "gate":
+        return cmd_gate(argv[1])
+    sys.exit("usage: backlog.py gate <worker|role> | sync | apply <backlog.json>")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
