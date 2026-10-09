@@ -17,11 +17,7 @@ on:
         type: choice
         options: [worker, product-owner, analyst, writer, editor, meta]
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  id-token: write
+permissions: {}
 
 jobs:
   role:
@@ -29,6 +25,13 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || vars.AGENTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment: agents
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    outputs:
+      po: ${{ steps.gate.outputs.run == 'true' && steps.gate.outputs.role == 'product-owner' }}
     concurrency:
       group: agents-${{ inputs.role || github.event.schedule }}
       cancel-in-progress: false
@@ -64,6 +67,27 @@ jobs:
           BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
         run: bash .github/scripts/agent-gate.sh "${{ steps.want.outputs.want }}"
 
+      # Runs before the model, which never sees BACKLOG_TOKEN.
+      - name: Sync the board
+        id: sync
+        if: steps.gate.outputs.run == 'true' && steps.gate.outputs.role == 'product-owner'
+        env:
+          BOARD_TOKEN: ${{ secrets.BACKLOG_TOKEN }}
+          BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
+          BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}
+          BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
+        run: |
+          python3 .github/scripts/backlog.py sync > "$RUNNER_TEMP/state.json"
+          # Issue titles are in the state; a random delimiter cannot occur there.
+          eof="STATE_$(openssl rand -hex 16)"
+          {
+            echo "prompt<<$eof"
+            echo "## Backlog state"
+            echo
+            cat "$RUNNER_TEMP/state.json"
+            echo "$eof"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Run the role
         if: steps.gate.outputs.run == 'true'
         uses: ./.github/actions/agent-setup
@@ -72,5 +96,45 @@ jobs:
           model: ${{ steps.gate.outputs.model }}
           max_turns: ${{ steps.gate.outputs.max_turns }}
           # Quoted: a " #" inside an expression starts a YAML comment and leaves ${{ unclosed.
-          extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || '' }}"
+          extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || steps.sync.outputs.prompt || '' }}"
           oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Keep the backlog plan
+        if: always() && steps.sync.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: backlog-plan
+          path: backlog.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # A fresh checkout: nothing the model wrote runs here except backlog.json,
+  # which is data and is validated against the live board.
+  apply:
+    name: apply backlog plan
+    needs: role
+    if: always() && needs.role.outputs.po == 'true'
+    runs-on: ubuntu-latest
+    environment: agents
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: backlog-plan
+          path: ${{ runner.temp }}/plan
+
+      - name: Apply the plan
+        env:
+          BOARD_TOKEN: ${{ secrets.BACKLOG_TOKEN }}
+          BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
+          BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}
+          BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
+        run: python3 .github/scripts/backlog.py apply "$RUNNER_TEMP/plan/backlog.json"

@@ -232,6 +232,36 @@ def test_plan_sync_adds_missing_and_fixes_empty_status():
     assert [x["n"] for x in add] == [3] and [i["n"] for i in unset] == [2], (add, unset)
 
 
+def test_state_rows_and_stale_review():
+    import datetime
+    its = board((1, "Backlog", U), (2, "Next", B), (3, "Done", U))
+    got = backlog.state(its, AUTHORS, datetime.date(2026, 10, 12))
+    assert [r["n"] for r in got["next"]] == [2] and [r["n"] for r in got["backlog"]] == [1]
+    assert got["next"][0] == {"n": 2, "title": "t2", "author": "claude[bot]",
+                              "labels": ["gap", "ready-for-agent"]}, got
+    assert got["stale_review"] is True
+    assert backlog.state(its, AUTHORS, datetime.date(2026, 10, 13))["stale_review"] is False
+
+
+def test_load_plan_rejects_large_and_broken_files():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        p = os.path.join(d, "backlog.json")
+        for content in ("{", " " * (backlog.MAX_BYTES + 1)):
+            with open(p, "w") as fh:
+                fh.write(content)
+            try:
+                backlog.load_plan(p)
+            except SystemExit as e:
+                assert "invalid backlog.json" in str(e.code), e.code
+            else:
+                raise AssertionError(content[:5])
+        try:
+            backlog.load_plan(os.path.join(d, "missing.json"))
+        except SystemExit as e:
+            assert "invalid backlog.json" in str(e.code), e.code
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

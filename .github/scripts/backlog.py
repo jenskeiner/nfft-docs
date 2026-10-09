@@ -11,6 +11,7 @@ BOARD_TOKEN, issue edits use GH_TOKEN. Needs BACKLOG_OWNER, BACKLOG_PROJECT,
 BACKLOG_AUTHORS and GITHUB_REPOSITORY.
 """
 
+import datetime
 import json
 import os
 import subprocess
@@ -157,6 +158,25 @@ def plan_sync(items, issues, authors):
     return add, unset
 
 
+def state(items, authors, today):
+    def row(i):
+        return {"n": i["n"], "title": i["title"], "author": i["author"], "labels": i["labels"]}
+    r = ranked(items, authors)
+    return {"next": [row(i) for i in r if i["status"] == "Next"],
+            "backlog": [row(i) for i in r if i["status"] == "Backlog"],
+            "stale_review": today.isoweekday() == 1}
+
+
+def load_plan(path):
+    try:
+        if os.path.getsize(path) > MAX_BYTES:
+            sys.exit(f"invalid backlog.json: larger than {MAX_BYTES} bytes")
+        with open(path) as fh:
+            return json.load(fh)
+    except (OSError, ValueError) as e:
+        sys.exit(f"invalid backlog.json: {e}")
+
+
 BOARD = """
 query($owner: String!, $number: Int!, $cursor: String) {
   organization(login: $owner) { projectV2(number: $number) {
@@ -211,6 +231,92 @@ def read_board(owner, number, repo):
     return project["id"], field["id"], options, parse_items(nodes, repo)
 
 
+ISSUES = """
+query($owner: String!, $name: String!, $cursor: String) {
+  repository(owner: $owner, name: $name) {
+    issues(states: OPEN, first: 100, after: $cursor) {
+      pageInfo { hasNextPage endCursor }
+      nodes { id number author { __typename login } }
+    }
+  }
+}
+"""
+
+ADD = """
+mutation($p: ID!, $c: ID!) { addProjectV2ItemById(input: {projectId: $p, contentId: $c}) { item { id } } }
+"""
+
+SET_STATUS = """
+mutation($p: ID!, $i: ID!, $f: ID!, $o: String!) {
+  updateProjectV2ItemFieldValue(input: {projectId: $p, itemId: $i, fieldId: $f,
+    value: {singleSelectOptionId: $o}}) { projectV2Item { id } }
+}
+"""
+
+MOVE = """
+mutation($p: ID!, $i: ID!, $a: ID) {
+  updateProjectV2ItemPosition(input: {projectId: $p, itemId: $i, afterId: $a}) { clientMutationId }
+}
+"""
+
+
+def open_issues(repo):
+    owner, name = repo.split("/")
+    out, cursor = [], None
+    while True:
+        page = graphql(ISSUES, owner=owner, name=name, cursor=cursor)["repository"]["issues"]
+        out += [{"n": x["number"], "id": x["id"], "author": login(x["author"])}
+                for x in page["nodes"]]
+        if not page["pageInfo"]["hasNextPage"]:
+            return out
+        cursor = page["pageInfo"]["endCursor"]
+
+
+def sync():
+    owner, number, authors, repo = env()
+    project, field, options, items = read_board(owner, number, repo)
+    add, unset = plan_sync(items, open_issues(repo), authors)
+    for x in add:
+        item = graphql(ADD, p=project, c=x["id"])["addProjectV2ItemById"]["item"]["id"]
+        graphql(SET_STATUS, p=project, i=item, f=field, o=options["Backlog"])
+    for i in unset:
+        graphql(SET_STATUS, p=project, i=i["id"], f=field, o=options["Backlog"])
+    if add or unset:
+        items = read_board(owner, number, repo)[3]
+    return project, authors, items
+
+
+def issue(*args):
+    r = subprocess.run(["gh", "issue", *args], capture_output=True, text=True)
+    if r.returncode:
+        sys.exit(f"gh issue {args[0]}: {r.stderr.strip()}")
+
+
+def cmd_sync():
+    _, authors, items = sync()
+    print(json.dumps(state(items, authors, datetime.datetime.now(datetime.timezone.utc).date()),
+                     indent=1))
+
+
+def cmd_apply(path):
+    plan = load_plan(path)
+    project, authors, items = sync()
+    errors = check(plan, items)
+    if errors:
+        sys.exit("invalid backlog.json: " + "; ".join(errors))
+    steps = moves(items, authors, final_order(plan["order"], items, authors))
+    for item_id, after in steps:
+        graphql(MOVE, p=project, i=item_id, a=after)
+    print(f"moved {len(steps)} items")
+    for kind, n, reason in stale_actions(plan.get("stale", []), items):
+        if kind == "close":
+            issue("close", str(n), "--reason", "not planned", "--comment", f"Stale: {reason}")
+        else:
+            issue("edit", str(n), "--add-label", "stale-candidate")
+            issue("comment", str(n), "--body", f"Stale candidate: {reason}")
+        print(f"{kind} #{n}: {reason}")
+
+
 def cmd_gate(want):
     owner, number, authors, repo = env()
     with open("agents/roles.json") as fh:
@@ -225,6 +331,10 @@ def cmd_gate(want):
 def main(argv):
     if len(argv) == 2 and argv[0] == "gate":
         return cmd_gate(argv[1])
+    if argv == ["sync"]:
+        return cmd_sync()
+    if len(argv) == 2 and argv[0] == "apply":
+        return cmd_apply(argv[1])
     sys.exit("usage: backlog.py gate <worker|role> | sync | apply <backlog.json>")
 
 
