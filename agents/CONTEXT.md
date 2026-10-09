@@ -95,6 +95,7 @@ Parity means the topics are covered. Never copy text from an external site.
 
 Type: `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`,
 `upstream`, `meta`, `design`, `decision`, `upstream-defect`. State: `needs-triage`, `ready-for-agent`, `in-progress`,
-`blocked`, `wontfix`. Origin: `from-maintainer`, `agent`. `priority: high`.
+`blocked`, `wontfix`. Origin: `from-maintainer`, `agent`. `stale-candidate`, `keep`.
 
-Pick order: `from-maintainer` first, then `priority: high`, then oldest.
+Pick order: the board, `Next` then `Backlog`. The gate picks; see the `backlog`
+skill.

@@ -5,6 +5,9 @@ Skills: `backlog`, `site-comparison`.
 
 ## Inputs
 
+- The section "Backlog state" at the end of your prompt: the board items in
+  `next` (the maintainer's, in the maintainer's order) and `backlog` (yours
+  to order), and `stale_review`.
 - `gh issue list --state open --limit 200 --json number,title,labels,createdAt,body`
 - `gh pr list --state open --label agent --json number,title,labels,createdAt`
 - `doc/api/coverage.json`, field `symbols`, every `"none"` is an API gap.
@@ -19,7 +22,7 @@ Skills: `backlog`, `site-comparison`.
    - Unclear: label `needs-info`, ask one precise question, stop on it.
    - Otherwise: add the type label if missing, write or sharpen the
      acceptance criteria in the body (edit it), remove `needs-triage`, add
-     `ready-for-agent`. Issues from the maintainer also get `priority: high`.
+     `ready-for-agent`.
 2. Open issues labelled `decision` are rulings by the maintainer. For each,
    append a row to `agents/DECISIONS.md` (next id, today, scope, the ruling
    in one sentence, the issue URL, `active`); if the issue names a
@@ -33,6 +36,28 @@ Skills: `backlog`, `site-comparison`.
 3. Release stale claims: an issue with `in-progress` whose claim comment is
    older than 12 hours and has no open PR gets `in-progress` removed and a
    comment saying so.
+3b. Order the backlog. Rank every item of `backlog` in the state. Criteria,
+   in order: the targets in `CONTEXT.md`, dependencies between issues (an
+   issue goes after the issues it needs), small before large at equal value.
+   Issues you file in this run go into the order too. Never list an item of
+   `next`: the maintainer owns that column, and a script drops such numbers.
+3c. If `stale_review` is true, review every open issue, also those in `next`.
+   An issue is stale if: the pages already meet its acceptance criteria, it
+   duplicates another open issue, it conflicts with an active decision, it
+   refers to code removed upstream, or it is outside the targets in
+   `CONTEXT.md`. Never propose an issue labelled `keep` or
+   `stale-candidate`. At most 10 per run. Give each a reason of one sentence
+   that names the page, issue, decision or path. A script closes stale
+   issues filed by agents and labels the other issues `stale-candidate`. Do
+   not close or label them yourself.
+3d. Write `backlog.json` at the repository root. Do not commit it.
+
+   ```json
+   {"order": [42, 35, 34], "stale": [{"n": 17, "reason": "doc/guide/openmp.md has the section"}]}
+   ```
+
+   `order` lists every `backlog` number once, best first. `stale` may be
+   empty. An invalid file changes nothing and fails the run.
 4. Housekeeping PR: `agents/DECISIONS.md` rows from step 2 and the refresh of
    `agents/coverage.md` (one row per topic, columns nfft.org, fftw.org,
    FINUFFT, ours, values `yes`, `partial`, `no`, `n/a`; change only rows you
@@ -56,5 +81,6 @@ Skills: `backlog`, `site-comparison`.
 
 ## Stop conditions
 
-Stop after step 7 or after 60 tool calls, whichever is first. Never edit
-pages. Never close an issue filed by the maintainer.
+Stop after step 7, with `backlog.json` written, or after 60 tool calls,
+whichever is first. Never edit pages. Never close an issue filed by the
+maintainer.
