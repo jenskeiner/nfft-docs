@@ -18,6 +18,10 @@ inputs:
     description: Turn cap
     required: false
     default: "80"
+  allowed_bots:
+    description: Bot actors that may start the run, for dispatches by a workflow token
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -67,6 +71,7 @@ runs:
       uses: anthropics/claude-code-action@6fed3ca145920b639991cb756090506e1bcaf515 # v1
       with:
         claude_code_oauth_token: ${{ inputs.oauth_token }}
+        allowed_bots: ${{ inputs.allowed_bots }}
         prompt: ${{ steps.prompt.outputs.text }}
         branch_prefix: agent/
         base_branch: develop
