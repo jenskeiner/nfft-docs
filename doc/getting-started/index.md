@@ -172,6 +172,13 @@ EPEL 7. For all other ecosystems, see Repology:
 [nfft-3](https://repology.org/project/nfft-3/). A Homebrew package is not
 available yet.
 
+The badges below come from Repology and show the current package versions.
+The browser loads them from repology.org when the page opens.
+
+[![Packaging status for nfft](https://repology.org/badge/vertical-allrepos/nfft.svg)](https://repology.org/project/nfft/versions)
+
+[![Packaging status for nfft-3](https://repology.org/badge/vertical-allrepos/nfft-3.svg)](https://repology.org/project/nfft-3/versions)
+
 ## Source build
 
 To build by hand, for example for a module, precision or window that no
