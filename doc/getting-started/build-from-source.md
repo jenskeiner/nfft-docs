@@ -2,19 +2,9 @@
 
 ## Prerequisites
 
-[FFTW3](https://fftw.org) development files, `make` and a C compiler. From a
-git checkout you also need `autoconf`, `automake` and `libtool`. The unit tests
+[FFTW3](https://fftw.org) development files, `make` and a C compiler. Download the
+source archive and unpack it. The archive contains `configure`. The unit tests
 need [CUnit](http://cunit.sourceforge.net).
-
-## Generate the build system
-
-Only from a git checkout. A release tarball already contains `configure`.
-
-```bash
-./bootstrap.sh
-```
-
-Run it again after editing any `Makefile.am` or `configure.ac`.
 
 ## Configure and build
 
