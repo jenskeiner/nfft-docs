@@ -17,8 +17,9 @@ sudo make install
 
 `./configure --help` lists every option. It also lists the generic options of
 Autoconf, Automake and Libtool, for example `--prefix` and `--enable-shared`.
-The sections below describe the options that NFFT adds. Each row gives the
-default and the effect.
+The sections below describe all options that NFFT adds. Each row gives the
+default and the effect. The last sections cover options that most users do not
+need, with a note on when they apply.
 
 ### Modules
 
@@ -151,12 +152,46 @@ If FFTW is not where the compiler looks:
 
 `configure` selects optimization flags only when you do not set `CFLAGS`.
 
-### Options for library developers
+### Benchmarks
 
-`./configure --help` also lists options for benchmarks, the Doxygen output,
-the timer hardware and maintainer mode. You do not need them to build and use
-the library. They are described under
-[Development](../development/index.md).
+Use these options if you measure the speed of the library. A normal build
+does not need them. The [benchmark](../development/benchmarks.md) page
+describes how to run the programs.
+
+| Flag | Default | Effect |
+|------|---------|--------|
+| `--enable-benchmarks` | off | Build the benchmark programs. |
+| `--with-benchmarks-prefix=PREFIX` | empty | Prefix for the names of the benchmarks. |
+| `--with-agnostic-benchmarks=FLAGS` | all on | Choose which benchmarks to build. `FLAGS` is a comma-separated list of `parameter:flag` pairs, for example `window:1,openmp:0,precision:1`. The parameters are `window`, `openmp` and `precision`. The flag is `0` or `1`. Parameters that you do not list are off. Any other parameter stops `configure`. |
+| `--with-codspeed=DIR` | off | Link the benchmarks with the CodSpeed C++ library in `DIR`. Use it if you track the benchmark results with CodSpeed. |
+
+### Documentation output
+
+Use these options if you build the C API documentation with Doxygen. You do
+not need them to use the library or to read this site. Each option has a
+`--enable-doxygen-NAME` form. For the features that are on by default, the
+form is `--disable-doxygen-NAME`.
+
+| Feature `NAME` | Default | Output |
+|----------------|---------|--------|
+| `doc` | on | Any Doxygen documentation. |
+| `html` | on | Plain HTML. |
+| `dot` | on | Graphs in the documentation. |
+| `man` | off | Manual pages. |
+| `rtf` | off | RTF. |
+| `xml` | off | XML. |
+| `chm` | off | Compressed HTML help. |
+| `chi` | off | Separate index file for compressed HTML help. |
+| `ps` | off | PostScript. |
+| `pdf` | off | PDF. |
+
+### Other options
+
+| Flag | Default | Effect |
+|------|---------|--------|
+| `--enable-exhaustive-unit-tests` | off | Add the exhaustive cases to the unit tests. They take longer to run. See [Testing](../development/testing.md). |
+| `--enable-mips-zbus-timer` | off | Use the MIPS ZBus cycle counter for time measurements. Relevant only on MIPS hardware with `--enable-measure-time`. |
+| `--enable-maintainer-mode` | off | Turn on the Automake maintainer rules. This also turns on the default of `--enable-all` and the extra compiler warnings. It is for people who work on the library. |
 
 ## Testing
 

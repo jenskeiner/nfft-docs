@@ -29,9 +29,6 @@ Leave out of user pages:
 - Names of internal makefiles, `configure.ac`, m4 files and generated logs.
 - Names of test programs and test result files. Say what the command does
   and how a failure looks on the terminal.
-- Options for benchmarks, documentation generators, timing hardware and
-  maintainer mode.
-- Options that only CI uses.
 
 Keep in user pages: options that change what the user gets (modules,
 precision, window, threads, interfaces, install prefix, location of FFTW),
@@ -45,7 +42,11 @@ archive, `./configure`, `make`, optional `make check`, `make install`. Compare
 your text with it. A step that this sequence does not run does not belong in
 the main flow. State a default only when a user can see its effect.
 
-## Options table
+## Options tables
 
-List an option in a user page only if it passes the test above. For the rest,
-say that `./configure --help` lists every option.
+Document every option that the project defines, for example every `configure`
+option. Do not select a subset. Order the options by relevance. Put the
+options that every user needs first. Put the other options in later sections
+and say when they are relevant, for example "Use these options if you measure
+the speed of the library". Do not describe how to use them beyond their
+effect. Link to `doc/development/` for the procedure.
