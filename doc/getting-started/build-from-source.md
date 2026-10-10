@@ -192,6 +192,117 @@ form is `--disable-doxygen-NAME`.
 | `--enable-mips-zbus-timer` | off | Use the MIPS ZBus cycle counter for time measurements. Relevant only on MIPS hardware with `--enable-measure-time`. |
 | `--enable-maintainer-mode` | off | Turn on the Automake maintainer rules. This also turns on the default of `--enable-all` and the extra compiler warnings. It is for people who work on the library. |
 
+## CMake build
+
+CMake builds the same sources. It needs CMake 3.20 or later, and 3.24 or
+later for the Julia interface. You do not run `./bootstrap.sh`.
+
+!!! note "Autotools is the authoritative build"
+
+    The project supports CMake on a best-effort basis. Autotools is the
+    authoritative build system. If the two builds differ, the Autotools build
+    is the reference. Use Autotools when you need an option that only
+    `configure` offers.
+
+```bash
+cmake -S . -B build
+cmake --build build -j
+ctest --test-dir build    # only with -DNFFT_ENABLE_TESTS=ON
+cmake --install build --prefix /usr/local
+```
+
+Set an option with `-D<name>=<value>` in the first command. Without a build
+type, CMake uses `Release`.
+
+### Options
+
+| Name | Default | Effect |
+|------|---------|--------|
+| `BUILD_SHARED_LIBS` | `ON` | Build shared libraries. `OFF` builds static libraries. |
+| `NFFT_ENABLE_FLOAT` | `OFF` | Build `libnfft3f` in `float` precision. |
+| `NFFT_ENABLE_LONG_DOUBLE` | `OFF` | Build `libnfft3l` in `long double` precision. |
+| `NFFT_ENABLE_OPENMP` | `OFF` | Also build the OpenMP library `libnfft3_omp`. |
+| `NFFT_ENABLE_MAXOPT` | `ON` | Add aggressive optimization flags, for example `-O3 -ffast-math -march=native`. Skipped when `CMAKE_C_FLAGS` is set. |
+| `NFFT_ENABLE_TESTS` | `OFF` | Build the CUnit test programs. Without CUnit, the configure step skips them. |
+| `NFFT_ENABLE_EXHAUSTIVE_UNIT_TESTS` | `OFF` | The larger, slower test set. Available only with `NFFT_ENABLE_TESTS=ON`. |
+| `NFFT_BENCHMARK_MODE` | `off` | `off`, `simulation` or `walltime`. A value other than `off` builds the [benchmarks](../development/benchmarks.md) in that mode. |
+| `NFFT_ENABLE_EXAMPLES` | `ON` | Build the programs under `examples/`. They are not installed. |
+| `NFFT_ENABLE_APPLICATIONS` | `ON` | Build the programs under `applications/`. They are not installed. |
+| `NFFT_WINDOW` | `kaiserbessel` | The window function: `kaiserbessel`, `gaussian`, `bspline`, `sinc` or `dirac`. |
+| `NFFT_ENABLE_JULIA` | `OFF` | The Julia interface. Double precision and shared libraries only. |
+| `NFFT_WITH_OCTAVE` | `OFF` | The Octave interface. Not with `long double`. |
+| `NFFT_WITH_MATLAB` | empty | Path to a MATLAB installation. A non-empty path builds the MATLAB interface. Not with `long double`. |
+| `NFFT_ENABLE_MATLAB_THREADS` | the value of `NFFT_ENABLE_OPENMP` | Build the Octave or MATLAB interface with the OpenMP kernel. Available only with one of these interfaces. Needs `NFFT_ENABLE_OPENMP=ON`. |
+| `NFFT_VERSION_TYPE` | `alpha` | The suffix of the version string. |
+| `NFFT_INSTALL_CMAKEDIR` | `<libdir>/cmake/nfft3` | The install directory of the CMake package files. Float and long double add `f` or `l`. |
+
+The configure step stops with an error for these combinations:
+
+- `NFFT_ENABLE_FLOAT` and `NFFT_ENABLE_LONG_DOUBLE` together.
+- `NFFT_ENABLE_JULIA` with `float` or `long double`, or with `BUILD_SHARED_LIBS=OFF`.
+- `NFFT_WITH_OCTAVE` and `NFFT_WITH_MATLAB` together.
+
+As with Autotools, each precision and each window needs its own build tree.
+
+### Modules
+
+CMake has no module options. It always builds the NFFT, the NFCT, the NFST and
+the solver. In double precision it also builds the NNFFT, the NSFFT, the MRI
+plans, the FPT, the NFSFT and the NFSOFT. These six modules build in double
+precision only.
+
+A double precision CMake build thus has the modules of `./configure --enable-all`.
+
+### Differences from the Autotools build
+
+| Topic | Autotools | CMake |
+|-------|-----------|-------|
+| Modules | One flag for each module. | No module flags. The precision selects the modules. |
+| Julia interface | On with `--enable-all` in a double precision, shared build. | Off. Set `-DNFFT_ENABLE_JULIA=ON`. |
+| Dirac window | `--with-window=delta`. `configure` rejects `dirac`. | `-DNFFT_WINDOW=dirac`. |
+| Optimization flags | Chosen by `configure` unless you set `CFLAGS`. | `NFFT_ENABLE_MAXOPT`, on by default. Skipped when you set `CMAKE_C_FLAGS`. |
+| Debug build, timing, portable binary | `--enable-debug`, `--enable-measure-time`, `--enable-measure-time-fftw`, `--enable-portable-binary`. | No such options. |
+| Location of FFTW | `--with-fftw3`, `--with-fftw3-includedir`, `--with-fftw3-libdir`. | `FFTW3_ROOT`, `FFTW3_INCLUDEDIR`, `FFTW3_LIBDIR`. |
+| Running the tests | `make check`. | `ctest`. |
+| Installed files | Libraries, headers and pkg-config files. | The same, and the CMake package files. |
+
+### Finding FFTW with CMake
+
+If FFTW is not where CMake looks, give its root:
+
+```bash
+cmake -S . -B build -DFFTW3_ROOT=/opt/fftw
+```
+
+`FFTW3_ROOT` can also be an environment variable. `FFTW3_INCLUDEDIR` and
+`FFTW3_LIBDIR` give the two directories separately. CMake looks for the FFTW
+library of the selected precision, and for its `_omp` and `_threads` variants.
+
+### Using the installed library from CMake
+
+The install writes these files to `<libdir>/cmake/nfft3`, where `<libdir>` is
+the library directory of the install, for example `lib`:
+
+- `NFFT3Config.cmake` and `NFFT3ConfigVersion.cmake`.
+- `NFFT3Targets.cmake`, with the imported target `NFFT3::nfft3`.
+- `FindFFTW3.cmake`, which the package uses to find FFTW.
+
+A float build writes `NFFT3fConfig.cmake` to `<libdir>/cmake/nfft3f` and exports
+`NFFT3::nfft3f`. A long double build uses `l` in the same places. The package
+accepts a request for the same major version. The install also writes the
+pkg-config file `nfft3.pc`, `nfft3f.pc` or `nfft3l.pc`.
+
+In your project:
+
+```cmake
+find_package(NFFT3 REQUIRED)
+target_link_libraries(my_program PRIVATE NFFT3::nfft3)
+```
+
+The OpenMP library `libnfft3_omp` is installed, but it is not a target of the
+package, and the pkg-config file names only the serial library. Link it by
+name, `-lnfft3_omp`, with the OpenMP flag of your compiler.
+
 ## Testing
 
 ```bash
