@@ -28,6 +28,8 @@ doc/applications/quadratureS2.md	applications/quadratureS2/quadratureS2.c:990:10
 doc/applications/radon.md	applications/radon/inverse_radon.c:175:221	77694fe868d57b39bddf19fe49d5db74ff71448aaf27c7d520cf92964fb15cbb
 doc/applications/radon.md	applications/radon/radon.c:164:190	93cd7b46c8d4fc862269f0e9431c822d14aa9a2ce8f194c66e2493e77a8ab3c4
 doc/getting-started/first-transform.md	examples/nfft/simple_test.c:24:73	50df094dbedc79e6ff1ce8519d3691b092b5da8993a339a6b26e403764ce432a
+doc/getting-started/index.md	examples/nfft/simple_test.c:150:161	74b995b98f0853ea0e2d6d1b18ccaf30a34c3681b064ca1f226d0ebe588970e6
+doc/getting-started/index.md	examples/nfft/simple_test.c:18:22	6b3238f11184dd7b4fb88ba3dc3a5d6295ee6d9826adc93e1785c7d5ba2eab7e
 doc/guide/plans-and-flags.md	examples/nfft/simple_test.c:84:116	45dbdc848dec81bd18e83b727bdf6701bfe553ac4190031e4dd673b6745ba289
 doc/guide/troubleshooting.md	examples/nfft/simple_test.c:39:53	9aac7ec8beea440e740005f36f7e570eaf28f769be097a040faf13b582a84bdc
 doc/interfaces/julia.md	julia/nfft/simple_test_1d.jl:1:45	a0622c4e1ce60103564f21bf73f16fc31616b8b43e632f1c655ccef0fa02a8be
