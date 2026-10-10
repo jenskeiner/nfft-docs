@@ -46,10 +46,8 @@ default and the effect.
 | `--enable-applications` | on | The programs under `applications/`. |
 | `--enable-tests` | off | The CUnit test programs. See [Testing](#testing). |
 
-The module flags come from the macro `AX_NFFT_MODULE`. It takes its default
-from `--enable-all` (`nfft/m4/ax_nfft_module.m4:3`, `9-10`). `--enable-all` is
-off unless maintainer mode is on. The examples and
-the applications do not depend on `--enable-all`.
+`--enable-all` is off unless maintainer mode is on. The examples and the
+applications do not depend on `--enable-all`.
 
 Only NFCT and NFST compile in all three precisions. In single or long double
 precision, the other modules default to off, also with `--enable-all`. If you enable one of them explicitly,
@@ -118,7 +116,7 @@ thread.
 | `--enable-julia` | value of `--enable-all` in double precision with shared libraries, else off | The Julia interface. Other precisions or `--disable-shared` stop `configure`. |
 | `--with-matlab=DIR` | off | The MATLAB interface. `DIR` is the MATLAB root. |
 | `--with-matlab-arch=ARCH` | detected | The MATLAB architecture name, for example `glnxa64`. |
-| `--enable-matlab-argchecks` | on | Check the arguments of each MEX call. Defines `MATLAB_ARGCHECKS`. |
+| `--enable-matlab-argchecks` | on | Check the arguments of each MEX call. |
 | `--with-matlab-fftw3-libdir=DIR` | `bin/ARCH` under the MATLAB root | The directory of the FFTW library that the MEX file links. |
 | `--enable-matlab-threads` | value of `--enable-openmp` | Link the MEX file against the OpenMP library. Needs `--enable-openmp`. |
 | `--with-octave=DIR` | off | The Octave interface. Without `DIR`, `configure` searches for Octave. |
@@ -151,11 +149,11 @@ If FFTW is not where the compiler looks:
 
 | Flag | Default | Effect |
 |------|---------|--------|
-| `--enable-debug` | off | Defines `NFFT_DEBUG`. Replaces `CFLAGS` with `-g -O2` and the address and undefined behaviour sanitizers. Adds GCC warnings. |
-| `--enable-measure-time` | off | Defines `MEASURE_TIME`. Fills the `MEASURE_TIME_t` members of the plans. |
-| `--enable-measure-time-fftw` | off | Defines `MEASURE_TIME_FFTW`. Also measures the time of the FFTW calls. |
-| `--enable-mips-zbus-timer` | off | Defines `HAVE_MIPS_ZBUS_TIMER`. Uses the MIPS ZBus cycle counter as the clock. |
-| `--enable-exhaustive-unit-tests` | off | Defines `NFFT_EXHAUSTIVE_UNIT_TESTS`. The larger, slower test set. What CI runs. |
+| `--enable-debug` | off | Replaces `CFLAGS` with `-g -O2` and the address and undefined behaviour sanitizers. Adds GCC warnings. |
+| `--enable-measure-time` | off | Measure the run time of the transforms and store it in the plans. |
+| `--enable-measure-time-fftw` | off | Also measures the time of the FFTW calls. |
+| `--enable-mips-zbus-timer` | off | Uses the MIPS ZBus cycle counter as the clock. |
+| `--enable-exhaustive-unit-tests` | off | The larger, slower test set. What CI runs. |
 
 ### Compiler optimization
 
@@ -196,7 +194,7 @@ The options below are for work on NFFT itself. They are described under
 make check
 ```
 
-`make check` builds and runs the programs in `check_PROGRAMS`:
+`make check` builds and runs these programs:
 
 - `tests/checkall`, the serial suite, linked against `libnfft3` It tests the NFFT, and the NFCT and
   the NFST if those modules are on.
