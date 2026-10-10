@@ -7,6 +7,8 @@ description: Use when writing or editing any page under doc/ of the NFFT3 docume
 
 ## Before writing
 
+0. Read the `audience` skill. The readers use the library; they do not change
+   it. Leave out facts that only a library developer needs.
 1. Read `doc/transforms/<module>.md` for the transform the page concerns. Use
    its notation and its terms. Do not invent synonyms.
 2. Read one finished page of the same section, for example
