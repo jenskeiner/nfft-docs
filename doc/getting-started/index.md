@@ -37,9 +37,145 @@ The library is precision-agnostic and links against the FFTW variant of the
 precision it was configured for: `libfftw3f` for float, `libfftw3` for double,
 `libfftw3l` for long double.
 
-## NFFT3
+## Packages
 
-There is no distribution package. Build from source; it is three commands.
+Several package managers ship NFFT3. Each package below builds all modules
+(`--enable-all`), unless the tab says otherwise. Without that flag, the
+library has only the NFFT, NFCT and NFST modules
+(`nfft/configure.ac:193-204`). Each package uses the default Kaiser-Bessel
+window (`nfft/configure.ac:237-240`), unless the tab names a variant. Each
+package is double precision only, unless the tab says otherwise.
+
+=== "Debian and Ubuntu"
+
+    ```bash
+    sudo apt install libnfft3-dev
+    ```
+
+    `libnfft3-dev` holds the header and the `pkg-config` file. It pulls in
+    the libraries `libnfft3-single4`, `libnfft3-double4` and, on most
+    architectures, `libnfft3-long4`. The package builds all modules, with
+    OpenMP, in float, double and long double precision. It ships no static
+    library. `libnfft3-doc` holds the API documentation.
+    `libnfft3-julia` holds the Julia interface.
+
+    Older releases, for example Debian 11 and Ubuntu 22.04, ship an older
+    upstream release under other library package names, such as
+    `libnfft3-double2`. `libnfft3-dev` is correct on all of them.
+
+    Sources: [Debian packaging](https://sources.debian.org/src/nfft/),
+    [packages.ubuntu.com](https://packages.ubuntu.com/search?keywords=libnfft3-dev),
+    [Repology](https://repology.org/project/nfft/).
+
+=== "Arch Linux"
+
+    The official repositories have no package. The AUR package `nfft`
+    builds from source on your machine:
+
+    ```bash
+    git clone https://aur.archlinux.org/nfft.git
+    cd nfft
+    makepkg -si
+    ```
+
+    It builds all modules with OpenMP.
+
+    Source: [AUR package nfft](https://aur.archlinux.org/packages/nfft).
+
+=== "Gentoo"
+
+    ```bash
+    sudo emerge --ask sci-libs/nfft
+    ```
+
+    The ebuild builds all modules. The USE flag `openmp` adds the OpenMP
+    library, `doc` adds the documentation. The package has only testing
+    keywords (`~amd64`, `~x86`). Accept the keyword in
+    `/etc/portage/package.accept_keywords` before you install it.
+
+    Source: [packages.gentoo.org](https://packages.gentoo.org/packages/sci-libs/nfft).
+
+=== "Nix"
+
+    ```bash
+    nix-shell -p nfft
+    ```
+
+    The attribute is `nfft`. It builds all modules with OpenMP.
+
+    Source: [nixpkgs package.nix](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/nf/nfft/package.nix).
+
+=== "FreeBSD"
+
+    ```bash
+    sudo pkg install nfft
+    ```
+
+    The port is `math/nfft`. It builds all modules. The port option
+    `OPENMP` adds the OpenMP library. It is on by default on amd64,
+    aarch64, powerpc64 and powerpc64le. To change an option, build the port
+    with `make config install` in `/usr/ports/math/nfft`.
+
+    Source: [FreshPorts math/nfft](https://www.freshports.org/math/nfft/).
+
+=== "MSYS2"
+
+    ```bash
+    pacman -S mingw-w64-ucrt-x86_64-nfft
+    ```
+
+    The package exists for each MSYS2 environment:
+    `mingw-w64-ucrt-x86_64-nfft`, `mingw-w64-x86_64-nfft`,
+    `mingw-w64-clang-x86_64-nfft` and `mingw-w64-clang-aarch64-nfft`.
+    Install the one for the environment you compile in. It builds all
+    modules with OpenMP.
+
+    Source: [packages.msys2.org](https://packages.msys2.org/base/mingw-w64-nfft).
+
+=== "MacPorts"
+
+    ```bash
+    sudo port install nfft-3
+    ```
+
+    The port name is `nfft-3`. It builds all modules. Variants change the
+    build:
+
+    | Variant | Effect |
+    |---------|--------|
+    | `+openmp` | Adds the OpenMP library `libnfft3_omp`. |
+    | `+gaussian` | Uses the Gaussian window. |
+    | `+bspline` | Uses the B-spline window. |
+    | `+sinc` | Uses the sinc power window. |
+
+    The three window variants exclude each other. Add variants to the
+    install command, for example `sudo port install nfft-3 +openmp +gaussian`.
+    [Window functions](../guide/windows.md) compares the windows.
+
+    Source: [ports.macports.org](https://ports.macports.org/port/nfft-3/).
+
+=== "Spack"
+
+    ```bash
+    spack install nfft
+    ```
+
+    The package builds one library for each precision that the `fftw`
+    package provides. It does not pass `--enable-all` or `--enable-openmp`,
+    so it has only the NFFT, NFCT and NFST modules and no OpenMP library.
+
+    Source: [Spack package nfft](https://packages.spack.io/package.html?name=nfft).
+
+Fedora and openSUSE have no current package. Fedora shipped `nfft` only in
+EPEL 7. For all other ecosystems, see Repology:
+[nfft](https://repology.org/project/nfft/) and
+[nfft-3](https://repology.org/project/nfft-3/). A Homebrew package is not
+available yet.
+
+## Source build
+
+To build by hand, for example for a module, precision or window that no
+package has, see [Build from source](build-from-source.md). The short form:
 
 ```bash
 git clone https://github.com/NFFT/nfft.git
