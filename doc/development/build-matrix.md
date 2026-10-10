@@ -12,7 +12,7 @@ lists what each workflow builds and runs.
 |------|--------|-----------|-------|
 | Window | Kaiser-Bessel, Gaussian, B-spline, sinc power | `--with-window=` with `kaiserbessel`, `gaussian`, `bspline` or `sinc` | `-DNFFT_WINDOW=` with the same names |
 | Precision | double, float, long double | none, `--enable-float`, `--enable-long-double` | none, `-DNFFT_ENABLE_FLOAT=ON`, `-DNFFT_ENABLE_LONG_DOUBLE=ON` |
-| OpenMP | off, on | `--enable-openmp` | `-DNFFT_ENABLE_OPENMP=ON`, the default |
+| OpenMP | off, on | `--enable-openmp` | `-DNFFT_ENABLE_OPENMP=ON`. The default is off. |
 
 The precisions exclude each other in one build tree. The Dirac window is not part
 of any CI matrix. The modules NNFFT, NSFFT, MRI, FPT, NFSFT and NFSOFT build in
