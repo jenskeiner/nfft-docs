@@ -13,6 +13,7 @@ the maintainer; the maintainer directly.
 | Id | Date | Scope | Decision | Source | Status |
 |----|------|-------|----------|--------|--------|
 | D1 | 2026-10-10 | All pages | Do not point readers to source locations (file and line in `nfft/`, `configure.ac` and similar) unless readers need to open that source themselves. State the fact only. | https://github.com/jenskeiner/nfft-docs/pull/70#issuecomment-6098681357 | active |
+| D2 | 2026-10-10 | All pages | Do not explain how browsers or other third-party tools work. Document the library only. | https://github.com/jenskeiner/nfft-docs/pull/70#discussion_r4238109951 | active |
 
 ## Standing rules
 
