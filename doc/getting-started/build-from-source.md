@@ -40,9 +40,9 @@ need, with a note on when they apply.
 `--enable-all` is off unless maintainer mode is on. The examples and the
 applications do not depend on `--enable-all`.
 
-Only NFCT and NFST compile in all three precisions. In single or long double
-precision, the other modules default to off, also with `--enable-all`. If you enable one of them explicitly,
-`configure` stops.
+The NFFT core, the solver, NFCT and NFST compile in all three precisions. In
+single or long double precision, the other modules default to off, also with
+`--enable-all`. If you enable one of them explicitly, `configure` stops.
 
 The [NFFT](../transforms/nfft.md) core and the [solver](../transforms/solver.md)
 are always built.
