@@ -172,7 +172,6 @@ EPEL 7. For all other ecosystems, see Repology:
 available yet.
 
 The badges below come from Repology and show the current package versions.
-The browser loads them from repology.org when the page opens.
 
 [![Packaging status for nfft](https://repology.org/badge/vertical-allrepos/nfft.svg)](https://repology.org/project/nfft/versions)
 
