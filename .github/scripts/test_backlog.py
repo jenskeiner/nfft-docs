@@ -464,6 +464,12 @@ def test_moves_never_touch_focus_items():
     assert got == [("I3", None)], got
 
 
+def test_analyst_focus_accepts_text_after_the_number():
+    its = items(node(2, "Focus", labels=FOCUS), node(7, author=B, title="Analysis: #2 install pages"),
+                node(8, author=B, title="Analysis: #23"))
+    assert backlog.analyst_focus(its, M) == (None, "every focus analysed")
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

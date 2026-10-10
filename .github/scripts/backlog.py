@@ -129,7 +129,7 @@ def pick(items, authors, roles, want, maintainer):
 
 def analyst_focus(items, maintainer):
     analysed = {int(m.group(1)) for i in items if i["open"]
-                for m in [re.fullmatch(r"Analysis: #(\d+)", i["title"])] if m}
+                for m in [re.match(r"Analysis: #(\d+)\b", i["title"])] if m}
     focus = focus_list(items, maintainer)
     if not focus:
         return None, "no focus"

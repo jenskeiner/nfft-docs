@@ -24,6 +24,9 @@ Skills: `backlog`, `site-comparison`.
    - Unclear: label `needs-info`, ask one precise question, stop on it.
    - A `focus` issue by the maintainer: remove `needs-triage`. Never add
      `ready-for-agent` or a type label to it.
+   - An `Analysis: #<n>` issue by the analyst: remove `needs-triage`. Never
+     add `ready-for-agent` or a type label to it. Close it when every issue
+     it lists is closed; then the analyst can review that focus again.
    - Otherwise: add the type label if missing, write or sharpen the
      acceptance criteria in the body (edit it), remove `needs-triage`, add
      `ready-for-agent`.
