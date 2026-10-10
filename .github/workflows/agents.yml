@@ -66,6 +66,7 @@ jobs:
           BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
           BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}
           BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
+          BACKLOG_MAINTAINER: ${{ vars.BACKLOG_MAINTAINER }}
         run: bash .github/scripts/agent-gate.sh "${{ steps.want.outputs.want }}"
 
       # Runs before the model, which never sees BACKLOG_TOKEN.
@@ -77,6 +78,7 @@ jobs:
           BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
           BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}
           BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
+          BACKLOG_MAINTAINER: ${{ vars.BACKLOG_MAINTAINER }}
         run: |
           python3 .github/scripts/backlog.py sync > "$RUNNER_TEMP/state.json"
           # Issue titles are in the state; a random delimiter cannot occur there.
@@ -97,7 +99,7 @@ jobs:
           model: ${{ steps.gate.outputs.model }}
           max_turns: ${{ steps.gate.outputs.max_turns }}
           # Quoted: a " #" inside an expression starts a YAML comment and leaves ${{ unclosed.
-          extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || steps.sync.outputs.prompt || '' }}"
+          extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || steps.gate.outputs.focus && format('Review focus issue number {0}. It was chosen by the gate.', steps.gate.outputs.focus) || steps.sync.outputs.prompt || '' }}"
           oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
       - name: Check the backlog plan
@@ -152,4 +154,5 @@ jobs:
           BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
           BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}
           BACKLOG_AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
+          BACKLOG_MAINTAINER: ${{ vars.BACKLOG_MAINTAINER }}
         run: python3 .github/scripts/backlog.py apply "$RUNNER_TEMP/plan/backlog.json"
