@@ -45,7 +45,7 @@ do not remove them.
 | MATLAB / Octave interface | yes | n/a | yes | partial |
 | Python interface | no | n/a | yes | no |
 | Fortran interface | no | yes | yes | no |
-| Migration from other libraries | n/a | yes | yes | no |
+| Migration from other libraries | n/a | yes | yes | partial |
 | Related software | partial | no | yes | no |
 | Users and citations | no | no | yes | no |
 | Publications | yes | no | yes | yes |
