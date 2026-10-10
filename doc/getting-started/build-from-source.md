@@ -70,7 +70,8 @@ name prefixes keep them apart. See the [API index](../api/index.md).
 ./configure --with-window=kaiserbessel
 ```
 
-`kaiserbessel` (the default), `gaussian`, `bspline`, `sinc` or `delta`. Any other value stops `configure`. The choice is
+`kaiserbessel` (the default), `gaussian`, `bspline`, `sinc` or `delta`. The `delta` window is deprecated and will be removed in a
+future release. Any other value stops `configure`. The choice is
 baked into the library. Which one you linked is reported by
 `nfft_get_window_name()`. What the window does is explained in the
 [guide](../guide/index.md).
