@@ -12,18 +12,34 @@ The backlog is GitHub Issues. Labels carry the state.
 | Group | Labels |
 |-------|--------|
 | Type, exactly one | `gap`, `new-section`, `api-gap`, `math`, `style`, `clarity`, `compare`, `upstream`, `meta`, `design` |
-| Maintainer input | `decision` (a ruling to record in `agents/DECISIONS.md`) |
+| Maintainer input | `decision` (a ruling to record in `agents/DECISIONS.md`), `focus` (an area to work on) |
 | State, exactly one | `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `in-progress`, `blocked`, `wontfix` |
 | Origin | `from-maintainer`, `agent` |
 | Backlog | `stale-candidate` (proposed for closing, the maintainer decides), `keep` (never stale) |
 | Upstream | `upstream-defect`, always with `ready-for-human`, never `ready-for-agent` |
 
 Pick order: the board `NFFT docs backlog` of the organization
-`nfft-docs-agents`. Column `Next` first, then `Backlog`, each top down. The
-maintainer owns `Next`. The product owner orders `Backlog`. The gate picks
-the first item with `ready-for-agent` and without `in-progress`, `blocked`
-or `needs-triage`. Only issues by the maintainer, by agents and by the
-workflows are on the board.
+`nfft-docs-agents`. Columns `Next`, `Focus`, `Backlog`, `Done`. The
+maintainer owns `Next` and `Focus`; `Focus` holds the open focus issues,
+most important first. The product owner orders `Backlog`. The gate picks
+from `Next`, then `Backlog`, top down, the first item with
+`ready-for-agent`, without `in-progress`, `blocked` or `needs-triage`, that
+is in scope: in `Next`, filed by the maintainer, of type `upstream` or
+`meta`, or a sub-issue of an open focus issue. Only issues by the
+maintainer, by agents and by the workflows are on the board.
+
+## Focus areas
+
+A focus issue is an open issue with label `focus` filed by the maintainer.
+Work for a focus is its sub-issue. Link an issue as a sub-issue:
+
+```
+parent=$(gh issue view <focus> --json id --jq .id)
+child=$(gh issue view <n> --json id --jq .id)
+gh api graphql -f query='mutation($p: ID!, $c: ID!) { addSubIssue(input: {issueId: $p, subIssueId: $c}) { issue { number } } }' -f p="$parent" -f c="$child"
+```
+
+An issue has at most one parent.
 
 ## Filing an issue
 
