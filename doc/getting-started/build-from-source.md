@@ -11,7 +11,7 @@ need [CUnit](http://cunit.sourceforge.net).
 ```bash
 ./configure --enable-all --enable-openmp
 make -j
-make check          # optional, needs --enable-tests and CUnit
+make check          # optional, see Testing
 sudo make install
 ```
 
@@ -32,8 +32,8 @@ default and the effect.
 | `--enable-nsfft` | value of `--enable-all` | [NSFFT](../transforms/nsfft.md). |
 | `--enable-mri` | value of `--enable-all` | The [MRI](../applications/mri.md) plans. |
 | `--enable-fpt` | value of `--enable-all` | [Fast polynomial transform](../transforms/fpt.md). |
-| `--enable-examples` | on | The programs under `examples/`. |
-| `--enable-applications` | on | The programs under `applications/`. |
+| `--enable-examples` | on | The example programs. |
+| `--enable-applications` | on | The application programs. |
 | `--enable-tests` | off | The CUnit test programs. See [Testing](#testing). |
 
 `--enable-all` is off unless maintainer mode is on. The examples and the
@@ -89,8 +89,7 @@ baked into the library. Which one you linked is reported by
 ./configure --enable-all --enable-openmp
 ```
 
-This adds a second library, `libnfft3_omp`, alongside the serial one, and a
-second test binary `tests/checkall_threads`. If the compiler does not support
+This adds a second library, `libnfft3_omp`, alongside the serial one. If the compiler does not support
 OpenMP, `configure` stops.
 
 `configure` looks for a threaded FFTW. It prefers
@@ -139,66 +138,43 @@ If FFTW is not where the compiler looks:
 
 | Flag | Default | Effect |
 |------|---------|--------|
-| `--enable-debug` | off | Replaces `CFLAGS` with `-g -O2` and the address and undefined behaviour sanitizers. Adds GCC warnings. |
-| `--enable-measure-time` | off | Measure the run time of the transforms and store it in the plans. |
+| `--enable-debug` | off | Builds with `-g -O2`, the address and undefined behaviour sanitizers and extra GCC warnings. Replaces `CFLAGS`. |
+| `--enable-measure-time` | off | Measures the run time of the transforms and stores it in the plans. |
 | `--enable-measure-time-fftw` | off | Also measures the time of the FFTW calls. |
-| `--enable-mips-zbus-timer` | off | Uses the MIPS ZBus cycle counter as the clock. |
-| `--enable-exhaustive-unit-tests` | off | The larger, slower test set. What CI runs. |
 
 ### Compiler optimization
 
 | Flag | Default | Effect |
 |------|---------|--------|
-| `--with-gcc-arch=ARCH` | `-march=native` if the compiler accepts it, else a guess | Pass `ARCH` to `-march` and `-mtune`. |
-| `--enable-portable-binary` | off | Do not use flags that tie the binary to the build machine, such as `-march=native`. |
+| `--with-gcc-arch=ARCH` | `-march=native` if the compiler accepts it | Pass `ARCH` to `-march` and `-mtune`. |
+| `--enable-portable-binary` | off | Do not tie the binary to the build machine. Use it if you run the library on another machine. |
 
-`configure` selects optimization flags only when you do not set `CFLAGS`. In a cross build it does not use
-`-march=native`.
+`configure` selects optimization flags only when you do not set `CFLAGS`.
 
-### Developer options
+### Options for library developers
 
-The options below are for work on NFFT itself. They are described under
-[Development](../development/index.md) and
-[Benchmarks](../development/benchmarks.md).
-
-| Flag | Default | Effect |
-|------|---------|--------|
-| `--enable-maintainer-mode` | off | Sets the default of `--enable-all` to on and adds GCC warnings. |
-| `--enable-benchmarks` | off | Build the benchmark programs. Needs CodSpeed, else `configure` stops. |
-| `--with-codspeed=DIR` | off | The CodSpeed C++ library in `DIR`. |
-| `--with-benchmarks-prefix=PREFIX` | empty | A prefix for the benchmark names. |
-| `--with-agnostic-benchmarks=FLAGS` | all on | Which benchmarks ignore the window, the precision or OpenMP. Used only in CI. |
-| `--enable-doxygen-doc` | on | Any Doxygen output, through `make doc`. Turn off with `--disable-doxygen-doc`. |
-| `--enable-doxygen-dot` | on | Graphs in the Doxygen output. |
-| `--enable-doxygen-html` | on | Doxygen HTML. |
-| `--enable-doxygen-chm`, `--enable-doxygen-chi` | off | Compressed HTML help, and its separate index. |
-| `--enable-doxygen-man` | off | Doxygen manual pages. |
-| `--enable-doxygen-rtf` | off | Doxygen RTF. |
-| `--enable-doxygen-xml` | off | Doxygen XML. |
-| `--enable-doxygen-pdf`, `--enable-doxygen-ps` | off | Doxygen PDF and PostScript. |
+`./configure --help` also lists options for benchmarks, the Doxygen output,
+the timer hardware and maintainer mode. You do not need them to build and use
+the library. They are described under
+[Development](../development/index.md).
 
 ## Testing
 
 ```bash
 ./configure --enable-tests
+make
 make check
 ```
 
-`make check` builds and runs these programs:
+`make check` runs the unit tests. They need [CUnit](http://cunit.sourceforge.net).
+Without `--enable-tests`, `make check` runs no test. With `--enable-tests` and
+no CUnit, `configure` stops. If CUnit is not in the default search path, use
+`--with-cunit-includedir` and `--with-cunit-libdir`. With `--enable-openmp`, the
+tests also run against the OpenMP library.
 
-- `tests/checkall`, the serial suite, linked against `libnfft3` It tests the NFFT, and the NFCT and
-  the NFST if those modules are on.
-- `tests/checkall_threads`, the same sources linked against `libnfft3_omp`, only with `--enable-openmp`.
-
-The tests need `--enable-tests` and CUnit. Without `--enable-tests`, the list
-is empty and `make check` runs no test. With
-`--enable-tests` and no CUnit, `configure` stops.
-
-A test program exits with a failure status if one CUnit test fails. `make check` then reports `FAIL` for that
-program and exits with a nonzero status. The details are in
-`tests/checkall.log` and in `tests/CUnitAutomated-Results.xml`. The suites, the
-accuracy report and the reference data are described under
-[Testing](../development/testing.md).
+If a test fails, `make check` prints `FAIL` for the test program and exits with
+a nonzero status. The suites, the accuracy report and the reference data are
+described under [Testing](../development/testing.md).
 
 ## Cleaning
 

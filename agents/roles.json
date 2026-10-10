@@ -1,7 +1,7 @@
 {
   "_comment": "Worker roles picked by the gate from the ready backlog. Keys are role names, files agents/<role>.md. Types are issue type labels. Edited by the meta role through meta issues.",
-  "writer": {"model": "claude-opus-5-5", "max_turns": 80, "types": ["gap", "new-section", "api-gap", "math"], "skills": ["writing-docs", "api-overlay", "math-from-sources", "snippets"]},
-  "editor": {"model": "claude-sonnet-5-5", "max_turns": 60, "types": ["style", "clarity"], "skills": ["writing-docs"]},
+  "writer": {"model": "claude-opus-5-5", "max_turns": 80, "types": ["gap", "new-section", "api-gap", "math"], "skills": ["writing-docs", "audience", "api-overlay", "math-from-sources", "snippets"]},
+  "editor": {"model": "claude-sonnet-5-5", "max_turns": 60, "types": ["style", "clarity"], "skills": ["writing-docs", "audience"]},
   "designer": {"model": "claude-sonnet-5-5", "max_turns": 60, "types": ["design"], "skills": ["site-design", "backlog"]},
   "meta":   {"model": "claude-opus-5-5", "max_turns": 80, "types": ["meta"], "skills": ["self-improvement", "backlog"]}
 }
