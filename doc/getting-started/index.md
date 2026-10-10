@@ -41,9 +41,8 @@ precision it was configured for: `libfftw3f` for float, `libfftw3` for double,
 
 Several package managers ship NFFT3. Each package below builds all modules
 (`--enable-all`), unless the tab says otherwise. Without that flag, the
-library has only the NFFT, NFCT and NFST modules
-(`nfft/configure.ac:193-204`). Each package uses the default Kaiser-Bessel
-window (`nfft/configure.ac:237-240`), unless the tab names a variant. Each
+library has only the NFFT, NFCT and NFST modules. Each package uses the
+default Kaiser-Bessel window, unless the tab names a variant. Each
 package is double precision only, unless the tab says otherwise.
 
 === "Debian and Ubuntu"
