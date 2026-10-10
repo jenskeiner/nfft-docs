@@ -11,6 +11,7 @@ import backlog  # noqa: E402
 
 REPO = "jenskeiner/nfft-docs"
 AUTHORS = {"jenskeiner", "claude[bot]"}
+M = "jenskeiner"
 ROLES = {
     "_comment": "x",
     "writer": {"types": ["gap", "new-section"]},
@@ -18,16 +19,22 @@ ROLES = {
 }
 
 
+def par(n, state="OPEN", author=("User", "jenskeiner"), labels=("focus",)):
+    return {"number": n, "state": state, "author": {"__typename": author[0], "login": author[1]},
+            "labels": {"nodes": [{"name": x} for x in labels]}}
+
+
 def node(n, status="Backlog", labels=("gap", "ready-for-agent"), author=("User", "jenskeiner"),
-         state="OPEN", repo=REPO, kind="Issue"):
+         state="OPEN", repo=REPO, kind="Issue", parent=None, title=None):
     return {
         "id": f"I{n}",
         "fieldValueByName": {"name": status} if status else None,
         "content": {
-            "__typename": kind, "number": n, "title": f"t{n}", "state": state,
+            "__typename": kind, "number": n, "title": title or f"t{n}", "state": state,
             "repository": {"nameWithOwner": repo},
             "author": {"__typename": author[0], "login": author[1]},
             "labels": {"nodes": [{"name": x} for x in labels]},
+            "parent": parent,
         },
     }
 
@@ -37,7 +44,7 @@ def items(*nodes):
 
 
 def pick(*args):
-    return backlog.pick(*args)[0]
+    return backlog.pick(*args, M)[0]
 
 
 def test_login_normalizes_bots():
@@ -102,14 +109,14 @@ def test_pick_logs_skipped_next_items():
         node(2, "Next", labels=("meta", "ready-for-agent")),
         node(3, "Next", labels=("gap", "ready-for-agent", "blocked")),
         node(4, "Backlog", labels=("gap",)),
-        node(5)), AUTHORS, ROLES, "worker")
+        node(5)), AUTHORS, ROLES, "worker", M)
     assert got == (5, "writer"), got
     assert skipped == ["skip #1: not ready-for-agent", "skip #2: no role for its type",
                        "skip #3: labelled blocked"], skipped
 
 
 def test_pick_accepts_bot_author():
-    got = pick(items(node(1, author=("Bot", "claude"))), AUTHORS, ROLES, "worker")
+    got = pick(items(node(1, author=("Bot", "claude"), parent=par(9))), AUTHORS, ROLES, "worker")
     assert got == (1, "writer"), got
 
 
@@ -117,7 +124,7 @@ def test_env_requires_authors():
     saved = dict(os.environ)
     try:
         os.environ.update(GITHUB_REPOSITORY=REPO, BACKLOG_OWNER="nfft-docs-agents",
-                          BACKLOG_PROJECT="3", BACKLOG_AUTHORS=" ")
+                          BACKLOG_PROJECT="3", BACKLOG_AUTHORS=" ", BACKLOG_MAINTAINER=M)
         try:
             backlog.env()
         except SystemExit as e:
@@ -125,7 +132,15 @@ def test_env_requires_authors():
         else:
             raise AssertionError("no exit")
         os.environ["BACKLOG_AUTHORS"] = "jenskeiner claude[bot]"
-        assert backlog.env() == ("nfft-docs-agents", 3, AUTHORS, REPO)
+        assert backlog.env() == ("nfft-docs-agents", 3, AUTHORS, REPO, M)
+        os.environ["BACKLOG_MAINTAINER"] = ""
+        try:
+            backlog.env()
+        except SystemExit as e:
+            assert "BACKLOG_MAINTAINER" in str(e.code), e.code
+        else:
+            raise AssertionError("no exit")
+        os.environ["BACKLOG_MAINTAINER"] = M
         os.environ["BACKLOG_OWNER"] = ""
         try:
             backlog.env()
@@ -225,22 +240,23 @@ def test_stale_truncates_reason():
 
 def test_plan_sync_adds_missing_and_fixes_empty_status():
     its = board((1, "Backlog", U), (2, None, U))
-    issues = [{"n": 1, "id": "N1", "author": "jenskeiner"},
-              {"n": 3, "id": "N3", "author": "claude[bot]"},
-              {"n": 4, "id": "N4", "author": "stranger"}]
-    add, unset = backlog.plan_sync(its, issues, AUTHORS)
-    assert [x["n"] for x in add] == [3] and [i["n"] for i in unset] == [2], (add, unset)
+    issues = [{"n": 1, "id": "N1", "author": "jenskeiner", "labels": []},
+              {"n": 3, "id": "N3", "author": "claude[bot]", "labels": []},
+              {"n": 4, "id": "N4", "author": "stranger", "labels": []}]
+    add, fix = backlog.plan_sync(its, issues, AUTHORS, M)
+    assert [(x["n"], w) for x, w in add] == [(3, "Backlog")], add
+    assert [(i["n"], w) for i, w in fix] == [(2, "Backlog")], fix
 
 
 def test_state_rows_and_stale_review():
     import datetime
     its = board((1, "Backlog", U), (2, "Next", B), (3, "Done", U))
-    got = backlog.state(its, AUTHORS, datetime.date(2026, 10, 12))
+    got = backlog.state(its, AUTHORS, datetime.date(2026, 10, 12), M)
     assert [r["n"] for r in got["next"]] == [2] and [r["n"] for r in got["backlog"]] == [1]
     assert got["next"][0] == {"n": 2, "title": "t2", "author": "claude[bot]",
                               "labels": ["gap", "ready-for-agent"]}, got
     assert got["stale_review"] is True
-    assert backlog.state(its, AUTHORS, datetime.date(2026, 10, 13))["stale_review"] is False
+    assert backlog.state(its, AUTHORS, datetime.date(2026, 10, 13), M)["stale_review"] is False
 
 
 def test_load_plan_rejects_large_and_broken_files():
@@ -287,14 +303,15 @@ def test_stale_skips_foreign_authors():
 
 def test_plan_sync_resets_reopened_done_items():
     its = items(node(1, "Done"), node(2, "Done", state="CLOSED"))
-    add, unset = backlog.plan_sync(its, [{"n": 1, "id": "N1", "author": "jenskeiner"}], AUTHORS)
-    assert add == [] and [i["n"] for i in unset] == [1], (add, unset)
+    issues = [{"n": 1, "id": "N1", "author": "jenskeiner", "labels": ["gap"]}]
+    add, fix = backlog.plan_sync(its, issues, AUTHORS, M)
+    assert add == [] and [(i["n"], w) for i, w in fix] == [(1, "Backlog")], (add, fix)
 
 
-def test_assume_backlog_marks_items_the_sync_wrote():
+def test_assume_status_marks_items_the_sync_wrote():
     its = items(node(1, None), node(2, "Done"), node(3, "Next"), node(4, None))
-    got = backlog.assume_backlog(its, {1, 2})
-    assert [(i["n"], i["status"]) for i in got] == [(1, "Backlog"), (2, "Backlog"),
+    got = backlog.assume_status(its, {1: "Backlog", 2: "Focus"})
+    assert [(i["n"], i["status"]) for i in got] == [(1, "Backlog"), (2, "Focus"),
                                                     (3, "Next"), (4, None)], got
 
 
@@ -318,7 +335,8 @@ def test_env_rejects_non_numeric_project():
     saved = dict(os.environ)
     try:
         os.environ.update(GITHUB_REPOSITORY=REPO, BACKLOG_OWNER="nfft-docs-agents",
-                          BACKLOG_PROJECT="one", BACKLOG_AUTHORS="jenskeiner")
+                          BACKLOG_PROJECT="one", BACKLOG_AUTHORS="jenskeiner",
+                          BACKLOG_MAINTAINER=M)
         try:
             backlog.env()
         except SystemExit as e:
@@ -350,6 +368,100 @@ def test_load_plan_names_recursion_errors():
                 raise AssertionError("no exit")
     finally:
         backlog.json.load = saved
+
+
+FOCUS = ("focus", "from-maintainer")
+
+
+def test_parse_reads_parent():
+    got = items(node(1, parent=par(9)), node(2))
+    assert got[0]["parent"] == {"n": 9, "open": True, "author": "jenskeiner",
+                                "labels": ["focus"]}, got
+    assert got[1]["parent"] is None
+
+
+def test_pick_takes_sub_issue_of_active_focus():
+    got = pick(items(node(1, author=B), node(2, author=B, parent=par(9))),
+               AUTHORS, ROLES, "worker")
+    assert got == (2, "writer"), got
+
+
+def test_pick_skips_agent_issue_outside_focus_and_logs_it():
+    got, skipped = backlog.pick(items(node(1, author=B)), AUTHORS, ROLES, "worker", M)
+    assert got is None and skipped == ["skip #1: outside focus"], (got, skipped)
+
+
+def test_pick_skips_sub_issue_of_inactive_focus():
+    for parent in (par(9, state="CLOSED"), par(9, author=("Bot", "claude")),
+                   par(9, labels=("gap",))):
+        assert pick(items(node(1, author=B, parent=parent)), AUTHORS, ROLES, "worker") is None
+
+
+def test_pick_exceptions_run_without_focus():
+    roles = {"writer": {"types": ["gap"]}, "meta": {"types": ["meta"]},
+             "watcher": {"types": ["upstream"]}}
+    assert pick(items(node(1, "Next", author=B)), AUTHORS, roles, "worker") == (1, "writer")
+    assert pick(items(node(2, author=U)), AUTHORS, roles, "worker") == (2, "writer")
+    assert pick(items(node(3, author=B, labels=("meta", "ready-for-agent"))),
+                AUTHORS, roles, "worker") == (3, "meta")
+    assert pick(items(node(4, author=B, labels=("upstream", "gap", "ready-for-agent"))),
+                AUTHORS, roles, "worker") == (4, "writer")
+
+
+def test_pick_never_takes_a_focus_issue():
+    its = items(node(1, "Next", labels=FOCUS + ("gap", "ready-for-agent")))
+    got, skipped = backlog.pick(its, AUTHORS, ROLES, "worker", M)
+    assert got is None and skipped == ["skip #1: focus issue"], (got, skipped)
+
+
+def test_focus_list_puts_focus_column_first():
+    its = items(node(1, "Backlog", labels=FOCUS), node(2, "Focus", labels=FOCUS),
+                node(3, "Focus", labels=FOCUS, author=B), node(4, "Focus", labels=FOCUS),
+                node(5, "Focus", labels=FOCUS, state="CLOSED"))
+    assert [i["n"] for i in backlog.focus_list(its, M)] == [2, 4, 1]
+
+
+def test_analyst_focus_takes_first_focus_without_open_analysis():
+    its = items(node(2, "Focus", labels=FOCUS), node(4, "Focus", labels=FOCUS),
+                node(7, author=B, title="Analysis: #2"),
+                node(8, author=B, title="Analysis: #4", state="CLOSED"))
+    assert backlog.analyst_focus(its, M) == (4, None)
+
+
+def test_analyst_focus_reasons():
+    assert backlog.analyst_focus(items(node(1)), M) == (None, "no focus")
+    its = items(node(2, "Focus", labels=FOCUS), node(7, author=B, title="Analysis: #2"))
+    assert backlog.analyst_focus(its, M) == (None, "every focus analysed")
+
+
+def test_plan_sync_moves_focus_issues_into_focus():
+    its = items(node(1, "Backlog", labels=FOCUS), node(2, "Next", labels=FOCUS),
+                node(3, "Focus", labels=FOCUS), node(4, "Focus", labels=FOCUS, author=B),
+                node(5, "Focus"))
+    issues = [{"n": 6, "id": "N6", "author": "jenskeiner", "labels": ["focus"]},
+              {"n": 7, "id": "N7", "author": "claude[bot]", "labels": ["focus"]}]
+    add, fix = backlog.plan_sync(its, issues, AUTHORS, M)
+    assert [(x["n"], w) for x, w in add] == [(6, "Focus"), (7, "Backlog")], add
+    assert [(i["n"], w) for i, w in fix] == [(1, "Focus"), (2, "Focus"), (4, "Backlog"),
+                                             (5, "Backlog")], fix
+
+
+def test_state_lists_focus_with_sub_issues():
+    import datetime
+    its = items(node(9, "Focus", labels=FOCUS, title="[Focus] NFSFT API"),
+                node(1, author=B, parent=par(9)),
+                node(2, author=B, parent=par(9), labels=("gap", "needs-triage")),
+                node(3, author=B, parent=par(9), state="CLOSED"))
+    got = backlog.state(its, AUTHORS, datetime.date(2026, 10, 13), M)
+    assert got["focus"] == [{"n": 9, "title": "[Focus] NFSFT API", "sub": [1, 2],
+                             "ready": 1}], got["focus"]
+    assert [r["n"] for r in got["backlog"]] == [1, 2], got["backlog"]
+
+
+def test_moves_never_touch_focus_items():
+    its = items(node(1, "Focus", labels=FOCUS), node(2), node(3))
+    got = backlog.moves(its, AUTHORS, backlog.final_order([1, 3, 2], its, AUTHORS))
+    assert got == [("I3", None)], got
 
 
 if __name__ == "__main__":
