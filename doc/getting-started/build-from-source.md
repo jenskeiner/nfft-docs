@@ -42,15 +42,14 @@ applications do not depend on `--enable-all`.
 
 The NFFT core, the solver, NFCT and NFST compile in all three precisions. In
 single or long double precision, the other modules default to off, also with
-`--enable-all`. If you enable one of them explicitly, `configure` stops.
+`--enable-all`. If you enable one of them explicitly, `configure` fails with an error.
 
 The [NFFT](../transforms/nfft.md) core and the [solver](../transforms/solver.md)
 are always built.
 
 ### Precision
 
-The same C sources compile in three precisions. They are mutually exclusive,
-and each one needs its **own configured tree**.
+The same C sources compile in three precisions. Each one needs its **own configured tree**.
 
 | Flag | Real type | Library | FFTW variant |
 |------|-----------|---------|--------------|
@@ -58,8 +57,7 @@ and each one needs its **own configured tree**.
 | `--enable-float` (or `--enable-single`) | `float` | `libnfft3f` | `libfftw3f` |
 | `--enable-long-double` | `long double` | `libnfft3l` | `libfftw3l` |
 
-Both flags are off by default. If you give
-both, `configure` stops.
+Both flags are off by default. They are mutually exclusive.
 
 All three can be installed side by side and linked into the same program; the
 name prefixes keep them apart. See the [API index](../api/index.md).
@@ -71,7 +69,7 @@ name prefixes keep them apart. See the [API index](../api/index.md).
 ```
 
 `kaiserbessel` (the default), `gaussian`, `bspline`, `sinc` or `delta`. The `delta` window is deprecated and will be removed in a
-future release. Any other value stops `configure`. The choice is
+future release. Any other value makes `configure` fail with an error. The choice is
 baked into the library. Which one you linked is reported by
 `nfft_get_window_name()`. What the window does is explained in the
 [guide](../guide/index.md).
@@ -92,7 +90,7 @@ baked into the library. Which one you linked is reported by
 ```
 
 This adds a second library, `libnfft3_omp`, alongside the serial one. If the compiler does not support
-OpenMP, `configure` stops.
+OpenMP, `configure` fails with an error.
 
 `configure` looks for a threaded FFTW. It prefers
 the OpenMP variant of FFTW. If it finds only the generic threads variant, it
@@ -115,7 +113,7 @@ thread.
 | `--with-octave-includedir=DIR` | detected | The Octave include directory. |
 
 `--with-matlab` and `--with-octave` exclude each other. With `--enable-long-double`, the MATLAB
-interface stops `configure`.
+interface makes `configure` fail with an error.
 
 ### Finding FFTW and CUnit
 
@@ -163,7 +161,7 @@ describes how to run the programs.
 |------|---------|--------|
 | `--enable-benchmarks` | off | Build the benchmark programs. |
 | `--with-benchmarks-prefix=PREFIX` | empty | Prefix for the names of the benchmarks. |
-| `--with-agnostic-benchmarks=FLAGS` | all on | Choose which benchmarks to build. `FLAGS` is a comma-separated list of `parameter:flag` pairs, for example `window:1,openmp:0,precision:1`. The parameters are `window`, `openmp` and `precision`. The flag is `0` or `1`. Parameters that you do not list are off. Any other parameter stops `configure`. |
+| `--with-agnostic-benchmarks=FLAGS` | all on | Choose which benchmarks to build. `FLAGS` is a comma-separated list of `parameter:flag` pairs, for example `window:1,openmp:0,precision:1`. The parameters are `window`, `openmp` and `precision`. The flag is `0` or `1`. Parameters that you do not list are off. Any other parameter makes `configure` fail with an error. |
 | `--with-codspeed=DIR` | off | Link the benchmarks with the CodSpeed C++ library in `DIR`. Use it if you track the benchmark results with CodSpeed. |
 
 ### Documentation output
@@ -204,7 +202,7 @@ make check
 
 `make check` runs the unit tests. They need [CUnit](http://cunit.sourceforge.net).
 Without `--enable-tests`, `make check` runs no test. With `--enable-tests` and
-no CUnit, `configure` stops. If CUnit is not in the default search path, use
+no CUnit, `configure` fails with an error. If CUnit is not in the default search path, use
 `--with-cunit-includedir` and `--with-cunit-libdir`. With `--enable-openmp`, the
 tests also run against the OpenMP library.
 
