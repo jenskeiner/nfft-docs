@@ -314,6 +314,44 @@ def test_read_until_gives_up_with_a_message():
         raise AssertionError("no exit")
 
 
+def test_env_rejects_non_numeric_project():
+    saved = dict(os.environ)
+    try:
+        os.environ.update(GITHUB_REPOSITORY=REPO, BACKLOG_OWNER="nfft-docs-agents",
+                          BACKLOG_PROJECT="one", BACKLOG_AUTHORS="jenskeiner")
+        try:
+            backlog.env()
+        except SystemExit as e:
+            assert "BACKLOG_PROJECT" in str(e.code), e.code
+        else:
+            raise AssertionError("no exit")
+    finally:
+        os.environ.clear()
+        os.environ.update(saved)
+
+
+def test_load_plan_names_recursion_errors():
+    import tempfile
+
+    def deep(fh):
+        raise RecursionError("maximum recursion depth exceeded")
+    saved = backlog.json.load
+    backlog.json.load = deep
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "backlog.json")
+            with open(p, "w") as fh:
+                fh.write("[]")
+            try:
+                backlog.load_plan(p)
+            except SystemExit as e:
+                assert "invalid backlog.json" in str(e.code), e.code
+            else:
+                raise AssertionError("no exit")
+    finally:
+        backlog.json.load = saved
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

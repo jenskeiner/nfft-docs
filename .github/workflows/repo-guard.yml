@@ -50,6 +50,7 @@ jobs:
           }
           for name in BACKLOG_TOKEN GUARD_TOKEN; do
             token=${!name}
+            if [ -z "$token" ]; then warn "$name" "it is not set"; continue; fi
             if ! head=$(GH_TOKEN=$token gh api -i /rate_limit 2>&1); then
               warn "$name" "the API rejects it"; continue
             fi
@@ -76,6 +77,8 @@ jobs:
           N: ${{ github.event.issue.number }}
         run: |
           if [ -z "${AUTHORS// /}" ]; then echo "BACKLOG_AUTHORS is not set" >&2; exit 1; fi
+          # claude[bot] is a glob pattern; split on blanks only.
+          set -f
           for a in $AUTHORS; do
             if [ "$a" = "$AUTHOR" ]; then echo "allowed: $AUTHOR"; exit 0; fi
           done
