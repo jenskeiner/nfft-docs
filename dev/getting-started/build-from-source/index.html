@@ -600,6 +600,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cmake-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        CMake build
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CMake build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Options
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modules_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Modules
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#differences-from-the-autotools-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Differences from the Autotools build
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-fftw-with-cmake" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Finding FFTW with CMake
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-installed-library-from-cmake" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Using the installed library from CMake
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#testing" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2782,6 +2854,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cmake-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        CMake build
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CMake build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Options
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modules_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Modules
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#differences-from-the-autotools-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Differences from the Autotools build
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-fftw-with-cmake" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Finding FFTW with CMake
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-installed-library-from-cmake" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Using the installed library from CMake
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#testing" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3335,10 +3479,215 @@ form is <code>--disable-doxygen-NAME</code>.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="cmake-build">CMake build<a class="headerlink" href="#cmake-build" title="Permanent link">&para;</a></h2>
+<p>CMake builds the same sources. It needs CMake 3.20 or later, and 3.24 or
+later for the Julia interface. You do not run <code>./bootstrap.sh</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Autotools is the authoritative build</p>
+<p>The project supports CMake on a best-effort basis. Autotools is the
+authoritative build system. If the two builds differ, the Autotools build
+is the reference. Use Autotools when you need an option that only
+<code>configure</code> offers.</p>
+</div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w">    </span><span class="c1"># only with -DNFFT_ENABLE_TESTS=ON</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>cmake<span class="w"> </span>--install<span class="w"> </span>build<span class="w"> </span>--prefix<span class="w"> </span>/usr/local
+</span></code></pre></div>
+<p>Set an option with <code>-D&lt;name&gt;=&lt;value&gt;</code> in the first command. Without a build
+type, CMake uses <code>Release</code>.</p>
+<h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BUILD_SHARED_LIBS</code></td>
+<td><code>ON</code></td>
+<td>Build shared libraries. <code>OFF</code> builds static libraries.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_FLOAT</code></td>
+<td><code>OFF</code></td>
+<td>Build <code>libnfft3f</code> in <code>float</code> precision.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_LONG_DOUBLE</code></td>
+<td><code>OFF</code></td>
+<td>Build <code>libnfft3l</code> in <code>long double</code> precision.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_OPENMP</code></td>
+<td><code>OFF</code></td>
+<td>Also build the OpenMP library <code>libnfft3_omp</code>.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_MAXOPT</code></td>
+<td><code>ON</code></td>
+<td>Add aggressive optimization flags, for example <code>-O3 -ffast-math -march=native</code>. Skipped when <code>CMAKE_C_FLAGS</code> is set.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_TESTS</code></td>
+<td><code>OFF</code></td>
+<td>Build the CUnit test programs. Without CUnit, the configure step skips them.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_EXHAUSTIVE_UNIT_TESTS</code></td>
+<td><code>OFF</code></td>
+<td>The larger, slower test set. Available only with <code>NFFT_ENABLE_TESTS=ON</code>.</td>
+</tr>
+<tr>
+<td><code>NFFT_BENCHMARK_MODE</code></td>
+<td><code>off</code></td>
+<td><code>off</code>, <code>simulation</code> or <code>walltime</code>. A value other than <code>off</code> builds the <a href="../../development/benchmarks/">benchmarks</a> in that mode.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_EXAMPLES</code></td>
+<td><code>ON</code></td>
+<td>Build the programs under <code>examples/</code>. They are not installed.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_APPLICATIONS</code></td>
+<td><code>ON</code></td>
+<td>Build the programs under <code>applications/</code>. They are not installed.</td>
+</tr>
+<tr>
+<td><code>NFFT_WINDOW</code></td>
+<td><code>kaiserbessel</code></td>
+<td>The window function: <code>kaiserbessel</code>, <code>gaussian</code>, <code>bspline</code>, <code>sinc</code> or <code>dirac</code>.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_JULIA</code></td>
+<td><code>OFF</code></td>
+<td>The Julia interface. Double precision and shared libraries only.</td>
+</tr>
+<tr>
+<td><code>NFFT_WITH_OCTAVE</code></td>
+<td><code>OFF</code></td>
+<td>The Octave interface. Not with <code>long double</code>.</td>
+</tr>
+<tr>
+<td><code>NFFT_WITH_MATLAB</code></td>
+<td>empty</td>
+<td>Path to a MATLAB installation. A non-empty path builds the MATLAB interface. Not with <code>long double</code>.</td>
+</tr>
+<tr>
+<td><code>NFFT_ENABLE_MATLAB_THREADS</code></td>
+<td>the value of <code>NFFT_ENABLE_OPENMP</code></td>
+<td>Build the Octave or MATLAB interface with the OpenMP kernel. Available only with one of these interfaces. Needs <code>NFFT_ENABLE_OPENMP=ON</code>.</td>
+</tr>
+<tr>
+<td><code>NFFT_VERSION_TYPE</code></td>
+<td><code>alpha</code></td>
+<td>The suffix of the version string.</td>
+</tr>
+<tr>
+<td><code>NFFT_INSTALL_CMAKEDIR</code></td>
+<td><code>&lt;libdir&gt;/cmake/nfft3</code></td>
+<td>The install directory of the CMake package files. Float and long double add <code>f</code> or <code>l</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The configure step stops with an error for these combinations:</p>
+<ul>
+<li><code>NFFT_ENABLE_FLOAT</code> and <code>NFFT_ENABLE_LONG_DOUBLE</code> together.</li>
+<li><code>NFFT_ENABLE_JULIA</code> with <code>float</code> or <code>long double</code>, or with <code>BUILD_SHARED_LIBS=OFF</code>.</li>
+<li><code>NFFT_WITH_OCTAVE</code> and <code>NFFT_WITH_MATLAB</code> together.</li>
+</ul>
+<p>As with Autotools, each precision and each window needs its own build tree.</p>
+<h3 id="modules_1">Modules<a class="headerlink" href="#modules_1" title="Permanent link">&para;</a></h3>
+<p>CMake has no module options. It always builds the NFFT, the NFCT, the NFST and
+the solver. In double precision it also builds the NNFFT, the NSFFT, the MRI
+plans, the FPT, the NFSFT and the NFSOFT. These six modules build in double
+precision only.</p>
+<p>A double precision CMake build thus has the modules of <code>./configure --enable-all</code>.</p>
+<h3 id="differences-from-the-autotools-build">Differences from the Autotools build<a class="headerlink" href="#differences-from-the-autotools-build" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Autotools</th>
+<th>CMake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modules</td>
+<td>One flag for each module.</td>
+<td>No module flags. The precision selects the modules.</td>
+</tr>
+<tr>
+<td>Julia interface</td>
+<td>On with <code>--enable-all</code> in a double precision, shared build.</td>
+<td>Off. Set <code>-DNFFT_ENABLE_JULIA=ON</code>.</td>
+</tr>
+<tr>
+<td>Dirac window</td>
+<td><code>--with-window=delta</code>. <code>configure</code> rejects <code>dirac</code>.</td>
+<td><code>-DNFFT_WINDOW=dirac</code>.</td>
+</tr>
+<tr>
+<td>Optimization flags</td>
+<td>Chosen by <code>configure</code> unless you set <code>CFLAGS</code>.</td>
+<td><code>NFFT_ENABLE_MAXOPT</code>, on by default. Skipped when you set <code>CMAKE_C_FLAGS</code>.</td>
+</tr>
+<tr>
+<td>Debug build, timing, portable binary</td>
+<td><code>--enable-debug</code>, <code>--enable-measure-time</code>, <code>--enable-measure-time-fftw</code>, <code>--enable-portable-binary</code>.</td>
+<td>No such options.</td>
+</tr>
+<tr>
+<td>Location of FFTW</td>
+<td><code>--with-fftw3</code>, <code>--with-fftw3-includedir</code>, <code>--with-fftw3-libdir</code>.</td>
+<td><code>FFTW3_ROOT</code>, <code>FFTW3_INCLUDEDIR</code>, <code>FFTW3_LIBDIR</code>.</td>
+</tr>
+<tr>
+<td>Running the tests</td>
+<td><code>make check</code>.</td>
+<td><code>ctest</code>.</td>
+</tr>
+<tr>
+<td>Installed files</td>
+<td>Libraries, headers and pkg-config files.</td>
+<td>The same, and the CMake package files.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="finding-fftw-with-cmake">Finding FFTW with CMake<a class="headerlink" href="#finding-fftw-with-cmake" title="Permanent link">&para;</a></h3>
+<p>If FFTW is not where CMake looks, give its root:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DFFTW3_ROOT<span class="o">=</span>/opt/fftw
+</span></code></pre></div>
+<p><code>FFTW3_ROOT</code> can also be an environment variable. <code>FFTW3_INCLUDEDIR</code> and
+<code>FFTW3_LIBDIR</code> give the two directories separately. CMake looks for the FFTW
+library of the selected precision, and for its <code>_omp</code> and <code>_threads</code> variants.</p>
+<h3 id="using-the-installed-library-from-cmake">Using the installed library from CMake<a class="headerlink" href="#using-the-installed-library-from-cmake" title="Permanent link">&para;</a></h3>
+<p>The install writes these files to <code>&lt;libdir&gt;/cmake/nfft3</code>, where <code>&lt;libdir&gt;</code> is
+the library directory of the install, for example <code>lib</code>:</p>
+<ul>
+<li><code>NFFT3Config.cmake</code> and <code>NFFT3ConfigVersion.cmake</code>.</li>
+<li><code>NFFT3Targets.cmake</code>, with the imported target <code>NFFT3::nfft3</code>.</li>
+<li><code>FindFFTW3.cmake</code>, which the package uses to find FFTW.</li>
+</ul>
+<p>A float build writes <code>NFFT3fConfig.cmake</code> to <code>&lt;libdir&gt;/cmake/nfft3f</code> and exports
+<code>NFFT3::nfft3f</code>. A long double build uses <code>l</code> in the same places. The package
+accepts a request for the same major version. The install also writes the
+pkg-config file <code>nfft3.pc</code>, <code>nfft3f.pc</code> or <code>nfft3l.pc</code>.</p>
+<p>In your project:</p>
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">find_package</span><span class="p">(</span><span class="s">NFFT3</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">my_program</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">NFFT3::nfft3</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The OpenMP library <code>libnfft3_omp</code> is installed, but it is not a target of the
+package, and the pkg-config file names only the serial library. Link it by
+name, <code>-lnfft3_omp</code>, with the OpenMP flag of your compiler.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./configure<span class="w"> </span>--enable-tests
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>make
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>make<span class="w"> </span>check
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>./configure<span class="w"> </span>--enable-tests
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>make
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>make<span class="w"> </span>check
 </span></code></pre></div>
 <p><code>make check</code> runs the unit tests. They need <a href="http://cunit.sourceforge.net">CUnit</a>.
 Without <code>--enable-tests</code>, <code>make check</code> runs no test. With <code>--enable-tests</code> and
@@ -3349,8 +3698,8 @@ tests also run against the OpenMP library.</p>
 a nonzero status. The suites, the accuracy report and the reference data are
 described under <a href="../../development/testing/">Testing</a>.</p>
 <h2 id="cleaning">Cleaning<a class="headerlink" href="#cleaning" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>clean<span class="w">       </span><span class="c1"># object files</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>make<span class="w"> </span>distclean<span class="w">   </span><span class="c1"># everything configure produced</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>make<span class="w"> </span>clean<span class="w">       </span><span class="c1"># object files</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>make<span class="w"> </span>distclean<span class="w">   </span><span class="c1"># everything configure produced</span>
 </span></code></pre></div>
 <p>A second precision or a second window means a second configured tree, not a
 <code>make clean</code> in this one.</p>
