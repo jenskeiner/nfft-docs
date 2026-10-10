@@ -298,6 +298,22 @@ def test_assume_backlog_marks_items_the_sync_wrote():
                                                     (3, "Next"), (4, None)], got
 
 
+def test_read_until_waits_for_written_items():
+    reads = iter([items(node(1)), items(node(1)), items(node(1), node(2))])
+    slept = []
+    got = backlog.read_until(lambda: next(reads), {1, 2}, sleep=slept.append)
+    assert [i["n"] for i in got] == [1, 2] and slept == [2.0, 4.0], (got, slept)
+
+
+def test_read_until_gives_up_with_a_message():
+    try:
+        backlog.read_until(lambda: items(node(1)), {1, 2}, sleep=lambda s: None)
+    except SystemExit as e:
+        assert "[2] not readable" in str(e.code), e.code
+    else:
+        raise AssertionError("no exit")
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):

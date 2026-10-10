@@ -16,6 +16,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 
 SKIP = {"in-progress", "blocked", "needs-triage"}
 AGENT = "claude[bot]"
@@ -171,6 +172,18 @@ def assume_backlog(items, written):
     return [{**i, "status": "Backlog"} if i["n"] in written else i for i in items]
 
 
+def read_until(read, written, tries=6, wait=2.0, sleep=time.sleep):
+    # A read right after a write can still miss new items.
+    for k in range(tries):
+        items = read()
+        missing = written - {i["n"] for i in items}
+        if not missing:
+            return items
+        if k + 1 < tries:
+            sleep(wait * (k + 1))
+    sys.exit(f"board: items {sorted(missing)} not readable after the write")
+
+
 def state(items, authors, today):
     def row(i):
         return {"n": i["n"], "title": i["title"], "author": i["author"], "labels": i["labels"]}
@@ -312,7 +325,8 @@ def sync():
             graphql(SET_STATUS, p=project, i=i["id"], f=field, o=options["Backlog"])
             written.add(i["n"])
     if written:
-        items = assume_backlog(read_board(owner, number, repo)[3], written)
+        items = assume_backlog(
+            read_until(lambda: read_board(owner, number, repo)[3], written), written)
     return project, authors, items
 
 
