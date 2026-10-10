@@ -34,6 +34,8 @@ def env():
                         ("BACKLOG_PROJECT", project), ("BACKLOG_AUTHORS", authors)):
         if not value:
             sys.exit(f"{name} is not set")
+    if not project.isdigit():
+        sys.exit(f"BACKLOG_PROJECT must be a project number, not {project!r}")
     return owner, int(project), authors, repo
 
 
@@ -199,7 +201,7 @@ def load_plan(path):
             sys.exit(f"invalid backlog.json: larger than {MAX_BYTES} bytes")
         with open(path) as fh:
             return json.load(fh)
-    except (OSError, ValueError) as e:
+    except (OSError, ValueError, RecursionError) as e:
         sys.exit(f"invalid backlog.json: {e}")
 
 

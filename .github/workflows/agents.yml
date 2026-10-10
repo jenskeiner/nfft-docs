@@ -31,9 +31,10 @@ jobs:
       issues: write
       id-token: write
     outputs:
-      po: ${{ steps.gate.outputs.run == 'true' && steps.gate.outputs.role == 'product-owner' }}
+      po: ${{ steps.plan.outputs.ok == 'true' }}
+    # One group per role, so a dispatch waits for the cron run of the same role.
     concurrency:
-      group: agents-${{ inputs.role || github.event.schedule }}
+      group: agents-${{ inputs.role || (github.event.schedule == '0 */6 * * *' && 'product-owner') || (github.event.schedule == '0 7 */2 * *' && 'analyst') || 'worker' }}
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
@@ -99,13 +100,23 @@ jobs:
           extra_prompt: "${{ steps.gate.outputs.issue && format('Work issue number {0}. It was chosen by the gate; skip the pick.', steps.gate.outputs.issue) || steps.sync.outputs.prompt || '' }}"
           oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
+      - name: Check the backlog plan
+        id: plan
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
+        run: |
+          if [ ! -f backlog.json ]; then
+            echo "::error::The product owner wrote no backlog.json. The board order did not change."
+            exit 1
+          fi
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
       - name: Keep the backlog plan
-        if: always() && steps.sync.outcome == 'success'
+        if: ${{ !cancelled() && steps.plan.outputs.ok == 'true' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: backlog-plan
           path: backlog.json
-          if-no-files-found: ignore
+          if-no-files-found: error
           retention-days: 14
 
   # A fresh checkout: nothing the model wrote runs here except backlog.json,
@@ -113,7 +124,10 @@ jobs:
   apply:
     name: apply backlog plan
     needs: role
-    if: always() && needs.role.outputs.po == 'true'
+    if: ${{ !cancelled() && needs.role.outputs.po == 'true' }}
+    concurrency:
+      group: backlog-apply
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment: agents
     permissions:
@@ -133,6 +147,7 @@ jobs:
 
       - name: Apply the plan
         env:
+          GH_REPO: ${{ github.repository }}
           BOARD_TOKEN: ${{ secrets.BACKLOG_TOKEN }}
           BACKLOG_OWNER: ${{ vars.BACKLOG_OWNER }}
           BACKLOG_PROJECT: ${{ vars.BACKLOG_PROJECT }}

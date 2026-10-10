@@ -32,7 +32,7 @@ if [ "$want" != worker ]; then
   jq -e --arg r "$want" '.[$r]' "$roles" >/dev/null || { echo "unknown role $want" >&2; exit 1; }
 fi
 if ! pick=$(python3 .github/scripts/backlog.py gate "$want"); then
-  echo "run=false" >> "$out"; echo "board read failed" >&2; exit 1
+  echo "run=false" >> "$out"; echo "backlog.py gate failed" >&2; exit 1
 fi
 [ -n "$pick" ] || say "no ready issue for $want" false
 issue=$(cut -f1 <<<"$pick"); role=$(cut -f2 <<<"$pick")
