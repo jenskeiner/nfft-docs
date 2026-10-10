@@ -6,8 +6,8 @@ do not remove them.
 
 | Topic | nfft.org | fftw.org | FINUFFT | ours |
 |-------|----------|----------|---------|------|
-| Installation from packages | yes | yes | yes | partial |
-| Build from source | yes | yes | yes | yes |
+| Installation from packages | yes | yes | yes | no |
+| Build from source | yes | yes | yes | partial |
 | First example | yes | yes | yes | yes |
 | Tutorial per transform type | partial | yes | yes | partial |
 | Mathematics and notation | yes | n/a | yes | partial |
