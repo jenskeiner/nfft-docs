@@ -3,13 +3,14 @@ name: Repo guard
 # Only the maintainer and the agents add issues. The interaction limit keeps
 # non-collaborators out; it expires after six months, so a monthly run renews
 # it. The same run warns before a token expires. An issue by any other author
-# is closed and locked when it opens.
+# is closed and locked when it opens. Only the maintainer sets or removes the
+# label focus; a change by anyone else is undone.
 on:
   schedule:
     - cron: "0 4 1 * *"
   workflow_dispatch:
   issues:
-    types: [opened]
+    types: [opened, labeled, unlabeled]
 
 permissions: {}
 
@@ -64,7 +65,7 @@ jobs:
 
   close:
     name: close foreign issue
-    if: github.event_name == 'issues'
+    if: github.event_name == 'issues' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -86,3 +87,29 @@ jobs:
             --body "This repository accepts issues only from the maintainer and its agents."
           gh issue close "$N" --repo "$GITHUB_REPOSITORY" --reason "not planned"
           gh issue lock "$N" --repo "$GITHUB_REPOSITORY"
+
+  focus:
+    name: keep the focus label with the maintainer
+    if: github.event_name == 'issues' && github.event.action != 'opened' && github.event.label.name == 'focus'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Undo focus label changes by others
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SENDER: ${{ github.event.sender.login }}
+          MAINTAINER: ${{ vars.BACKLOG_MAINTAINER }}
+          ACTION: ${{ github.event.action }}
+          N: ${{ github.event.issue.number }}
+        run: |
+          if [ -z "$MAINTAINER" ]; then echo "BACKLOG_MAINTAINER is not set" >&2; exit 1; fi
+          if [ "$SENDER" = "$MAINTAINER" ]; then echo "focus $ACTION by the maintainer"; exit 0; fi
+          # An edit with GITHUB_TOKEN starts no workflow, so this cannot loop.
+          if [ "$ACTION" = labeled ]; then
+            gh issue edit "$N" --repo "$GITHUB_REPOSITORY" --remove-label focus
+          else
+            gh issue edit "$N" --repo "$GITHUB_REPOSITORY" --add-label focus
+          fi
+          gh issue comment "$N" --repo "$GITHUB_REPOSITORY" \
+            --body "Only the maintainer sets or removes the label \`focus\`. The change by $SENDER is undone."

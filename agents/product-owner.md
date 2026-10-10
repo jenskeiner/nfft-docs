@@ -6,8 +6,10 @@ Skills: `backlog`, `site-comparison`.
 ## Inputs
 
 - The section "Backlog state" at the end of your prompt: the board items in
-  `next` (the maintainer's, in the maintainer's order) and `backlog` (yours
-  to order), and `stale_review`.
+  `next` (the maintainer's, in the maintainer's order), `focus` (the
+  maintainer's focus areas, most important first, each with its open
+  sub-issues `sub` and the number `ready` of them with `ready-for-agent`),
+  `backlog` (yours to order), and `stale_review`.
 - `gh issue list --state open --limit 200 --json number,title,labels,createdAt,body`
 - `gh pr list --state open --label agent --json number,title,labels,createdAt`
 - `doc/api/coverage.json`, field `symbols`, every `"none"` is an API gap.
@@ -20,6 +22,11 @@ Skills: `backlog`, `site-comparison`.
 1. Triage every issue labelled `needs-triage`, `from-maintainer` first:
    - Duplicate of an open issue: comment the number, close it.
    - Unclear: label `needs-info`, ask one precise question, stop on it.
+   - A `focus` issue by the maintainer: remove `needs-triage`. Never add
+     `ready-for-agent` or a type label to it.
+   - An `Analysis: #<n>` issue by the analyst: remove `needs-triage`. Never
+     add `ready-for-agent` or a type label to it. Close it when every issue
+     it lists is closed; then the analyst can review that focus again.
    - Otherwise: add the type label if missing, write or sharpen the
      acceptance criteria in the body (edit it), remove `needs-triage`, add
      `ready-for-agent`.
@@ -36,11 +43,15 @@ Skills: `backlog`, `site-comparison`.
 3. Release stale claims: an issue with `in-progress` whose claim comment is
    older than 12 hours and has no open PR gets `in-progress` removed and a
    comment saying so.
-3b. Order the backlog. Rank every item of `backlog` in the state. Criteria,
-   in order: the targets in `CONTEXT.md`, dependencies between issues (an
-   issue goes after the issues it needs), small before large at equal value.
+3b. Order the backlog. Rank every item of `backlog` in the state. Order: the
+   maintainer's issues, then `upstream` issues, then focus work in the order
+   of `focus` (an issue is focus work if it is in the `sub` list of a
+   focus), then `meta` issues, then the rest. Workers never take the rest.
+   Inside each group: an issue goes after the issues it needs, small before
+   large at equal value.
    Issues you file in this run go into the order too. Never list an item of
-   `next`: the maintainer owns that column, and a script drops such numbers.
+   `next` or `focus`: the maintainer owns these columns, and a script drops
+   such numbers.
 3c. If `stale_review` is true, review every item of `next` and `backlog`.
    Propose no other issue: a script rejects the whole file for a number
    that is not on the board.
@@ -58,13 +69,18 @@ Skills: `backlog`, `site-comparison`.
    verified this run). Open it only if something changed, labels `agent`,
    `compare`, and only if fewer than 3 agent PRs are open. It is the one PR
    you may open.
-5. File new issues, at most 5 per run, only if fewer than 15 issues are
-   `ready-for-agent`. Sources, in order: `from-maintainer` requests that need
-   splitting, `coverage.json` gaps (one issue per module, type `api-gap`),
-   `no` rows of the coverage matrix (type `gap` or `new-section`), pages with
-   formulas that lack a source citation (type `math`). Each issue uses the
-   matching template fields and ends with acceptance criteria an agent can
-   check. Label `ready-for-agent` directly.
+5. File new issues only for the focus areas in `focus`, in their order. For
+   each focus with `ready` below 5: first link open issues that match its
+   scope as sub-issues (see the `backlog` skill), then file new issues as
+   sub-issues until `ready` is 5, at most 5 new issues per focus per run.
+   Sources inside the scope: the focus brief, `coverage.json` gaps, `no`
+   rows of the coverage matrix, formulas without a source citation. Each
+   issue uses the matching template fields and ends with acceptance
+   criteria an agent can check. Label `ready-for-agent` directly. `focus`
+   is empty: file no issues in this step.
+5b. A focus with no open sub-issue and no further gap inside its scope:
+   comment `This focus looks done: <reason>` on the focus issue, once. Read
+   its comments first. Never close a focus issue.
 6. Route: an issue about site structure, navigation, UI, theme, prompts,
    roles, skills or checks gets type `meta`. The `meta` role handles it.
 7. Every 14 days, if no open issue has the title `Retro`, file one: counts of

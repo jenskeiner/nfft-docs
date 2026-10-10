@@ -22,8 +22,17 @@ open=$(gh pr list --label agent --state open --json number --jq length)
 if [ "$want" != analyst ] && [ "$want" != product-owner ] && [ "$open" -ge "$cap" ]; then
   say "cap reached: $open agent PRs open" false
 fi
-if [ "$want" = product-owner ] || [ "$want" = analyst ]; then
+if [ "$want" = product-owner ]; then
   say "go: $want" true
+fi
+# The analyst reviews one focus area; without a focus it does not run.
+if [ "$want" = analyst ]; then
+  if ! focus=$(python3 .github/scripts/backlog.py analyst); then
+    echo "run=false" >> "$out"; echo "backlog.py analyst failed" >&2; exit 1
+  fi
+  [ -n "$focus" ] || say "analyst idle" false
+  echo "focus=$focus" >> "$out"
+  say "go: analyst on focus #$focus" true
 fi
 
 # Worker, or a named worker role from a dispatch: the first ready issue on the

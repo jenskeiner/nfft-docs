@@ -1,0 +1,33 @@
+name: Focus
+description: An area the agents work on until the maintainer closes this issue.
+title: "[Focus] "
+labels: ["focus", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What the reader can do when this focus is done, and why it matters now.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Pages, nav sections, API modules. One per line.
+      placeholder: "doc/install/\nAPI module nfsft"
+    validations:
+      required: true
+  - type: textarea
+    id: out
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Checks a reader can verify.
+      value: "- [ ] "
+    validations:
+      required: true
