@@ -462,17 +462,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#generate-the-build-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Generate the build system
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#configure-and-build" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -540,10 +529,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#finding-fftw" class="md-nav__link">
+  <a href="#finding-fftw-and-cunit" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Finding FFTW
+        Finding FFTW and CUnit
       </span>
     </span>
   </a>
@@ -551,10 +540,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#other-useful-flags" class="md-nav__link">
+  <a href="#debugging-and-timing" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Other useful flags
+        Debugging and timing
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compiler-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Compiler optimization
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Benchmarks
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Documentation output
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Other options
       </span>
     </span>
   </a>
@@ -2611,17 +2644,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#generate-the-build-system" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Generate the build system
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#configure-and-build" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2689,10 +2711,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#finding-fftw" class="md-nav__link">
+  <a href="#finding-fftw-and-cunit" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Finding FFTW
+        Finding FFTW and CUnit
       </span>
     </span>
   </a>
@@ -2700,10 +2722,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#other-useful-flags" class="md-nav__link">
+  <a href="#debugging-and-timing" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        Other useful flags
+        Debugging and timing
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compiler-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Compiler optimization
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Benchmarks
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Documentation output
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Other options
       </span>
     </span>
   </a>
@@ -2827,69 +2893,96 @@
 
 <h1 id="build-from-source">Build from source<a class="headerlink" href="#build-from-source" title="Permanent link">&para;</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p><a href="https://fftw.org">FFTW3</a> development files, <code>make</code> and a C compiler. From a
-git checkout you also need <code>autoconf</code>, <code>automake</code> and <code>libtool</code>. The unit tests
+<p><a href="https://fftw.org">FFTW3</a> development files, <code>make</code> and a C compiler. Download the
+source archive and unpack it. The archive contains <code>configure</code>. The unit tests
 need <a href="http://cunit.sourceforge.net">CUnit</a>.</p>
-<h2 id="generate-the-build-system">Generate the build system<a class="headerlink" href="#generate-the-build-system" title="Permanent link">&para;</a></h2>
-<p>Only from a git checkout. A release tarball already contains <code>configure</code>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./bootstrap.sh
-</span></code></pre></div>
-<p>Run it again after editing any <code>Makefile.am</code> or <code>configure.ac</code>.</p>
 <h2 id="configure-and-build">Configure and build<a class="headerlink" href="#configure-and-build" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>make<span class="w"> </span>-j
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>make<span class="w"> </span>check<span class="w">          </span><span class="c1"># optional, needs CUnit</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>sudo<span class="w"> </span>make<span class="w"> </span>install
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>make<span class="w"> </span>-j
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>make<span class="w"> </span>check<span class="w">          </span><span class="c1"># optional, see Testing</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>sudo<span class="w"> </span>make<span class="w"> </span>install
 </span></code></pre></div>
-<p><code>./configure --help</code> lists every option. The ones that matter:</p>
+<p><code>./configure --help</code> lists every option. It also lists the generic options of
+Autoconf, Automake and Libtool, for example <code>--prefix</code> and <code>--enable-shared</code>.
+The sections below describe all options that NFFT adds. Each row gives the
+default and the effect. The last sections cover options that most users do not
+need, with a note on when they apply.</p>
 <h3 id="modules">Modules<a class="headerlink" href="#modules" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Flag</th>
+<th>Default</th>
 <th>Effect</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>--enable-all</code></td>
-<td>Build every module, plus the examples and the applications.</td>
+<td>off</td>
+<td>Sets the default of every module flag below to on.</td>
 </tr>
 <tr>
 <td><code>--enable-nfct</code>, <code>--enable-nfst</code></td>
+<td>value of <code>--enable-all</code></td>
 <td>The real-valued <a href="../../transforms/nfct/">cosine</a> and <a href="../../transforms/nfst/">sine</a> transforms.</td>
 </tr>
 <tr>
-<td><code>--enable-nnfft</code>, <code>--enable-nsfft</code></td>
-<td><a href="../../transforms/nnfft/">NNFFT</a>, <a href="../../transforms/nsfft/">NSFFT</a>.</td>
+<td><code>--enable-nfsft</code></td>
+<td>value of <code>--enable-all</code></td>
+<td><a href="../../transforms/nfsft/">Sphere</a>. Also builds the FPT.</td>
 </tr>
 <tr>
-<td><code>--enable-nfsft</code>, <code>--enable-nfsoft</code></td>
-<td><a href="../../transforms/nfsft/">Sphere</a> and <a href="../../transforms/nfsoft/">rotation group</a>. Both pull in the <a href="../../transforms/fpt/">FPT</a>.</td>
+<td><code>--enable-nfsoft</code></td>
+<td>value of <code>--enable-all</code></td>
+<td><a href="../../transforms/nfsoft/">Rotation group</a>. Also builds the FPT.</td>
 </tr>
 <tr>
-<td><code>--enable-fpt</code></td>
-<td><a href="../../transforms/fpt/">Fast polynomial transform</a>.</td>
+<td><code>--enable-nnfft</code></td>
+<td>value of <code>--enable-all</code></td>
+<td><a href="../../transforms/nnfft/">NNFFT</a>.</td>
+</tr>
+<tr>
+<td><code>--enable-nsfft</code></td>
+<td>value of <code>--enable-all</code></td>
+<td><a href="../../transforms/nsfft/">NSFFT</a>.</td>
 </tr>
 <tr>
 <td><code>--enable-mri</code></td>
+<td>value of <code>--enable-all</code></td>
 <td>The <a href="../../applications/mri/">MRI</a> plans.</td>
 </tr>
 <tr>
-<td><code>--enable-examples</code>, <code>--enable-applications</code></td>
-<td>The programs under <code>examples/</code> and <code>applications/</code>.</td>
+<td><code>--enable-fpt</code></td>
+<td>value of <code>--enable-all</code></td>
+<td><a href="../../transforms/fpt/">Fast polynomial transform</a>.</td>
+</tr>
+<tr>
+<td><code>--enable-examples</code></td>
+<td>on</td>
+<td>The example programs.</td>
+</tr>
+<tr>
+<td><code>--enable-applications</code></td>
+<td>on</td>
+<td>The application programs.</td>
 </tr>
 <tr>
 <td><code>--enable-tests</code></td>
-<td>The CUnit test programs.</td>
+<td>off</td>
+<td>The CUnit test programs. See <a href="#testing">Testing</a>.</td>
 </tr>
 </tbody>
 </table>
+<p><code>--enable-all</code> is off unless maintainer mode is on. The examples and the
+applications do not depend on <code>--enable-all</code>.</p>
+<p>The NFFT core, the solver, NFCT and NFST compile in all three precisions. In
+single or long double precision, the other modules default to off, also with
+<code>--enable-all</code>. If you enable one of them explicitly, <code>configure</code> fails with an error.</p>
 <p>The <a href="../../transforms/nfft/">NFFT</a> core and the <a href="../../transforms/solver/">solver</a>
 are always built.</p>
 <h3 id="precision">Precision<a class="headerlink" href="#precision" title="Permanent link">&para;</a></h3>
-<p>The same C sources compile in three precisions. They are mutually exclusive,
-and each one needs its <strong>own configured tree</strong>.</p>
+<p>The same C sources compile in three precisions. Each one needs its <strong>own configured tree</strong>.</p>
 <table>
 <thead>
 <tr>
@@ -2920,88 +3013,344 @@ and each one needs its <strong>own configured tree</strong>.</p>
 </tr>
 </tbody>
 </table>
+<p>Both flags are off by default. They are mutually exclusive.</p>
 <p>All three can be installed side by side and linked into the same program; the
 name prefixes keep them apart. See the <a href="../../api/">API index</a>.</p>
 <h3 id="window-function">Window function<a class="headerlink" href="#window-function" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./configure<span class="w"> </span>--with-window<span class="o">=</span>kaiserbessel
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./configure<span class="w"> </span>--with-window<span class="o">=</span>kaiserbessel
 </span></code></pre></div>
-<p><code>kaiserbessel</code> (the default), <code>gaussian</code>, <code>bspline</code>, <code>sinc</code> or <code>dirac</code>. The
-choice is baked into the library. Which one you linked is reported by
+<p><code>kaiserbessel</code> (the default), <code>gaussian</code>, <code>bspline</code>, <code>sinc</code> or <code>delta</code>. The <code>delta</code> window is deprecated and will be removed in a
+future release. Any other value makes <code>configure</code> fail with an error. The choice is
+baked into the library. Which one you linked is reported by
 <code>nfft_get_window_name()</code>. What the window does is explained in the
 <a href="../../guide/">guide</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use <code>delta</code>, not <code>dirac</code></p>
+<p>The help text says <code>dirac</code>, but <code>configure</code> accepts only <code>delta</code>. See
+<a href="../../guide/windows/">Window functions</a>.</p>
+</div>
 <h3 id="threads">Threads<a class="headerlink" href="#threads" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable-openmp</code></td>
+<td>off</td>
+<td>Build the OpenMP library in addition to the serial one.</td>
+</tr>
+</tbody>
+</table>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
 </span></code></pre></div>
-<p>This adds a second library, <code>libnfft3_omp</code>, alongside the serial one, and a
-second test binary <code>tests/checkall_threads</code>. FFTW must have been built with
-<code>--enable-threads</code>.</p>
+<p>This adds a second library, <code>libnfft3_omp</code>, alongside the serial one. If the compiler does not support
+OpenMP, <code>configure</code> fails with an error.</p>
+<p><code>configure</code> looks for a threaded FFTW. It prefers
+the OpenMP variant of FFTW. If it finds only the generic threads variant, it
+prints a warning and uses that variant. If it finds no threaded FFTW, it prints
+a warning. Then only the NFFT code runs in parallel, and the FFTs run on one
+thread.</p>
 <h3 id="interfaces">Interfaces<a class="headerlink" href="#interfaces" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Flag</th>
+<th>Default</th>
 <th>Effect</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>--enable-julia</code></td>
-<td>The Julia interface. Double precision and shared libraries only.</td>
+<td>value of <code>--enable-all</code> in double precision with shared libraries, else off</td>
+<td>The Julia interface. Other precisions or <code>--disable-shared</code> stop <code>configure</code>.</td>
 </tr>
 <tr>
-<td><code>--with-matlab=/path/to/matlab</code></td>
-<td>The MATLAB interface.</td>
+<td><code>--with-matlab=DIR</code></td>
+<td>off</td>
+<td>The MATLAB interface. <code>DIR</code> is the MATLAB root.</td>
 </tr>
 <tr>
-<td><code>--with-octave=/path/to/octave</code></td>
-<td>The Octave interface.</td>
+<td><code>--with-matlab-arch=ARCH</code></td>
+<td>detected</td>
+<td>The MATLAB architecture name, for example <code>glnxa64</code>.</td>
+</tr>
+<tr>
+<td><code>--enable-matlab-argchecks</code></td>
+<td>on</td>
+<td>Check the arguments of each MEX call.</td>
+</tr>
+<tr>
+<td><code>--with-matlab-fftw3-libdir=DIR</code></td>
+<td><code>bin/ARCH</code> under the MATLAB root</td>
+<td>The directory of the FFTW library that the MEX file links.</td>
+</tr>
+<tr>
+<td><code>--enable-matlab-threads</code></td>
+<td>value of <code>--enable-openmp</code></td>
+<td>Link the MEX file against the OpenMP library. Needs <code>--enable-openmp</code>.</td>
+</tr>
+<tr>
+<td><code>--with-octave=DIR</code></td>
+<td>off</td>
+<td>The Octave interface. Without <code>DIR</code>, <code>configure</code> searches for Octave.</td>
+</tr>
+<tr>
+<td><code>--with-octave-libdir=DIR</code></td>
+<td>detected</td>
+<td>The Octave library directory.</td>
+</tr>
+<tr>
+<td><code>--with-octave-includedir=DIR</code></td>
+<td>detected</td>
+<td>The Octave include directory.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="finding-fftw">Finding FFTW<a class="headerlink" href="#finding-fftw" title="Permanent link">&para;</a></h3>
+<p><code>--with-matlab</code> and <code>--with-octave</code> exclude each other. With <code>--enable-long-double</code>, the MATLAB
+interface makes <code>configure</code> fail with an error.</p>
+<h3 id="finding-fftw-and-cunit">Finding FFTW and CUnit<a class="headerlink" href="#finding-fftw-and-cunit" title="Permanent link">&para;</a></h3>
 <p>If FFTW is not where the compiler looks:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./configure<span class="w"> </span>--with-fftw3<span class="o">=</span>/opt/fftw
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># or, separately</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>./configure<span class="w"> </span>--with-fftw3-includedir<span class="o">=</span>/opt/fftw/include<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">            </span>--with-fftw3-libdir<span class="o">=</span>/opt/fftw/lib
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./configure<span class="w"> </span>--with-fftw3<span class="o">=</span>/opt/fftw
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># or, separately</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>./configure<span class="w"> </span>--with-fftw3-includedir<span class="o">=</span>/opt/fftw/include<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">            </span>--with-fftw3-libdir<span class="o">=</span>/opt/fftw/lib
 </span></code></pre></div>
-<p><code>--with-cunit-includedir</code> and <code>--with-cunit-libdir</code> do the same for CUnit.</p>
-<h3 id="other-useful-flags">Other useful flags<a class="headerlink" href="#other-useful-flags" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Flag</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--with-fftw3=DIR</code></td>
+<td>compiler search path</td>
+<td>Use <code>DIR/include</code> and <code>DIR/lib</code>.</td>
+</tr>
+<tr>
+<td><code>--with-fftw3-includedir=DIR</code></td>
+<td>compiler search path</td>
+<td>The FFTW header directory.</td>
+</tr>
+<tr>
+<td><code>--with-fftw3-libdir=DIR</code></td>
+<td>compiler search path</td>
+<td>The FFTW library directory.</td>
+</tr>
+<tr>
+<td><code>--with-cunit-includedir=DIR</code></td>
+<td>compiler search path</td>
+<td>The CUnit header directory.</td>
+</tr>
+<tr>
+<td><code>--with-cunit-libdir=DIR</code></td>
+<td>compiler search path</td>
+<td>The CUnit library directory.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="debugging-and-timing">Debugging and timing<a class="headerlink" href="#debugging-and-timing" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
 <th>Effect</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>--enable-debug</code></td>
-<td>Extra runtime checks.</td>
+<td>off</td>
+<td>Builds with <code>-g -O2</code>, the address and undefined behaviour sanitizers and extra GCC warnings. Replaces <code>CFLAGS</code>.</td>
 </tr>
 <tr>
 <td><code>--enable-measure-time</code></td>
-<td>Fill the <code>MEASURE_TIME_t</code> members of the plans.</td>
+<td>off</td>
+<td>Measures the run time of the transforms and stores it in the plans.</td>
 </tr>
+<tr>
+<td><code>--enable-measure-time-fftw</code></td>
+<td>off</td>
+<td>Also measures the time of the FFTW calls.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="compiler-optimization">Compiler optimization<a class="headerlink" href="#compiler-optimization" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--with-gcc-arch=ARCH</code></td>
+<td><code>-march=native</code> if the compiler accepts it</td>
+<td>Pass <code>ARCH</code> to <code>-march</code> and <code>-mtune</code>.</td>
+</tr>
+<tr>
+<td><code>--enable-portable-binary</code></td>
+<td>off</td>
+<td>Do not tie the binary to the build machine. Use it if you run the library on another machine.</td>
+</tr>
+</tbody>
+</table>
+<p><code>configure</code> selects optimization flags only when you do not set <code>CFLAGS</code>.</p>
+<h3 id="benchmarks">Benchmarks<a class="headerlink" href="#benchmarks" title="Permanent link">&para;</a></h3>
+<p>Use these options if you measure the speed of the library. A normal build
+does not need them. The <a href="../../development/benchmarks/">benchmark</a> page
+describes how to run the programs.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable-benchmarks</code></td>
+<td>off</td>
+<td>Build the benchmark programs.</td>
+</tr>
+<tr>
+<td><code>--with-benchmarks-prefix=PREFIX</code></td>
+<td>empty</td>
+<td>Prefix for the names of the benchmarks.</td>
+</tr>
+<tr>
+<td><code>--with-agnostic-benchmarks=FLAGS</code></td>
+<td>all on</td>
+<td>Choose which benchmarks to build. <code>FLAGS</code> is a comma-separated list of <code>parameter:flag</code> pairs, for example <code>window:1,openmp:0,precision:1</code>. The parameters are <code>window</code>, <code>openmp</code> and <code>precision</code>. The flag is <code>0</code> or <code>1</code>. Parameters that you do not list are off. Any other parameter makes <code>configure</code> fail with an error.</td>
+</tr>
+<tr>
+<td><code>--with-codspeed=DIR</code></td>
+<td>off</td>
+<td>Link the benchmarks with the CodSpeed C++ library in <code>DIR</code>. Use it if you track the benchmark results with CodSpeed.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="documentation-output">Documentation output<a class="headerlink" href="#documentation-output" title="Permanent link">&para;</a></h3>
+<p>Use these options if you build the C API documentation with Doxygen. You do
+not need them to use the library or to read this site. Each option has a
+<code>--enable-doxygen-NAME</code> form. For the features that are on by default, the
+form is <code>--disable-doxygen-NAME</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Feature <code>NAME</code></th>
+<th>Default</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>doc</code></td>
+<td>on</td>
+<td>Any Doxygen documentation.</td>
+</tr>
+<tr>
+<td><code>html</code></td>
+<td>on</td>
+<td>Plain HTML.</td>
+</tr>
+<tr>
+<td><code>dot</code></td>
+<td>on</td>
+<td>Graphs in the documentation.</td>
+</tr>
+<tr>
+<td><code>man</code></td>
+<td>off</td>
+<td>Manual pages.</td>
+</tr>
+<tr>
+<td><code>rtf</code></td>
+<td>off</td>
+<td>RTF.</td>
+</tr>
+<tr>
+<td><code>xml</code></td>
+<td>off</td>
+<td>XML.</td>
+</tr>
+<tr>
+<td><code>chm</code></td>
+<td>off</td>
+<td>Compressed HTML help.</td>
+</tr>
+<tr>
+<td><code>chi</code></td>
+<td>off</td>
+<td>Separate index file for compressed HTML help.</td>
+</tr>
+<tr>
+<td><code>ps</code></td>
+<td>off</td>
+<td>PostScript.</td>
+</tr>
+<tr>
+<td><code>pdf</code></td>
+<td>off</td>
+<td>PDF.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="other-options">Other options<a class="headerlink" href="#other-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>--enable-exhaustive-unit-tests</code></td>
-<td>The larger, slower test set. What CI runs.</td>
+<td>off</td>
+<td>Add the exhaustive cases to the unit tests. They take longer to run. See <a href="../../development/testing/">Testing</a>.</td>
 </tr>
 <tr>
-<td><code>--with-gcc-arch=&lt;arch&gt;</code></td>
-<td>Pass an architecture to <code>-march</code>/<code>-mtune</code>.</td>
+<td><code>--enable-mips-zbus-timer</code></td>
+<td>off</td>
+<td>Use the MIPS ZBus cycle counter for time measurements. Relevant only on MIPS hardware with <code>--enable-measure-time</code>.</td>
+</tr>
+<tr>
+<td><code>--enable-maintainer-mode</code></td>
+<td>off</td>
+<td>Turn on the Automake maintainer rules. This also turns on the default of <code>--enable-all</code> and the extra compiler warnings. It is for people who work on the library.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>check
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./configure<span class="w"> </span>--enable-tests
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>make
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>make<span class="w"> </span>check
 </span></code></pre></div>
-<p>This builds and runs <code>tests/checkall</code>, and <code>tests/checkall_threads</code> as well
-when the tree was configured with <code>--enable-openmp</code>. Details, and the accuracy
-report the suite produces, are under <a href="../../development/testing/">Testing</a>.</p>
+<p><code>make check</code> runs the unit tests. They need <a href="http://cunit.sourceforge.net">CUnit</a>.
+Without <code>--enable-tests</code>, <code>make check</code> runs no test. With <code>--enable-tests</code> and
+no CUnit, <code>configure</code> fails with an error. If CUnit is not in the default search path, use
+<code>--with-cunit-includedir</code> and <code>--with-cunit-libdir</code>. With <code>--enable-openmp</code>, the
+tests also run against the OpenMP library.</p>
+<p>If a test fails, <code>make check</code> prints <code>FAIL</code> for the test program and exits with
+a nonzero status. The suites, the accuracy report and the reference data are
+described under <a href="../../development/testing/">Testing</a>.</p>
 <h2 id="cleaning">Cleaning<a class="headerlink" href="#cleaning" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>make<span class="w"> </span>clean<span class="w">       </span><span class="c1"># object files</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>make<span class="w"> </span>distclean<span class="w">   </span><span class="c1"># everything configure produced</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>clean<span class="w">       </span><span class="c1"># object files</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>make<span class="w"> </span>distclean<span class="w">   </span><span class="c1"># everything configure produced</span>
 </span></code></pre></div>
 <p>A second precision or a second window means a second configured tree, not a
 <code>make clean</code> in this one.</p>
