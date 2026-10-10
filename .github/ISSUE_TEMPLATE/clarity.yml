@@ -2,6 +2,7 @@ name: Clarity
 description: Hard to follow, needs restructuring
 title: "[Clarity] "
 labels: ["clarity", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: input
     id: pages

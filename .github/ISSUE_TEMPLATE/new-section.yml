@@ -2,6 +2,7 @@ name: New section
 description: A page or section that does not exist yet
 title: "[New section] "
 labels: ["new-section", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: input
     id: pages

@@ -4,3 +4,4 @@ doc/api/
 __pycache__/
 .cache/
 agents/plugin/
+backlog.json

@@ -1,0 +1,85 @@
+name: Repo guard
+
+# Only the maintainer and the agents add issues. The interaction limit keeps
+# non-collaborators out; it expires after six months, so a monthly run renews
+# it. The same run warns before a token expires. An issue by any other author
+# is closed and locked when it opens.
+on:
+  schedule:
+    - cron: "0 4 1 * *"
+  workflow_dispatch:
+  issues:
+    types: [opened]
+
+permissions: {}
+
+jobs:
+  monthly:
+    name: interaction limit and token expiry
+    if: github.event_name != 'issues'
+    runs-on: ubuntu-latest
+    environment: agents
+    permissions:
+      issues: write
+    steps:
+      # INTERACTION_LIMIT is false if the limit blocks the agent bots.
+      - name: Collaborators only, six months
+        if: vars.INTERACTION_LIMIT == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GUARD_TOKEN }}
+        run: |
+          gh api -X PUT "repos/$GITHUB_REPOSITORY/interaction-limits" \
+            -f limit=collaborators_only -f expiry=six_months
+
+      - name: Warn 60 days before a token expires
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BACKLOG_TOKEN: ${{ secrets.BACKLOG_TOKEN }}
+          GUARD_TOKEN: ${{ secrets.GUARD_TOKEN }}
+        run: |
+          warn() {
+            title="Renew $1"
+            if [ "$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+                  --search "in:title \"$title\"" --json title \
+                  --jq "[.[] | select(.title == \"$title\")] | length")" -gt 0 ]; then
+              echo "$title: issue already open"; return
+            fi
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" \
+              --label meta --label ready-for-human \
+              --body "Secret \`$1\` in environment \`agents\`: $2. Create a new fine-grained token with the same resource owner, repository access and permissions, 1 year expiry, and store it under the same name."
+          }
+          for name in BACKLOG_TOKEN GUARD_TOKEN; do
+            token=${!name}
+            if ! head=$(GH_TOKEN=$token gh api -i /rate_limit 2>&1); then
+              warn "$name" "the API rejects it"; continue
+            fi
+            exp=$(printf '%s\n' "$head" | tr -d '\r' \
+              | awk -F': ' 'tolower($1) == "github-authentication-token-expiration" { print $2 }')
+            if [ -z "$exp" ]; then echo "$name: no expiry"; continue; fi
+            days=$(( ($(date -u -d "$exp" +%s) - $(date -u +%s)) / 86400 ))
+            echo "$name: expires $exp, in $days days"
+            if [ "$days" -le 60 ]; then warn "$name" "expires $exp"; fi
+          done
+
+  close:
+    name: close foreign issue
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Close issues by other authors
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+          AUTHORS: ${{ vars.BACKLOG_AUTHORS }}
+          N: ${{ github.event.issue.number }}
+        run: |
+          if [ -z "${AUTHORS// /}" ]; then echo "BACKLOG_AUTHORS is not set" >&2; exit 1; fi
+          for a in $AUTHORS; do
+            if [ "$a" = "$AUTHOR" ]; then echo "allowed: $AUTHOR"; exit 0; fi
+          done
+          gh issue comment "$N" --repo "$GITHUB_REPOSITORY" \
+            --body "This repository accepts issues only from the maintainer and its agents."
+          gh issue close "$N" --repo "$GITHUB_REPOSITORY" --reason "not planned"
+          gh issue lock "$N" --repo "$GITHUB_REPOSITORY"

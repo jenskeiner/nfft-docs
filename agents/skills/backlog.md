@@ -15,11 +15,15 @@ The backlog is GitHub Issues. Labels carry the state.
 | Maintainer input | `decision` (a ruling to record in `agents/DECISIONS.md`) |
 | State, exactly one | `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `in-progress`, `blocked`, `wontfix` |
 | Origin | `from-maintainer`, `agent` |
-| Priority | `priority: high` |
+| Backlog | `stale-candidate` (proposed for closing, the maintainer decides), `keep` (never stale) |
 | Upstream | `upstream-defect`, always with `ready-for-human`, never `ready-for-agent` |
 
-Pick order for workers: `from-maintainer`, then `priority: high`, then the
-oldest `createdAt`.
+Pick order: the board `NFFT docs backlog` of the organization
+`nfft-docs-agents`. Column `Next` first, then `Backlog`, each top down. The
+maintainer owns `Next`. The product owner orders `Backlog`. The gate picks
+the first item with `ready-for-agent` and without `in-progress`, `blocked`
+or `needs-triage`. Only issues by the maintainer, by agents and by the
+workflows are on the board.
 
 ## Filing an issue
 

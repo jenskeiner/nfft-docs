@@ -18,36 +18,24 @@ case "$want" in
 esac
 
 open=$(gh pr list --label agent --state open --json number --jq length)
-if [ "$want" != analyst ] && [ "$open" -ge "$cap" ]; then
+# The product owner opens at most its housekeeping PR, under its own rule.
+if [ "$want" != analyst ] && [ "$want" != product-owner ] && [ "$open" -ge "$cap" ]; then
   say "cap reached: $open agent PRs open" false
 fi
 if [ "$want" = product-owner ] || [ "$want" = analyst ]; then
   say "go: $want" true
 fi
 
-# Worker, or a named worker role from a dispatch: pick the best ready issue
-# whose type a role handles. Order: from-maintainer, priority: high, oldest.
-if [ "$want" = worker ]; then
-  candidates=$(jq -r 'to_entries[] | select(.key != "_comment") | .key' "$roles")
-else
+# Worker, or a named worker role from a dispatch: the first ready issue on the
+# board, Next before Backlog, in board order, whose type a role handles.
+if [ "$want" != worker ]; then
   jq -e --arg r "$want" '.[$r]' "$roles" >/dev/null || { echo "unknown role $want" >&2; exit 1; }
-  candidates="$want"
 fi
-
-best=""
-for role in $candidates; do
-  for t in $(jq -r --arg r "$role" '.[$r].types[]' "$roles"); do
-    gh issue list --label ready-for-agent --label "$t" --state open --limit 100 \
-      --json number,createdAt,labels \
-      --jq '.[] | select(all(.labels[].name; . != "in-progress" and . != "blocked"))
-             | [ (if any(.labels[].name; . == "from-maintainer") then 0 else 1 end),
-                 (if any(.labels[].name; . == "priority: high") then 0 else 1 end),
-                 .createdAt, (.number|tostring), "'"$role"'" ] | @tsv'
-  done
-done | sort -t$'\t' -k1,1n -k2,2n -k3,3 | head -1 > /tmp/pick.tsv
-
-if [ ! -s /tmp/pick.tsv ]; then say "no ready issue for $want" false; fi
-issue=$(cut -f4 /tmp/pick.tsv); role=$(cut -f5 /tmp/pick.tsv)
+if ! pick=$(python3 .github/scripts/backlog.py gate "$want"); then
+  echo "run=false" >> "$out"; echo "board read failed" >&2; exit 1
+fi
+[ -n "$pick" ] || say "no ready issue for $want" false
+issue=$(cut -f1 <<<"$pick"); role=$(cut -f2 <<<"$pick")
 {
   echo "role=$role"
   echo "model=$(jq -r --arg r "$role" '.[$r].model' "$roles")"

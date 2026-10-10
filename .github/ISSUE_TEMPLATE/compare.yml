@@ -2,6 +2,7 @@ name: Comparison
 description: Compare a topic with another documentation site
 title: "[Comparison] "
 labels: ["compare", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: input
     id: pages

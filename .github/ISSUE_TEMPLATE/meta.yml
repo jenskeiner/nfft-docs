@@ -2,6 +2,7 @@ name: Meta
 description: Improve the agent system or the site frame, not page content.
 title: "[Meta] "
 labels: ["meta", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: dropdown
     id: area

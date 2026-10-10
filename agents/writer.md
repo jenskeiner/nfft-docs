@@ -10,8 +10,8 @@ Skills: `writing-docs`, `api-overlay`, `math-from-sources`, `snippets`.
    skip the pick.
 1. Pick: `gh issue list --label ready-for-agent --state open --json number,title,labels,createdAt`.
    Keep issues with one of your type labels and without `in-progress` or
-   `blocked`. Order: `from-maintainer`, then `priority: high`, then oldest.
-   None left: stop, say so.
+   `blocked`. Order: oldest first. This is a fallback: the gate picks from
+   the board and names the issue. None left: stop, say so.
 2. Claim it as `CONTEXT.md` says.
 3. Read the issue, its comments, the pages it names, and the skill for its
    type. For `api-gap` read the C source of the symbol under `nfft/kernel/`

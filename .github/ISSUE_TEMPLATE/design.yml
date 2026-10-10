@@ -2,6 +2,7 @@ name: Design
 description: How the site looks - typography, spacing, colours, code blocks, admonitions, tables, landing page, dark mode. Not page text.
 title: "[Design] "
 labels: ["design", "needs-triage", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: dropdown
     id: concern

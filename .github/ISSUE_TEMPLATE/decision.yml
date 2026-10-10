@@ -2,6 +2,7 @@ name: Decision
 description: A ruling by the maintainer that agents must respect from now on.
 title: "[Decision] "
 labels: ["decision", "from-maintainer"]
+projects: ["nfft-docs-agents/1"]
 body:
   - type: textarea
     id: ruling

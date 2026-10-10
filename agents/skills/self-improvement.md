@@ -18,8 +18,8 @@ description: Use when changing the agent system of the NFFT3 docs repository, ro
 | Issue forms | `.github/ISSUE_TEMPLATE/*.yml` | Maintainer |
 | Site frame | `zensical.toml`, `doc/stylesheets/extra.css`, `support/overrides/main.html`, `doc/assets/` | Zensical build |
 
-Fixed crons: product-owner daily, analyst every two days, worker every two
-hours. The worker's role is data: add an entry to `roles.json` and a prompt
+Fixed crons: product-owner every six hours, analyst every two days, worker
+every hour. The worker's role is data: add an entry to `roles.json` and a prompt
 file, and the next worker run can pick it. No workflow edit is needed, and
 none is allowed.
 
