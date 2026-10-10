@@ -2426,10 +2426,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#nfft3" class="md-nav__link">
+  <a href="#packages" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        NFFT3
+        Packages
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Source build
       </span>
     </span>
   </a>
@@ -2575,28 +2586,151 @@
 <p>The library is precision-agnostic and links against the FFTW variant of the
 precision it was configured for: <code>libfftw3f</code> for float, <code>libfftw3</code> for double,
 <code>libfftw3l</code> for long double.</p>
-<h2 id="nfft3">NFFT3<a class="headerlink" href="#nfft3" title="Permanent link">&para;</a></h2>
-<p>There is no distribution package. Build from source; it is three commands.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NFFT/nfft.git
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">cd</span><span class="w"> </span>nfft
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>./bootstrap.sh
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>make<span class="w"> </span>-j
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>sudo<span class="w"> </span>make<span class="w"> </span>install
+<h2 id="packages">Packages<a class="headerlink" href="#packages" title="Permanent link">&para;</a></h2>
+<p>Several package managers ship NFFT3. Each package below builds all modules
+(<code>--enable-all</code>), unless the tab says otherwise. Without that flag, the
+library has only the NFFT, NFCT and NFST modules. Each package uses the
+default Kaiser-Bessel window, unless the tab names a variant. Each
+package is double precision only, unless the tab says otherwise.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:8"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><input id="__tabbed_2_7" name="__tabbed_2" type="radio" /><input id="__tabbed_2_8" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Debian and Ubuntu</label><label for="__tabbed_2_2">Arch Linux</label><label for="__tabbed_2_3">Gentoo</label><label for="__tabbed_2_4">Nix</label><label for="__tabbed_2_5">FreeBSD</label><label for="__tabbed_2_6">MSYS2</label><label for="__tabbed_2_7">MacPorts</label><label for="__tabbed_2_8">Spack</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libnfft3-dev
+</span></code></pre></div>
+<p><code>libnfft3-dev</code> holds the header and the <code>pkg-config</code> file. It pulls in
+the libraries <code>libnfft3-single4</code>, <code>libnfft3-double4</code> and, on most
+architectures, <code>libnfft3-long4</code>. The package builds all modules, with
+OpenMP, in float, double and long double precision. It ships no static
+library. <code>libnfft3-doc</code> holds the API documentation.
+<code>libnfft3-julia</code> holds the Julia interface.</p>
+<p>Older releases, for example Debian 11 and Ubuntu 22.04, ship an older
+upstream release under other library package names, such as
+<code>libnfft3-double2</code>. <code>libnfft3-dev</code> is correct on all of them.</p>
+<p>Sources: <a href="https://sources.debian.org/src/nfft/">Debian packaging</a>,
+<a href="https://packages.ubuntu.com/search?keywords=libnfft3-dev">packages.ubuntu.com</a>,
+<a href="https://repology.org/project/nfft/">Repology</a>.</p>
+</div>
+<div class="tabbed-block">
+<p>The official repositories have no package. The AUR package <code>nfft</code>
+builds from source on your machine:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://aur.archlinux.org/nfft.git
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">cd</span><span class="w"> </span>nfft
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>makepkg<span class="w"> </span>-si
+</span></code></pre></div>
+<p>It builds all modules with OpenMP.</p>
+<p>Source: <a href="https://aur.archlinux.org/packages/nfft">AUR package nfft</a>.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>emerge<span class="w"> </span>--ask<span class="w"> </span>sci-libs/nfft
+</span></code></pre></div>
+<p>The ebuild builds all modules. The USE flag <code>openmp</code> adds the OpenMP
+library, <code>doc</code> adds the documentation. The package has only testing
+keywords (<code>~amd64</code>, <code>~x86</code>). Accept the keyword in
+<code>/etc/portage/package.accept_keywords</code> before you install it.</p>
+<p>Source: <a href="https://packages.gentoo.org/packages/sci-libs/nfft">packages.gentoo.org</a>.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>nix-shell<span class="w"> </span>-p<span class="w"> </span>nfft
+</span></code></pre></div>
+<p>The attribute is <code>nfft</code>. It builds all modules with OpenMP.</p>
+<p>Source: <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/nf/nfft/package.nix">nixpkgs package.nix</a>.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sudo<span class="w"> </span>pkg<span class="w"> </span>install<span class="w"> </span>nfft
+</span></code></pre></div>
+<p>The port is <code>math/nfft</code>. It builds all modules. The port option
+<code>OPENMP</code> adds the OpenMP library. It is on by default on amd64,
+aarch64, powerpc64 and powerpc64le. To change an option, build the port
+with <code>make config install</code> in <code>/usr/ports/math/nfft</code>.</p>
+<p>Source: <a href="https://www.freshports.org/math/nfft/">FreshPorts math/nfft</a>.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pacman<span class="w"> </span>-S<span class="w"> </span>mingw-w64-ucrt-x86_64-nfft
+</span></code></pre></div>
+<p>The package exists for each MSYS2 environment:
+<code>mingw-w64-ucrt-x86_64-nfft</code>, <code>mingw-w64-x86_64-nfft</code>,
+<code>mingw-w64-clang-x86_64-nfft</code> and <code>mingw-w64-clang-aarch64-nfft</code>.
+Install the one for the environment you compile in. It builds all
+modules with OpenMP.</p>
+<p>Source: <a href="https://packages.msys2.org/base/mingw-w64-nfft">packages.msys2.org</a>.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>nfft-3
+</span></code></pre></div>
+<p>The port name is <code>nfft-3</code>. It builds all modules. Variants change the
+build:</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+openmp</code></td>
+<td>Adds the OpenMP library <code>libnfft3_omp</code>.</td>
+</tr>
+<tr>
+<td><code>+gaussian</code></td>
+<td>Uses the Gaussian window.</td>
+</tr>
+<tr>
+<td><code>+bspline</code></td>
+<td>Uses the B-spline window.</td>
+</tr>
+<tr>
+<td><code>+sinc</code></td>
+<td>Uses the sinc power window.</td>
+</tr>
+</tbody>
+</table>
+<p>The three window variants exclude each other. Add variants to the
+install command, for example <code>sudo port install nfft-3 +openmp +gaussian</code>.
+<a href="../guide/windows/">Window functions</a> compares the windows.</p>
+<p>Source: <a href="https://ports.macports.org/port/nfft-3/">ports.macports.org</a>.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>spack<span class="w"> </span>install<span class="w"> </span>nfft
+</span></code></pre></div>
+<p>The package builds one library for each precision that the <code>fftw</code>
+package provides. It does not pass <code>--enable-all</code> or <code>--enable-openmp</code>,
+so it has only the NFFT, NFCT and NFST modules and no OpenMP library.</p>
+<p>Source: <a href="https://packages.spack.io/package.html?name=nfft">Spack package nfft</a>.</p>
+</div>
+</div>
+</div>
+<p>Fedora and openSUSE have no current package. Fedora shipped <code>nfft</code> only in
+EPEL 7. For all other ecosystems, see Repology:
+<a href="https://repology.org/project/nfft/">nfft</a> and
+<a href="https://repology.org/project/nfft-3/">nfft-3</a>. A Homebrew package is not
+available yet.</p>
+<p>The badges below come from Repology and show the current package versions.</p>
+<p><a href="https://repology.org/project/nfft/versions"><img alt="Packaging status for nfft" src="https://repology.org/badge/vertical-allrepos/nfft.svg" /></a></p>
+<p><a href="https://repology.org/project/nfft-3/versions"><img alt="Packaging status for nfft-3" src="https://repology.org/badge/vertical-allrepos/nfft-3.svg" /></a></p>
+<h2 id="source-build">Source build<a class="headerlink" href="#source-build" title="Permanent link">&para;</a></h2>
+<p>To build by hand, for example for a module, precision or window that no
+package has, see <a href="build-from-source/">Build from source</a>. The short form:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NFFT/nfft.git
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nb">cd</span><span class="w"> </span>nfft
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>./bootstrap.sh
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>make<span class="w"> </span>-j
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>sudo<span class="w"> </span>make<span class="w"> </span>install
 </span></code></pre></div>
 <p><code>./bootstrap.sh</code> is only needed when you work from a git checkout; a release
 tarball ships a ready <code>configure</code>. Every flag is described under
 <a href="build-from-source/">Build from source</a>.</p>
 <p>Optional but recommended, run the test suite before installing. It needs
 CUnit and a tree that was configured with <code>--enable-tests</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>make<span class="w"> </span>check
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>make<span class="w"> </span>check
 </span></code></pre></div>
 <h2 id="compile-against-it">Compile against it<a class="headerlink" href="#compile-against-it" title="Permanent link">&para;</a></h2>
 <p>The install writes a <code>pkg-config</code> file, so a program is compiled with</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>cc<span class="w"> </span>myprogram.c<span class="w"> </span><span class="k">$(</span>pkg-config<span class="w"> </span>--cflags<span class="w"> </span>--libs<span class="w"> </span>nfft3<span class="k">)</span><span class="w"> </span>-lm
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>cc<span class="w"> </span>myprogram.c<span class="w"> </span><span class="k">$(</span>pkg-config<span class="w"> </span>--cflags<span class="w"> </span>--libs<span class="w"> </span>nfft3<span class="k">)</span><span class="w"> </span>-lm
 </span></code></pre></div>
 <p>Without <code>pkg-config</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>cc<span class="w"> </span>myprogram.c<span class="w"> </span>-lnfft3<span class="w"> </span>-lfftw3<span class="w"> </span>-lm
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>cc<span class="w"> </span>myprogram.c<span class="w"> </span>-lnfft3<span class="w"> </span>-lfftw3<span class="w"> </span>-lm
 </span></code></pre></div>
 <p>The library name carries the precision suffix: <code>nfft3</code> for double, <code>nfft3f</code>
 for float, <code>nfft3l</code> for long double. Add <code>_omp</code> for the OpenMP build, for
