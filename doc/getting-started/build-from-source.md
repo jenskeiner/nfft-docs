@@ -2,9 +2,78 @@
 
 ## Prerequisites
 
-[FFTW3](https://fftw.org) development files, `make` and a C compiler. Download the
-source archive and unpack it. The archive contains `configure`. The unit tests
-need [CUnit](http://cunit.sourceforge.net).
+| Prerequisite | Needed for |
+|--------------|------------|
+| A C compiler, for example `gcc` or `clang` | Every build. |
+| `make` | Every build. |
+| [FFTW3](https://fftw.org) development files | Every build. See [Install](index.md#fftw). |
+| [CUnit](http://cunit.sourceforge.net) | Only `--enable-tests`. |
+| A C compiler with OpenMP support | Only `--enable-openmp`. |
+| `autoconf`, `automake`, `libtool` | Only a git checkout. See below. |
+
+You get the source in one of two ways.
+
+### From a release archive
+
+The release archives are on the
+[releases page](https://github.com/NFFT/nfft/releases) of the repository. Use
+the asset `nfft-X.Y.Z.tar.gz`. This archive contains `configure`. The
+automatic source code archives of a release do not contain it. Treat them as a
+git checkout.
+
+```bash
+tar xzf nfft-X.Y.Z.tar.gz
+cd nfft-X.Y.Z
+./configure
+```
+
+### From a git checkout
+
+The git repository is <https://github.com/NFFT/nfft>. A checkout does not
+contain `configure`. The script `./bootstrap.sh` generates it.
+
+```bash
+git clone https://github.com/NFFT/nfft.git
+cd nfft
+./bootstrap.sh
+./configure
+```
+
+`bootstrap.sh` needs `autoconf`, `automake` and `libtool`. It runs
+`glibtoolize` if it finds it, else `libtoolize`. If it finds neither, it stops
+with an error. Install the tools:
+
+=== "Debian and Ubuntu"
+
+    ```bash
+    sudo apt install autoconf automake libtool make
+    ```
+
+=== "Fedora"
+
+    ```bash
+    sudo dnf install autoconf automake libtool make
+    ```
+
+=== "macOS, Homebrew"
+
+    ```bash
+    brew install autoconf automake libtool
+    ```
+
+=== "macOS, MacPorts"
+
+    ```bash
+    sudo port install autoconf automake libtool
+    ```
+
+=== "MSYS2"
+
+    ```bash
+    pacman -S autoconf automake-wrapper libtool make
+    ```
+
+On macOS, Homebrew and MacPorts install `libtoolize` as `glibtoolize`.
 
 ## Configure and build
 
