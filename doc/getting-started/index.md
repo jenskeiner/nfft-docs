@@ -220,6 +220,61 @@ The library name carries the precision suffix: `nfft3` for double, `nfft3f`
 for float, `nfft3l` for long double. Add `_omp` for the OpenMP build, for
 example `-lnfft3_omp`.
 
+## Check the installation
+
+Each precision installs its own `pkg-config` file: `nfft3f` for float,
+`nfft3` for double, `nfft3l` for long double. Ask each one for its version:
+
+```bash
+pkg-config --modversion nfft3f
+pkg-config --modversion nfft3
+pkg-config --modversion nfft3l
+```
+
+A version number, for example `3.6.0`, means that the library of that
+precision is installed and that `pkg-config` finds it. The message
+`Package nfft3f was not found` means that this precision is not installed,
+or that its `.pc` file is not in the search path of `pkg-config`. Add the
+directory `<prefix>/lib/pkgconfig` to `PKG_CONFIG_PATH` if you installed
+with a prefix of your own.
+
+The OpenMP libraries have no `pkg-config` file. To see which libraries are
+installed, list the library directory:
+
+```bash
+ls "$(pkg-config --variable=libdir nfft3)"/libnfft3*
+```
+
+The names are the ones from [Compile against it](#compile-against-it):
+`libnfft3f`, `libnfft3` and `libnfft3l` for the three precisions, and
+`libnfft3f_omp`, `libnfft3_omp` and `libnfft3l_omp` for their OpenMP builds.
+
+A program gets the version of the library it runs with from
+[`nfft_get_version`](../api/nfft.md#get_version). The function writes the
+major, minor and patch number. The five lines below are not from the source
+tree:
+
+```c
+#include <stdio.h>
+#include <nfft3.h>
+int main(void) { unsigned major, minor, patch;
+  nfft_get_version(&major, &minor, &patch);
+  printf("%u.%u.%u\n", major, minor, patch); return 0; }
+```
+
+Compile it as shown in [Compile against it](#compile-against-it), then run
+it. It prints the major, minor and patch number that
+`pkg-config --modversion nfft3` shows. For
+float, call `nfftf_get_version` and link `nfft3f`. For long double, call
+`nfftl_get_version` and link `nfft3l`.
+
+If the program does not link, see
+[Linker errors](../guide/troubleshooting.md#linker-errors). If it links but
+does not start because the system does not find `libnfft3`, the library
+directory is not in the search path of the dynamic loader. Run
+`sudo ldconfig` after `make install`, or add the library directory to
+`LD_LIBRARY_PATH`.
+
 ## Next
 
 [Write a first transform](first-transform.md).
