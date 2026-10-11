@@ -268,12 +268,8 @@ it. It prints the major, minor and patch number that
 float, call `nfftf_get_version` and link `nfft3f`. For long double, call
 `nfftl_get_version` and link `nfft3l`.
 
-If the program does not link, see
-[Linker errors](../guide/troubleshooting.md#linker-errors). If it links but
-does not start because the system does not find `libnfft3`, the library
-directory is not in the search path of the dynamic loader. Run
-`sudo ldconfig` after `make install`, or add the library directory to
-`LD_LIBRARY_PATH`.
+If the program does not link or does not start, see
+[Troubleshooting](../guide/troubleshooting.md).
 
 ## Next
 
