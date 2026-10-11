@@ -459,6 +459,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-a-release-archive" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        From a release archive
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-a-git-checkout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        From a git checkout
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2713,6 +2741,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-a-release-archive" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        From a release archive
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-a-git-checkout" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        From a git checkout
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3037,14 +3093,92 @@
 
 <h1 id="build-from-source">Build from source<a class="headerlink" href="#build-from-source" title="Permanent link">&para;</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p><a href="https://fftw.org">FFTW3</a> development files, <code>make</code> and a C compiler. Download the
-source archive and unpack it. The archive contains <code>configure</code>. The unit tests
-need <a href="http://cunit.sourceforge.net">CUnit</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Prerequisite</th>
+<th>Needed for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A C compiler, for example <code>gcc</code> or <code>clang</code></td>
+<td>Every build.</td>
+</tr>
+<tr>
+<td><code>make</code></td>
+<td>Every build.</td>
+</tr>
+<tr>
+<td><a href="https://fftw.org">FFTW3</a> development files</td>
+<td>Every build. See <a href="../#fftw">Install</a>.</td>
+</tr>
+<tr>
+<td><a href="http://cunit.sourceforge.net">CUnit</a></td>
+<td>Only <code>--enable-tests</code>.</td>
+</tr>
+<tr>
+<td>A C compiler with OpenMP support</td>
+<td>Only <code>--enable-openmp</code>.</td>
+</tr>
+<tr>
+<td><code>autoconf</code>, <code>automake</code>, <code>libtool</code></td>
+<td>Only a git checkout. See below.</td>
+</tr>
+</tbody>
+</table>
+<p>You get the source in one of two ways.</p>
+<h3 id="from-a-release-archive">From a release archive<a class="headerlink" href="#from-a-release-archive" title="Permanent link">&para;</a></h3>
+<p>The release archives are on the
+<a href="https://github.com/NFFT/nfft/releases">releases page</a> of the repository. Use
+the asset <code>nfft-X.Y.Z.tar.gz</code>. This archive contains <code>configure</code>. The
+automatic source code archives of a release do not contain it. Treat them as a
+git checkout.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tar<span class="w"> </span>xzf<span class="w"> </span>nfft-X.Y.Z.tar.gz
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>nfft-X.Y.Z
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>./configure
+</span></code></pre></div>
+<h3 id="from-a-git-checkout">From a git checkout<a class="headerlink" href="#from-a-git-checkout" title="Permanent link">&para;</a></h3>
+<p>The git repository is <a href="https://github.com/NFFT/nfft">https://github.com/NFFT/nfft</a>. A checkout does not
+contain <code>configure</code>. The script <code>./bootstrap.sh</code> generates it.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NFFT/nfft.git
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>nfft
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>./bootstrap.sh
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>./configure
+</span></code></pre></div>
+<p><code>bootstrap.sh</code> needs <code>autoconf</code>, <code>automake</code> and <code>libtool</code>. It runs
+<code>glibtoolize</code> if it finds it, else <code>libtoolize</code>. If it finds neither, it stops
+with an error. Install the tools:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Debian and Ubuntu</label><label for="__tabbed_1_2">Fedora</label><label for="__tabbed_1_3">macOS, Homebrew</label><label for="__tabbed_1_4">macOS, MacPorts</label><label for="__tabbed_1_5">MSYS2</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>make
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool<span class="w"> </span>make
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>brew<span class="w"> </span>install<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>autoconf<span class="w"> </span>automake<span class="w"> </span>libtool
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pacman<span class="w"> </span>-S<span class="w"> </span>autoconf<span class="w"> </span>automake-wrapper<span class="w"> </span>libtool<span class="w"> </span>make
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>On macOS, Homebrew and MacPorts install <code>libtoolize</code> as <code>glibtoolize</code>.</p>
 <h2 id="configure-and-build">Configure and build<a class="headerlink" href="#configure-and-build" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>make<span class="w"> </span>-j
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>make<span class="w"> </span>check<span class="w">          </span><span class="c1"># optional, see Testing</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>sudo<span class="w"> </span>make<span class="w"> </span>install
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>make<span class="w"> </span>-j
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>make<span class="w"> </span>check<span class="w">          </span><span class="c1"># optional, see Testing</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>sudo<span class="w"> </span>make<span class="w"> </span>install
 </span></code></pre></div>
 <p><code>./configure --help</code> lists every option. It also lists the generic options of
 Autoconf, Automake and Libtool, for example <code>--prefix</code> and <code>--enable-shared</code>.
@@ -3161,7 +3295,7 @@ are always built.</p>
 <p>All three can be installed side by side and linked into the same program; the
 name prefixes keep them apart. See the <a href="../../api/">API index</a>.</p>
 <h3 id="window-function">Window function<a class="headerlink" href="#window-function" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./configure<span class="w"> </span>--with-window<span class="o">=</span>kaiserbessel
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>./configure<span class="w"> </span>--with-window<span class="o">=</span>kaiserbessel
 </span></code></pre></div>
 <p><code>kaiserbessel</code> (the default), <code>gaussian</code>, <code>bspline</code>, <code>sinc</code> or <code>delta</code>. The <code>delta</code> window is deprecated and will be removed in a
 future release. Any other value makes <code>configure</code> fail with an error. The choice is
@@ -3190,7 +3324,7 @@ baked into the library. Which one you linked is reported by
 </tr>
 </tbody>
 </table>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>./configure<span class="w"> </span>--enable-all<span class="w"> </span>--enable-openmp
 </span></code></pre></div>
 <p>This adds a second library, <code>libnfft3_omp</code>, alongside the serial one. If the compiler does not support
 OpenMP, <code>configure</code> fails with an error.</p>
@@ -3260,10 +3394,10 @@ thread.</p>
 interface makes <code>configure</code> fail with an error.</p>
 <h3 id="finding-fftw-and-cunit">Finding FFTW and CUnit<a class="headerlink" href="#finding-fftw-and-cunit" title="Permanent link">&para;</a></h3>
 <p>If FFTW is not where the compiler looks:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./configure<span class="w"> </span>--with-fftw3<span class="o">=</span>/opt/fftw
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># or, separately</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>./configure<span class="w"> </span>--with-fftw3-includedir<span class="o">=</span>/opt/fftw/include<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">            </span>--with-fftw3-libdir<span class="o">=</span>/opt/fftw/lib
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>./configure<span class="w"> </span>--with-fftw3<span class="o">=</span>/opt/fftw
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1"># or, separately</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>./configure<span class="w"> </span>--with-fftw3-includedir<span class="o">=</span>/opt/fftw/include<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">            </span>--with-fftw3-libdir<span class="o">=</span>/opt/fftw/lib
 </span></code></pre></div>
 <table>
 <thead>
@@ -3489,10 +3623,10 @@ authoritative build system. If the two builds differ, the Autotools build
 is the reference. Use Autotools when you need an option that only
 <code>configure</code> offers.</p>
 </div>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w">    </span><span class="c1"># only with -DNFFT_ENABLE_TESTS=ON</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>cmake<span class="w"> </span>--install<span class="w"> </span>build<span class="w"> </span>--prefix<span class="w"> </span>/usr/local
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w">    </span><span class="c1"># only with -DNFFT_ENABLE_TESTS=ON</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>cmake<span class="w"> </span>--install<span class="w"> </span>build<span class="w"> </span>--prefix<span class="w"> </span>/usr/local
 </span></code></pre></div>
 <p>Set an option with <code>-D&lt;name&gt;=&lt;value&gt;</code> in the first command. Without a build
 type, CMake uses <code>Release</code>.</p>
@@ -3660,7 +3794,7 @@ precision only.</p>
 </table>
 <h3 id="finding-fftw-with-cmake">Finding FFTW with CMake<a class="headerlink" href="#finding-fftw-with-cmake" title="Permanent link">&para;</a></h3>
 <p>If FFTW is not where CMake looks, give its root:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DFFTW3_ROOT<span class="o">=</span>/opt/fftw
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DFFTW3_ROOT<span class="o">=</span>/opt/fftw
 </span></code></pre></div>
 <p><code>FFTW3_ROOT</code> can also be an environment variable. <code>FFTW3_INCLUDEDIR</code> and
 <code>FFTW3_LIBDIR</code> give the two directories separately. CMake looks for the FFTW
@@ -3678,16 +3812,16 @@ the library directory of the install, for example <code>lib</code>:</p>
 accepts a request for the same major version. The install also writes the
 pkg-config file <code>nfft3.pc</code>, <code>nfft3f.pc</code> or <code>nfft3l.pc</code>.</p>
 <p>In your project:</p>
-<div class="language-cmake highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">find_package</span><span class="p">(</span><span class="s">NFFT3</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">my_program</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">NFFT3::nfft3</span><span class="p">)</span>
+<div class="language-cmake highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">find_package</span><span class="p">(</span><span class="s">NFFT3</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">my_program</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">NFFT3::nfft3</span><span class="p">)</span>
 </span></code></pre></div>
 <p>The OpenMP library <code>libnfft3_omp</code> is installed, but it is not a target of the
 package, and the pkg-config file names only the serial library. Link it by
 name, <code>-lnfft3_omp</code>, with the OpenMP flag of your compiler.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>./configure<span class="w"> </span>--enable-tests
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>make
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>make<span class="w"> </span>check
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>./configure<span class="w"> </span>--enable-tests
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>make
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>make<span class="w"> </span>check
 </span></code></pre></div>
 <p><code>make check</code> runs the unit tests. They need <a href="http://cunit.sourceforge.net">CUnit</a>.
 Without <code>--enable-tests</code>, <code>make check</code> runs no test. With <code>--enable-tests</code> and
@@ -3698,8 +3832,8 @@ tests also run against the OpenMP library.</p>
 a nonzero status. The suites, the accuracy report and the reference data are
 described under <a href="../../development/testing/">Testing</a>.</p>
 <h2 id="cleaning">Cleaning<a class="headerlink" href="#cleaning" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>make<span class="w"> </span>clean<span class="w">       </span><span class="c1"># object files</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>make<span class="w"> </span>distclean<span class="w">   </span><span class="c1"># everything configure produced</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>make<span class="w"> </span>clean<span class="w">       </span><span class="c1"># object files</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>make<span class="w"> </span>distclean<span class="w">   </span><span class="c1"># everything configure produced</span>
 </span></code></pre></div>
 <p>A second precision or a second window means a second configured tree, not a
 <code>make clean</code> in this one.</p>
