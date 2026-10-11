@@ -251,8 +251,7 @@ The names are the ones from [Compile against it](#compile-against-it):
 
 A program gets the version of the library it runs with from
 [`nfft_get_version`](../api/nfft.md#get_version). The function writes the
-major, minor and patch number. The five lines below are not from the source
-tree:
+major, minor and patch number. Example:
 
 ```c
 #include <stdio.h>
