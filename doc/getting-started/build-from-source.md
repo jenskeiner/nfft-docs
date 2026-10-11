@@ -167,6 +167,52 @@ prints a warning and uses that variant. If it finds no threaded FFTW, it prints
 a warning. Then only the NFFT code runs in parallel, and the FFTs run on one
 thread.
 
+### Shared and static libraries
+
+By default, `configure` builds each library twice: as a shared library and as
+a static library. `make install` installs both.
+
+| Flag | Default | Effect |
+|------|---------|--------|
+| `--enable-shared` | on | Build the shared libraries, for example `libnfft3.so`. |
+| `--disable-shared` | off | Build no shared libraries. |
+| `--enable-static` | on | Build the static libraries, for example `libnfft3.a`. |
+| `--disable-static` | off | Build no static libraries. |
+
+To build only one type, disable the other:
+
+```bash
+./configure --disable-static   # shared libraries only
+./configure --disable-shared   # static libraries only
+```
+
+The interfaces need shared libraries:
+
+- The Julia interface loads a shared library at run time.
+  `--enable-julia --disable-shared` makes `configure` fail with an error.
+  Without `--enable-julia`, `--disable-shared` turns the Julia interface off.
+- The MATLAB and Octave interfaces build MEX files. A MEX file is a shared
+  object. With `--disable-shared`, `configure` succeeds, but `make` fails
+  when it links the MEX files.
+
+A static link needs the libraries that NFFT uses. Give them on the link line
+after the NFFT library:
+
+- The serial library needs the FFTW library of the same precision, for
+  example `libfftw3`, and the math library.
+- The OpenMP library also needs the threaded FFTW library that `configure`
+  found, `libfftw3_omp` or `libfftw3_threads`. Compile and link with the
+  OpenMP flag of your compiler.
+
+[Compile against it](index.md#compile-against-it) gives the link flags.
+
+A shared library in a prefix outside the search path of the dynamic linker
+does not load at run time. Add its directory to the run-time library path of
+your program, or to the search path of the dynamic linker.
+
+The matching CMake option is `BUILD_SHARED_LIBS`. CMake builds one type per
+build tree, shared by default. See the [CMake options](#options).
+
 ### Interfaces
 
 | Flag | Default | Effect |
