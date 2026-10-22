@@ -87,6 +87,17 @@ both: `Requires: fftw3` and `Libs: -L${libdir} -lnfft3` (`nfft/nfft3.pc.in:9-10`
 **Fix.** Use `pkg-config --cflags --libs nfft3`. Without it, give the library
 directory with `-L` and put `-lnfft3` before `-lfftw3` and `-lm`. See [Install](../getting-started/index.md#compile-against-it).
 
+## The program does not start
+
+**Symptom.** The program links. At start, the system reports that it does not
+find `libnfft3`.
+
+**Cause.** The library directory is not in the search path of the dynamic
+loader.
+
+**Fix.** Run `sudo ldconfig` after `make install`. Or add the library
+directory to `LD_LIBRARY_PATH`.
+
 ## Precision mismatch between header and library
 
 **Symptom.** The program compiles. The linker reports `undefined reference` to
